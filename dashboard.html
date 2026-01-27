@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIBRUZ - Panel Główny</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .admin-badge { background: #e74c3c; }
+        .director-badge { background: #3498db; }
+        .teacher-badge { background: #2ecc71; }
+        .student-badge { background: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="user-info">
+                <h3 id="userName">Ładowanie...</h3>
+                <div id="userRole" class="role-badge">Ładowanie...</div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul id="menuItems">
+                    <!-- Menu będzie dynamicznie ładowane w zależności od roli -->
+                </ul>
+            </nav>
+            
+            <button onclick="logout()" class="btn btn-logout">
+                Wyloguj się
+            </button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <div id="dashboardContent">
+                <!-- Tutaj będzie ładowana zawartość w zależności od wybranej opcji -->
+                <h1>Witaj w systemie LIBRUZ!</h1>
+                <p>Wybierz opcję z menu po lewej stronie.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/supabase-client.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/utils.js"></script>
+    
+    <!-- Ładowanie skryptów w zależności od roli -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('libruz_user'));
+            
+            // Ładuj odpowiedni skrypt w zależności od roli
+            const script = document.createElement('script');
+            
+            switch(user.role) {
+                case 'admin':
+                    script.src = 'js/admin.js';
+                    break;
+                case 'director':
+                    script.src = 'js/director.js';
+                    break;
+                case 'teacher':
+                    script.src = 'js/teacher.js';
+                    break;
+                case 'student':
+                    script.src = 'js/student.js';
+                    break;
+            }
+            
+            document.body.appendChild(script);
+        });
+    </script>
+</body>
+</html>
