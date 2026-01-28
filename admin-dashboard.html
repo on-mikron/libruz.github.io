@@ -2,679 +2,189 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LIBRUZ - Panel Administratora</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
         }
         
         body {
             background: #f5f5f5;
-            display: flex;
             min-height: 100vh;
-        }
-        
-        /* SIDEBAR */
-        .sidebar {
-            width: 250px;
-            background: #2c3e50;
-            color: white;
-            padding: 20px 0;
-        }
-        
-        .logo {
-            padding: 20px;
-            border-bottom: 1px solid #34495e;
-            text-align: center;
-        }
-        
-        .logo h2 {
-            color: #3498db;
-            font-size: 24px;
-        }
-        
-        .user-info {
-            padding: 20px;
-            border-bottom: 1px solid #34495e;
-        }
-        
-        .nav-menu {
-            padding: 20px 0;
-        }
-        
-        .nav-item {
-            display: block;
-            padding: 12px 20px;
-            color: #ecf0f1;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .nav-item:hover {
-            background: #34495e;
-            border-left: 4px solid #3498db;
-        }
-        
-        .nav-item.active {
-            background: #34495e;
-            border-left: 4px solid #2ecc71;
-        }
-        
-        .nav-icon {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* MAIN CONTENT */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
         }
         
         .header {
             background: white;
             padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .content-section {
+        .logo {
+            color: #2575fc;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .welcome-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .functions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .function-card {
             background: white;
             padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #2575fc;
+        }
+        
+        .function-card h3 {
+            color: #2575fc;
+            margin-bottom: 15px;
         }
         
         .btn {
             padding: 10px 20px;
+            background: #2575fc;
+            color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-        
-        .btn-success {
-            background: #2ecc71;
-            color: white;
-        }
-        
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .table {
-            width: 100%;
-            border-collapse: collapse;
             margin-top: 15px;
         }
         
-        .table th,
-        .table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
+        .btn:hover {
+            background: #1a68e8;
         }
         
-        .table th {
-            background: #f8f9fa;
-            font-weight: 600;
+        .btn-logout {
+            background: #ff3b30;
         }
         
-        .table tr:hover {
-            background: #f8f9fa;
+        .btn-logout:hover {
+            background: #e0352b;
         }
-        
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .badge-admin { background: #e74c3c; color: white; }
-        .badge-director { background: #3498db; color: white; }
-        .badge-teacher { background: #2ecc71; color: white; }
-        .badge-student { background: #f39c12; color: white; }
     </style>
 </head>
 <body>
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <div class="logo">
-            <h2>📚 LIBRUZ</h2>
-            <small>Panel Administratora</small>
-        </div>
-        
-        <div class="user-info">
-            <h4 id="userName">Administrator</h4>
-            <small id="userRole">admin@libruz.pl</small>
-        </div>
-        
-        <div class="nav-menu">
-            <a href="#" class="nav-item active" data-section="dashboard">
-                <span class="nav-icon">📊</span> Dashboard
-            </a>
-            <a href="#" class="nav-item" data-section="schools">
-                <span class="nav-icon">🏫</span> Szkoły
-            </a>
-            <a href="#" class="nav-item" data-section="users">
-                <span class="nav-icon">👥</span> Użytkownicy
-            </a>
-            <a href="#" class="nav-item" data-section="system">
-                <span class="nav-icon">⚙️</span> System
-            </a>
-            <a href="#" class="nav-item" onclick="logout()" style="color: #e74c3c;">
-                <span class="nav-icon">🚪</span> Wyloguj
-            </a>
+    <div class="header">
+        <div class="logo">📚 LIBRUZ - Panel Admina</div>
+        <div class="user-menu">
+            <span id="userName">Administrator</span>
+            <button class="btn btn-logout" onclick="logout()">🚪 Wyloguj</button>
         </div>
     </div>
     
-    <!-- MAIN CONTENT -->
     <div class="main-content">
-        <!-- DASHBOARD SECTION -->
-        <div id="dashboardSection" class="content-section">
-            <h2>📊 Panel główny</h2>
-            <p>Witaj w systemie LIBRUZ. Wybierz opcję z menu po lewej stronie.</p>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
-                <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; border-left: 4px solid #2196f3;">
-                    <h3>🏫 Szkoły</h3>
-                    <p id="schoolsCount">Ładowanie...</p>
-                    <button class="btn btn-primary" onclick="showModal('addSchoolModal')">Dodaj szkołę</button>
-                </div>
-                
-                <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; border-left: 4px solid #4caf50;">
-                    <h3>👥 Użytkownicy</h3>
-                    <p id="usersCount">Ładowanie...</p>
-                    <button class="btn btn-primary" onclick="loadSection('users')">Zarządzaj</button>
-                </div>
-                
-                <div style="background: #fff3e0; padding: 20px; border-radius: 8px; border-left: 4px solid #ff9800;">
-                    <h3>📈 Statystyki</h3>
-                    <p>System aktywny</p>
-                    <button class="btn btn-primary" onclick="loadSystemStats()">Pokaż</button>
-                </div>
-            </div>
+        <div class="welcome-box">
+            <h1>Witaj w Panelu Administratora!</h1>
+            <p>System LIBRUZ - Zarządzaj szkołami, użytkownikami i systemem.</p>
         </div>
         
-        <!-- SCHOOLS SECTION -->
-        <div id="schoolsSection" class="content-section" style="display: none;">
-            <h2>🏫 Zarządzanie szkołami</h2>
-            <button class="btn btn-primary" onclick="showModal('addSchoolModal')">➕ Dodaj szkołę</button>
-            
-            <table class="table" id="schoolsTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nazwa szkoły</th>
-                        <th>Data utworzenia</th>
-                        <th>Dyrektor</th>
-                        <th>Akcje</th>
-                    </tr>
-                </thead>
-                <tbody id="schoolsTableBody">
-                    <!-- Dane będą ładowane dynamicznie -->
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- USERS SECTION -->
-        <div id="usersSection" class="content-section" style="display: none;">
-            <h2>👥 Zarządzanie użytkownikami</h2>
-            
-            <div style="margin-bottom: 20px;">
-                <button class="btn btn-primary" onclick="showModal('addUserModal')">➕ Dodaj użytkownika</button>
-                <button class="btn" onclick="generatePasswords()">🔐 Generuj hasła</button>
+        <div class="functions-grid">
+            <div class="function-card">
+                <h3>🏫 Zarządzanie szkołami</h3>
+                <p>Dodawaj, edytuj i usuwaj szkoły w systemie.</p>
+                <button class="btn" onclick="manageSchools()">Zarządzaj szkołami</button>
             </div>
             
-            <table class="table" id="usersTable">
-                <thead>
-                    <tr>
-                        <th>Login</th>
-                        <th>Imię i nazwisko</th>
-                        <th>Rola</th>
-                        <th>Szkoła</th>
-                        <th>Status</th>
-                        <th>Akcje</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <!-- Dane będą ładowane dynamicznie -->
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- SYSTEM SECTION -->
-        <div id="systemSection" class="content-section" style="display: none;">
-            <h2>⚙️ Ustawienia systemu</h2>
-            <p>Ustawienia globalne systemu LIBRUZ.</p>
-            
-            <div class="form-group">
-                <label>Domyślny rok szkolny:</label>
-                <input type="text" id="schoolYear" value="2023/2024">
+            <div class="function-card">
+                <h3>👤 Tworzenie dyrektorów</h3>
+                <p>Dodawaj nowych dyrektorów szkół z tymczasowymi hasłami.</p>
+                <button class="btn" onclick="createDirector()">Dodaj dyrektora</button>
             </div>
             
-            <div class="form-group">
-                <label>Maksymalna liczba uczniów w klasie:</label>
-                <input type="number" id="maxStudents" value="30" min="10" max="50">
+            <div class="function-card">
+                <h3>🔐 Generowanie haseł</h3>
+                <p>Generuj bezpieczne, tymczasowe hasła dla użytkowników.</p>
+                <button class="btn" onclick="generatePassword()">Generuj hasło</button>
             </div>
             
-            <button class="btn btn-success">Zapisz ustawienia</button>
-        </div>
-    </div>
-    
-    <!-- MODALS -->
-    <!-- MODAL: Dodaj szkołę -->
-    <div id="addSchoolModal" class="modal">
-        <div class="modal-content">
-            <h3>🏫 Dodaj nową szkołę</h3>
-            
-            <div class="form-group">
-                <label>Nazwa szkoły:</label>
-                <input type="text" id="schoolName" placeholder="np. Liceum Ogólnokształcące nr 1">
-            </div>
-            
-            <h4 style="margin-top: 20px; margin-bottom: 15px;">👤 Dyrektor szkoły</h4>
-            
-            <div class="form-group">
-                <label>Email dyrektora:</label>
-                <input type="email" id="directorEmail" placeholder="dyrektor@szkola.pl">
-            </div>
-            
-            <div class="form-group">
-                <label>Imię dyrektora:</label>
-                <input type="text" id="directorFirstName" placeholder="Jan">
-            </div>
-            
-            <div class="form-group">
-                <label>Nazwisko dyrektora:</label>
-                <input type="text" id="directorLastName" placeholder="Kowalski">
-            </div>
-            
-            <div class="form-group">
-                <label>Tymczasowe hasło:</label>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="tempPassword" readonly style="flex: 1;">
-                    <button type="button" class="btn" onclick="generateTempPassword()">🎲 Generuj</button>
-                </div>
-            </div>
-            
-            <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end;">
-                <button class="btn" onclick="closeModal('addSchoolModal')">Anuluj</button>
-                <button class="btn btn-primary" onclick="createSchool()">Utwórz szkołę</button>
+            <div class="function-card">
+                <h3>📊 Przegląd systemu</h3>
+                <p>Sprawdzaj statystyki i aktywność wszystkich szkół.</p>
+                <button class="btn" onclick="viewStatistics()">Zobacz statystyki</button>
             </div>
         </div>
     </div>
     
-    <!-- MODAL: Dodaj użytkownika -->
-    <div id="addUserModal" class="modal">
-        <div class="modal-content">
-            <h3>👤 Dodaj użytkownika</h3>
-            <!-- Tu będzie formularz -->
-            <p>Funkcja w budowie...</p>
-            <button class="btn" onclick="closeModal('addUserModal')">Zamknij</button>
-        </div>
-    </div>
-    
-    <!-- Scripts -->
-    <script src="js/supabase-client.js"></script>
     <script>
-        // ====== GŁÓWNA LOGIKA PANELU ADMINA ======
-        
-        // Dane użytkownika
-        let currentUser = null;
-        let schools = [];
-        let users = [];
-        
-        // Inicjalizacja
-        document.addEventListener('DOMContentLoaded', async function() {
-            await checkAdminAuth();
-            await loadData();
-            setupEventListeners();
+        // Sprawdź czy użytkownik jest zalogowany jako admin
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('libruz_user');
+            
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            
+            if (user.role !== 'admin') {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Ustaw imię użytkownika
+            document.getElementById('userName').textContent = 
+                user.first_name + ' ' + user.last_name + ' (Admin)';
         });
         
-        // Sprawdź czy użytkownik jest adminem
-        async function checkAdminAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (!session) {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // Pobierz profil
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-            
-            if (!profile || profile.role !== 'admin') {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            currentUser = profile;
-            document.getElementById('userName').textContent = 
-                `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || 'Administrator';
-            document.getElementById('userRole').textContent = profile.email;
+        // Funkcje panelu
+        function manageSchools() {
+            alert('🏫 Zarządzanie szkołami\n\nFunkcja w budowie:\n• Lista wszystkich szkół\n• Dodawanie nowej szkoły\n• Przypisywanie dyrektora\n• Podgląd szczegółów');
         }
         
-        // Załaduj dane
-        async function loadData() {
-            await loadSchools();
-            await loadUsers();
-            updateCounters();
+        function createDirector() {
+            alert('👤 Tworzenie dyrektora\n\nFunkcja w budowie:\n• Formularz danych dyrektora\n• Generowanie tymczasowego hasła\n• Przypisanie do szkoły\n• Wysyłka danych logowania');
         }
         
-        // Załaduj szkoły
-        async function loadSchools() {
-            const { data, error } = await supabase
-                .from('schools')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error('Błąd ładowania szkół:', error);
-                return;
-            }
-            
-            schools = data || [];
-            renderSchoolsTable();
-        }
-        
-        // Załaduj użytkowników
-        async function loadUsers() {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select(`
-                    *,
-                    schools (name)
-                `)
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error('Błąd ładowania użytkowników:', error);
-                return;
-            }
-            
-            users = data || [];
-            renderUsersTable();
-        }
-        
-        // Aktualizuj liczniki
-        function updateCounters() {
-            document.getElementById('schoolsCount').textContent = 
-                `Liczba szkół: ${schools.length}`;
-            document.getElementById('usersCount').textContent = 
-                `Liczba użytkowników: ${users.length}`;
-        }
-        
-        // Renderuj tabelę szkół
-        function renderSchoolsTable() {
-            const tbody = document.getElementById('schoolsTableBody');
-            tbody.innerHTML = '';
-            
-            schools.forEach(school => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${school.id.substring(0, 8)}...</td>
-                    <td><strong>${school.name}</strong></td>
-                    <td>${new Date(school.created_at).toLocaleDateString('pl-PL')}</td>
-                    <td>Brak dyrektora</td>
-                    <td>
-                        <button class="btn" onclick="viewSchool('${school.id}')">👁️</button>
-                        <button class="btn btn-danger" onclick="deleteSchool('${school.id}')">🗑️</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-        
-        // Renderuj tabelę użytkowników
-        function renderUsersTable() {
-            const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '';
-            
-            users.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${user.email}</td>
-                    <td>${user.first_name || ''} ${user.last_name || ''}</td>
-                    <td><span class="badge badge-${user.role}">${user.role}</span></td>
-                    <td>${user.schools?.name || 'Brak'}</td>
-                    <td>${user.temporary_password ? '🔐 Hasło tymczasowe' : '✅ Aktywny'}</td>
-                    <td>
-                        <button class="btn" onclick="editUser('${user.id}')">✏️</button>
-                        <button class="btn" onclick="resetPassword('${user.id}')">🔄</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-        
-        // ====== FUNKCJE SZKOŁY ======
-        
-        // Generuj tymczasowe hasło
-        function generateTempPassword() {
+        function generatePassword() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
             let password = '';
+            
             for (let i = 0; i < 12; i++) {
                 password += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-            document.getElementById('tempPassword').value = password;
-        }
-        
-        // Utwórz szkołę
-        async function createSchool() {
-            const schoolName = document.getElementById('schoolName').value;
-            const directorEmail = document.getElementById('directorEmail').value;
-            const directorFirstName = document.getElementById('directorFirstName').value;
-            const directorLastName = document.getElementById('directorLastName').value;
-            const tempPassword = document.getElementById('tempPassword').value;
             
-            if (!schoolName || !directorEmail || !tempPassword) {
-                alert('Wypełnij wszystkie pola!');
-                return;
-            }
-            
-            try {
-                // 1. Stwórz szkołę
-                const { data: school, error: schoolError } = await supabase
-                    .from('schools')
-                    .insert([{ name: schoolName }])
-                    .select()
-                    .single();
-                
-                if (schoolError) throw schoolError;
-                
-                // 2. Stwórz konto dyrektora
-                const { data: authUser, error: authError } = await supabase.auth.signUp({
-                    email: directorEmail,
-                    password: tempPassword,
-                    options: {
-                        data: {
-                            first_name: directorFirstName,
-                            last_name: directorLastName,
-                            role: 'director'
-                        }
-                    }
-                });
-                
-                if (authError) throw authError;
-                
-                // 3. Dodaj profil dyrektora
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .insert([{
-                        id: authUser.user.id,
-                        email: directorEmail,
-                        first_name: directorFirstName,
-                        last_name: directorLastName,
-                        role: 'director',
-                        school_id: school.id,
-                        temporary_password: true
-                    }]);
-                
-                if (profileError) throw profileError;
-                
-                alert(`✅ Szkoła utworzona!\n\nSzkoła: ${schoolName}\nDyrektor: ${directorEmail}\nHasło tymczasowe: ${tempPassword}`);
-                
-                closeModal('addSchoolModal');
-                await loadData();
-                
-            } catch (error) {
-                alert('❌ Błąd: ' + error.message);
-            }
+            alert('🔐 Wygenerowane hasło:\n\n' + password + '\n\nSkopiuj to hasło i przekaż użytkownikowi.');
         }
         
-        // ====== FUNKCJE SYSTEMU ======
-        
-        // Przełączanie sekcji
-        function setupEventListeners() {
-            // Menu nawigacyjne
-            document.querySelectorAll('.nav-item[data-section]').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // Usuń aktywną klasę
-                    document.querySelectorAll('.nav-item').forEach(nav => {
-                        nav.classList.remove('active');
-                    });
-                    
-                    // Dodaj aktywną klasę
-                    this.classList.add('active');
-                    
-                    // Pokaż sekcję
-                    const section = this.getAttribute('data-section');
-                    loadSection(section);
-                });
-            });
-            
-            // Generuj hasło przy otwarciu modala
-            document.getElementById('addSchoolModal').addEventListener('shown', function() {
-                generateTempPassword();
-            });
+        function viewStatistics() {
+            alert('📊 Statystyki systemu\n\nFunkcja w budowie:\n• Liczba szkół\n• Liczba użytkowników\n• Aktywność systemu\n• Logi operacji');
         }
         
-        function loadSection(section) {
-            // Ukryj wszystkie sekcje
-            document.querySelectorAll('.content-section').forEach(sec => {
-                sec.style.display = 'none';
-            });
-            
-            // Pokaż wybraną sekcję
-            document.getElementById(section + 'Section').style.display = 'block';
-        }
-        
-        // Modal functions
-        function showModal(modalId) {
-            document.getElementById(modalId).style.display = 'flex';
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // Wylogowanie
-        async function logout() {
-            await supabase.auth.signOut();
+        function logout() {
+            localStorage.clear();
             window.location.href = 'index.html';
-        }
-        
-        // Inne funkcje (szkielet)
-        function viewSchool(schoolId) {
-            alert('Podgląd szkoły - w budowie');
-        }
-        
-        function deleteSchool(schoolId) {
-            if (confirm('Czy na pewno chcesz usunąć tę szkołę?')) {
-                alert('Usuwanie szkoły - w budowie');
-            }
-        }
-        
-        function editUser(userId) {
-            alert('Edycja użytkownika - w budowie');
-        }
-        
-        function resetPassword(userId) {
-            alert('Reset hasła - w budowie');
-        }
-        
-        function generatePasswords() {
-            alert('Generowanie haseł - w budowie');
-        }
-        
-        function loadSystemStats() {
-            alert('Statystyki systemu - w budowie');
-        }
-        
-        // Zamknij modal klikając poza nim
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
         }
     </script>
 </body>
