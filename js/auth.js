@@ -1,28 +1,39 @@
-// ====== AUTH.JS - POPRAWIONE LOGOWANIE ======
-console.log('🔐 Ładuję system logowania...');
+// ====== SYSTEM LOGOWANIA LIBRUZ ======
+console.log('🔐 Inicjalizacja systemu logowania...');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📝 Formularz logowania gotowy');
+    console.log('✅ Strona załadowana, konfiguruję logowanie...');
     
-    const loginForm = document.getElementById('loginForm');
+    const loginButton = document.getElementById('loginButton');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
     const errorMessage = document.getElementById('errorMessage');
     
-    if (!loginForm) {
-        console.error('❌ Nie znaleziono formularza logowania!');
+    if (!loginButton || !emailInput || !passwordInput) {
+        console.error('❌ Nie znaleziono elementów formularza!');
         return;
     }
     
-    // Nasłuchuj zdarzenie submit
-    loginForm.addEventListener('submit', async function(event) {
-        console.log('🖱️ Kliknięto przycisk logowania');
-        event.preventDefault(); // Zatrzymaj domyślne wysłanie formularza
+    console.log('✅ Formularz znaleziony, dodaję obsługę...');
+    
+    // 1. Obsługa kliknięcia przycisku
+    loginButton.addEventListener('click', handleLogin);
+    
+    // 2. Obsługa klawisza Enter w polach
+    emailInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') handleLogin();
+    });
+    
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') handleLogin();
+    });
+    
+    // 3. Główna funkcja logowania
+    async function handleLogin() {
+        console.log('🖱️ Rozpoczynam logowanie...');
         
-        // Pobierz wartości z formularza
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        console.log('📧 Email:', email);
-        console.log('🔑 Hasło:', password ? '***' : 'PUSTE');
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
         
         // Walidacja
         if (!email || !password) {
@@ -31,28 +42,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (!email.includes('@')) {
-            showError('⚠️ Wprowadź poprawny email!');
+            showError('⚠️ Wpisz poprawny adres email!');
             return;
         }
         
-        // Przycisk "ładowania"
-        const submitBtn = loginForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Logowanie...';
-        submitBtn.disabled = true;
+        // Zmiana stanu przycisku
+        loginButton.innerHTML = '⌛ Logowanie...';
+        loginButton.disabled = true;
         
         try {
-            console.log('🔄 Próba logowania...');
+            console.log('🔄 Łączę z Supabase...');
             
-            // Poczekaj aż Supabase będzie gotowy
-            const supabaseClient = await window.checkSupabase();
-            
-            if (!supabaseClient) {
-                throw new Error('Nie można połączyć się z bazą danych');
+            // Sprawdź czy Supabase jest dostępny
+            if (!window.supabase) {
+                throw new Error('Brak połączenia z systemem. Odśwież stronę.');
             }
             
             // Próba logowania
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
+            console.log('🔑 Próbuję zalogować:', email);
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: password
             });
@@ -60,28 +68,27 @@ document.addEventListener('DOMContentLoaded', function() {
             if (error) {
                 console.error('❌ Błąd logowania:', error.message);
                 
-                // Sprawdź konkretne błędy
+                // Specjalne komunikaty dla różnych błędów
                 if (error.message.includes('Invalid login credentials')) {
                     throw new Error('Nieprawidłowy email lub hasło');
                 } else if (error.message.includes('Email not confirmed')) {
-                    throw new Error('Email niepotwierdzony');
+                    throw new Error('Email niepotwierdzony - sprawdź skrzynkę');
                 } else {
-                    throw error;
+                    throw new Error('Błąd logowania: ' + error.message);
                 }
             }
             
-            console.log('✅ Zalogowano pomyślnie!');
-            console.log('Użytkownik:', data.user.email);
+            console.log('✅ Logowanie udane!', data.user.email);
             
             // Pobierz profil użytkownika
-            const { data: profile, error: profileError } = await supabaseClient
+            const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', data.user.id)
                 .single();
             
             if (profileError) {
-                console.error('Błąd pobierania profilu:', profileError);
+                console.error('❌ Błąd profilu:', profileError);
                 throw new Error('Błąd pobierania danych użytkownika');
             }
             
@@ -89,136 +96,161 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Sprawdź czy to pierwsze logowanie
             if (profile.temporary_password === true) {
-                console.log('🔐 Pierwsze logowanie - przekierowuję do zmiany hasła');
+                console.log('🔐 Pierwsze logowanie - zmiana hasła wymagana');
                 
-                // Zapisz dane w localStorage
+                // Zapisz w localStorage
                 localStorage.setItem('libruz_temp_user', JSON.stringify(profile));
                 localStorage.setItem('libruz_user_id', profile.id);
                 
                 // Przekieruj do zmiany hasła
-                window.location.href = 'change-password.html';
+                showSuccess('✅ Pierwsze logowanie! Przekierowuję...');
+                setTimeout(() => {
+                    window.location.href = 'change-password.html';
+                }, 1500);
                 
             } else {
-                console.log('✅ Normalne logowanie');
+                // Normalne logowanie
+                console.log('✅ Normalne logowanie - przekierowuję...');
                 
-                // Zapisz sesję
+                // Zapisz dane
                 localStorage.setItem('libruz_user', JSON.stringify(profile));
                 localStorage.setItem('libruz_session', JSON.stringify(data.session));
                 
-                // Przekieruj do odpowiedniego panelu
-                redirectToDashboard(profile);
+                // Przekieruj według roli
+                redirectByRole(profile);
             }
             
         } catch (error) {
-            console.error('💥 Krytyczny błąd:', error);
+            console.error('💥 Błąd podczas logowania:', error);
+            
+            // Pokaz błąd użytkownikowi
             showError('❌ ' + error.message);
             
-            // DEMO: Jeśli Supabase nie działa, użyj trybu demo
-            if (error.message.includes('baza danych') || error.message.includes('połączyć')) {
-                console.log('🔄 Przechodzę w tryb DEMO...');
+            // DEMO MODE: Jeśli Supabase nie działa, użyj trybu demo
+            if (error.message.includes('Brak połączenia') || 
+                error.message.includes('network')) {
                 
-                // Demo logowanie tylko dla admina
-                if (email === 'admin@libruz.pl' && password === 'Grahamka321@##') {
-                    showError('✅ DEMO: Zalogowano jako admin (tryb testowy)');
-                    
-                    // Symulacja admina
-                    const demoProfile = {
-                        id: 'demo-admin-id',
-                        email: 'admin@libruz.pl',
-                        first_name: 'Admin',
-                        last_name: 'System',
-                        role: 'admin',
-                        temporary_password: false
-                    };
-                    
-                    localStorage.setItem('libruz_user', JSON.stringify(demoProfile));
-                    setTimeout(() => {
-                        window.location.href = 'admin-dashboard.html';
-                    }, 1000);
-                    
-                } else {
-                    showError('❌ DEMO: Tylko admin@libruz.pl / Grahamka321@##');
-                }
+                console.log('🔄 Przechodzę w tryb DEMO...');
+                demoLogin(email, password);
             }
             
         } finally {
             // Przywróć przycisk
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }
-    });
-    
-    // Funkcja przekierowania
-    function redirectToDashboard(profile) {
-        console.log('🎯 Przekierowuję do panelu dla roli:', profile.role);
-        
-        switch(profile.role) {
-            case 'admin':
-                window.location.href = 'admin-dashboard.html';
-                break;
-            case 'director':
-                window.location.href = 'director-dashboard.html';
-                break;
-            case 'teacher':
-                window.location.href = 'teacher-dashboard.html';
-                break;
-            case 'student':
-                window.location.href = 'student-dashboard.html';
-                break;
-            default:
-                showError('Nieznana rola użytkownika: ' + profile.role);
+            loginButton.innerHTML = '🔐 Zaloguj się';
+            loginButton.disabled = false;
         }
     }
     
-    // Funkcja pokazująca błąd
+    // 4. Przekierowanie według roli
+    function redirectByRole(profile) {
+        console.log('🎯 Przekierowuję dla roli:', profile.role);
+        
+        showSuccess('✅ Zalogowano! Przekierowuję...');
+        
+        setTimeout(() => {
+            switch(profile.role) {
+                case 'admin':
+                    window.location.href = 'admin-dashboard.html';
+                    break;
+                case 'director':
+                    window.location.href = 'director-dashboard.html';
+                    break;
+                case 'teacher':
+                    window.location.href = 'teacher-dashboard.html';
+                    break;
+                case 'student':
+                    window.location.href = 'student-dashboard.html';
+                    break;
+                default:
+                    showError('Nieznana rola użytkownika');
+            }
+        }, 1000);
+    }
+    
+    // 5. Tryb DEMO (gdy Supabase nie działa)
+    function demoLogin(email, password) {
+        // Tylko dla admina w demo
+        if (email === 'admin@libruz.pl' && password === 'Grahamka321@##') {
+            showSuccess('✅ DEMO: Zalogowano jako Administrator');
+            
+            const demoProfile = {
+                id: 'demo-admin-123',
+                email: 'admin@libruz.pl',
+                first_name: 'Admin',
+                last_name: 'System',
+                role: 'admin',
+                temporary_password: false
+            };
+            
+            localStorage.setItem('libruz_user', JSON.stringify(demoProfile));
+            
+            setTimeout(() => {
+                window.location.href = 'admin-dashboard.html';
+            }, 1500);
+            
+        } else {
+            showError('❌ DEMO: Tylko admin@libruz.pl / Grahamka321@##');
+        }
+    }
+    
+    // 6. Funkcje pomocnicze
     function showError(message) {
         console.error('🚨 Błąd:', message);
         
         if (errorMessage) {
             errorMessage.textContent = message;
             errorMessage.style.display = 'block';
+            errorMessage.style.background = '#ffeaea';
+            errorMessage.style.color = '#ff3b30';
+            errorMessage.style.borderLeftColor = '#ff3b30';
             
             // Ukryj po 5 sekundach
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 5000);
-        } else {
-            alert(message);
         }
     }
     
-    // Sprawdź czy użytkownik jest już zalogowany
+    function showSuccess(message) {
+        console.log('✅ Sukces:', message);
+        
+        if (errorMessage) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            errorMessage.style.background = '#e8f5e9';
+            errorMessage.style.color = '#2e7d32';
+            errorMessage.style.borderLeftColor = '#2e7d32';
+        }
+    }
+    
+    // 7. Automatyczne sprawdzenie sesji
     async function checkExistingSession() {
         try {
-            const supabaseClient = await window.checkSupabase();
-            if (!supabaseClient) return;
+            if (!window.supabase) return;
             
-            const { data: { session } } = await supabaseClient.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
             
             if (session) {
-                console.log('📱 Znaleziono istniejącą sesję');
+                console.log('📱 Znaleziono aktywną sesję');
                 
-                // Pobierz profil
-                const { data: profile } = await supabaseClient
+                const { data: profile } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', session.user.id)
                     .single();
                 
                 if (profile) {
-                    console.log('👤 Automatyczne logowanie:', profile.email);
-                    redirectToDashboard(profile);
+                    console.log('🔄 Automatyczne logowanie:', profile.email);
+                    redirectByRole(profile);
                 }
             }
         } catch (error) {
-            console.log('Brak sesji lub błąd:', error.message);
+            console.log('ℹ️ Brak sesji:', error.message);
         }
     }
     
-    // Uruchom sprawdzenie sesji
-    setTimeout(() => {
-        checkExistingSession();
-    }, 1000);
+    // Sprawdź sesję po załadowaniu
+    setTimeout(checkExistingSession, 500);
     
-    console.log('✅ System logowania gotowy do użycia');
+    console.log('✅ System logowania gotowy!');
 });
