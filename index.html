@@ -15,15 +15,17 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" required autocomplete="username">
+                    <input type="email" id="email" required placeholder="admin@libruz.pl" autocomplete="username">
                 </div>
                 
                 <div class="form-group">
                     <label for="password">Hasło:</label>
-                    <input type="password" id="password" required autocomplete="current-password">
+                    <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Zaloguj się</button>
+                <button type="button" id="loginButton" class="btn btn-primary">
+                    🔐 Zaloguj się
+                </button>
                 
                 <div id="errorMessage" class="error-message"></div>
             </form>
@@ -34,7 +36,9 @@
         </div>
     </div>
     
-    <script src="js/supabase-client.js"></script>
+    <!-- Scripts - WAŻNA KOLEJNOŚĆ -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
     <script src="js/auth.js"></script>
 </body>
 </html>
