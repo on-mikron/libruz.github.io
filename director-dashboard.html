@@ -132,7 +132,222 @@
             alert("Zastępstwo dodane!");
             e.target.reset();
         }
+// director-dashboard.js - Rozszerzony panel dyrektora
+class DirectorDashboard {
+    constructor() {
+        this.isViceDirector = this.checkViceDirectorStatus();
+    }
 
+    // Sprawdzenie statusu wicedyrektora
+    checkViceDirectorStatus() {
+        const user = JSON.parse(localStorage.getItem('libruz_user'));
+        return user.is_vice_director || false;
+    }
+
+    // Renderowanie rozszerzonego panelu
+    renderDashboard() {
+        const user = JSON.parse(localStorage.getItem('libruz_user'));
+        const roleLabel = this.isViceDirector ? 'Wicedyrektor' : 'Dyrektor';
+        
+        return `
+            <div class="director-dashboard">
+                <!-- Nagłówek z informacją o roli -->
+                <div class="dashboard-header">
+                    <h1>📚 LIBRUZ - Panel ${roleLabel}</h1>
+                    <div class="user-info">
+                        <span>${user.first_name} ${user.last_name}</span>
+                        ${this.isViceDirector ? '<span class="vice-badge">Wicedyrektor</span>' : ''}
+                    </div>
+                </div>
+                
+                <!-- Przywracanie oryginalnego użytkownika jeśli logowano jako -->
+                ${localStorage.getItem('libruz_original_user') ? `
+                    <div class="impersonation-warning">
+                        ⚠️ Jesteś zalogowany jako inny użytkownik
+                        <button onclick="substitutions.restoreOriginalUser()">
+                            ↩️ Wróć do swojego konta
+                        </button>
+                    </div>
+                ` : ''}
+                
+                <!-- Główne karty funkcji -->
+                <div class="dashboard-grid">
+                    <!-- Funkcje zarządzania -->
+                    <div class="dashboard-card">
+                        <h3>🏫 Zarządzanie szkołą</h3>
+                        <ul class="function-list">
+                            <li><button onclick="director.manageTeachers()">👥 Zarządzaj nauczycielami</button></li>
+                            <li><button onclick="director.manageClasses()">📚 Zarządzaj klasami</button></li>
+                            <li><button onclick="director.manageSubjects()">📖 Zarządzaj przedmiotami</button></li>
+                            ${!this.isViceDirector ? 
+                                '<li><button onclick="director.manageViceDirectors()">👨‍💼 Zarządzaj wicedyrektorami</button></li>' : ''}
+                        </ul>
+                    </div>
+                    
+                    <!-- Zastępstwa -->
+                    <div class="dashboard-card">
+                        <h3>🔄 Zastępstwa</h3>
+                        <div id="substitutionsSection">
+                            <!-- Ładowane przez substitutions.js -->
+                        </div>
+                    </div>
+                    
+                    <!-- Logowanie jako -->
+                    <div class="dashboard-card">
+                        <h3>🔐 Logowanie jako</h3>
+                        <div id="loginAsSection">
+                            <!-- Ładowane przez substitutions.js -->
+                        </div>
+                    </div>
+                    
+                    <!-- Raporty i statystyki -->
+                    <div class="dashboard-card">
+                        <h3>📊 Raporty</h3>
+                        <ul class="function-list">
+                            <li><button onclick="director.generateAttendanceReport()">📈 Frekwencja</button></li>
+                            <li><button onclick="director.generateGradesReport()">📊 Oceny</button></li>
+                            <li><button onclick="director.generateCurriculumReport()">📚 Realizacja programu</button></li>
+                            <li><button onclick="director.viewSystemLogs()">📋 Logi systemowe</button></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Dodatkowe godziny nauczycieli -->
+                    <div class="dashboard-card">
+                        <h3>⏰ Dodatkowe godziny</h3>
+                        <button onclick="director.manageExtraHours()">Zarządzaj dodatkowymi godzinami</button>
+                        <div class="extra-hours-summary">
+                            <!-- Podsumowanie -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Zarządzanie wicedyrektorami (tylko dla dyrektora głównego)
+    async manageViceDirectors() {
+        if (this.isViceDirector) {
+            alert('Tylko dyrektor główny może zarządzać wicedyrektorami');
+            return;
+        }
+        
+        const modal = `
+            <div class="modal vice-directors-modal">
+                <h3>Zarządzanie wicedyrektorami</h3>
+                
+                <!-- Lista obecnych wicedyrektorów -->
+                <div class="current-vice-directors">
+                    <h4>Aktualni wicedyrektorzy</h4>
+                    <div id="viceDirectorsList"></div>
+                </div>
+                
+                <!-- Dodawanie nowego wicedyrektora -->
+                <div class="add-vice-director">
+                    <h4>Dodaj wicedyrektora</h4>
+                    <select id="teacherSelect">
+                        <option value="">Wybierz nauczyciela...</option>
+                        <!-- Dynamicznie ładowani nauczyciele -->
+                    </select>
+                    <div class="permissions-section">
+                        <h5>Uprawnienia:</h5>
+                        <label><input type="checkbox" name="vicePerm" value="substitutions"> Zarządzanie zastępstwami</label>
+                        <label><input type="checkbox" name="vicePerm" value="reports"> Generowanie raportów</label>
+                        <label><input type="checkbox" name="vicePerm" value="loginAs"> Logowanie jako</label>
+                        <label><input type="checkbox" name="vicePerm" value="extraHours"> Zatwierdzanie dodatkowych godzin</label>
+                    </div>
+                    <button onclick="director.addViceDirector()">Mianuj wicedyrektorem</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modal);
+        await this.loadTeachersForViceDirector();
+    }
+
+    // Dodawanie wicedyrektora
+    async addViceDirector() {
+        const teacherId = document.getElementById('teacherSelect').value;
+        const permissions = Array.from(document.querySelectorAll('input[name="vicePerm"]:checked'))
+            .map(cb => cb.value);
+        
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                is_vice_director: true,
+                permissions: permissions,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', teacherId);
+        
+        if (!error) {
+            this.showNotification('Nauczyciel został mianowany wicedyrektorem');
+        }
+    }
+
+    // Zarządzanie dodatkowymi godzinami
+    async manageExtraHours() {
+        const { data: extraHours } = await supabase
+            .from('extra_hours')
+            .select(`
+                *,
+                teacher:teacher_id(first_name, last_name),
+                class:class_id(name),
+                approved_by:profiles(first_name, last_name)
+            `)
+            .order('date', { ascending: false });
+        
+        const modal = `
+            <div class="modal extra-hours-modal">
+                <h3>Dodatkowe godziny nauczycieli</h3>
+                
+                <!-- Filtr -->
+                <div class="filter-bar">
+                    <input type="date" id="filterDate" placeholder="Filtruj po dacie">
+                    <select id="filterStatus">
+                        <option value="">Wszystkie</option>
+                        <option value="pending">Oczekujące</option>
+                        <option value="approved">Zatwierdzone</option>
+                    </select>
+                    <button onclick="director.filterExtraHours()">Filtruj</button>
+                </div>
+                
+                <!-- Lista godzin -->
+                <div class="extra-hours-list">
+                    ${extraHours.map(hour => `
+                        <div class="hour-item ${hour.approved ? 'approved' : 'pending'}">
+                            <div class="hour-header">
+                                <span class="teacher">${hour.teacher.first_name} ${hour.teacher.last_name}</span>
+                                <span class="date">${new Date(hour.date).toLocaleDateString('pl-PL')}</span>
+                                <span class="hours">${hour.hours} h</span>
+                            </div>
+                            <div class="hour-details">
+                                <p><strong>Opis:</strong> ${hour.description}</p>
+                                <p><strong>Klasa:</strong> ${hour.class?.name || '---'}</p>
+                                ${hour.attendance_list?.length ? `
+                                    <p><strong>Obecność:</strong> ${hour.attendance_list.join(', ')}</p>
+                                ` : ''}
+                            </div>
+                            <div class="hour-footer">
+                                ${hour.approved ? `
+                                    <span class="approved-by">
+                                        Zatwierdzone przez: ${hour.approved_by?.first_name} ${hour.approved_by?.last_name}
+                                    </span>
+                                ` : `
+                                    <button onclick="director.approveExtraHour('${hour.id}')">✓ Zatwierdź</button>
+                                    <button onclick="director.rejectExtraHour('${hour.id}')">✗ Odrzuć</button>
+                                `}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modal);
+    }
+}
+
+const director = new DirectorDashboard();
         renderSubs();
     </script>
 </body>
