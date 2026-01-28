@@ -2,91 +2,128 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIBRUZ - System Szkolny</title>
+    <title>LIBRUZ - Zmiana hasła</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Dodatkowe style */
-        .change-password-section {
-            display: none; /* Na początku ukryte */
-        }
-        .demo-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border-left: 4px solid #3498db;
-        }
+        .container { max-width: 500px; margin: 50px auto; }
+        .info-box { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>LIBRUZ</h1>
-        <p class="subtitle">System Zarządzania Szkołą</p>
-        
-        <!-- FORMULARZ LOGOWANIA (widoczny na starcie) -->
-        <div id="loginSection">
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="loginInput">Login / Email:</label>
-                    <input type="text" id="loginInput" placeholder="np. admin@libruz.pl" required>
-                </div>
-                
-                <div class="input-group">
-                    <label for="passwordInput">Hasło:</label>
-                    <input type="password" id="passwordInput" placeholder="Wpisz hasło" required>
-                </div>
-                
-                <button type="submit" class="btn" id="loginBtn">🔐 Zaloguj się</button>
-                
-                <div class="demo-info">
-                    <strong>Dane testowe:</strong><br>
-                    Login: <code>admin@libruz.pl</code><br>
-                    Hasło: <code>Grahamka321@##</code>
-                </div>
-            </form>
-        </div>
-        
-        <!-- FORMULARZ ZMIANY HASŁA (ukryty na starcie) -->
-        <div id="changePasswordSection" class="change-password-section">
-            <h2>👤 Ustaw swoje dane</h2>
-            <p>To Twoje pierwsze logowanie. Ustaw nowe hasło i dane.</p>
+    <div class="container">
+        <div class="login-box">
+            <h1>🔐 Ustaw nowe hasło</h1>
+            <div class="info-box">
+                To Twoje pierwsze logowanie. Ustaw własne hasło i dane osobowe.
+            </div>
             
             <form id="changePasswordForm">
-                <div class="input-group">
-                    <label for="firstNameInput">Imię:</label>
-                    <input type="text" id="firstNameInput" placeholder="Twoje imię" required>
+                <div class="form-group">
+                    <label for="firstName">Imię:</label>
+                    <input type="text" id="firstName" required>
                 </div>
                 
-                <div class="input-group">
-                    <label for="lastNameInput">Nazwisko:</label>
-                    <input type="text" id="lastNameInput" placeholder="Twoje nazwisko" required>
+                <div class="form-group">
+                    <label for="lastName">Nazwisko:</label>
+                    <input type="text" id="lastName" required>
                 </div>
                 
-                <div class="input-group">
-                    <label for="newPasswordInput">Nowe hasło:</label>
-                    <input type="password" id="newPasswordInput" placeholder="Minimum 8 znaków" required>
+                <div class="form-group">
+                    <label for="newPassword">Nowe hasło (min. 8 znaków):</label>
+                    <input type="password" id="newPassword" required minlength="8">
                 </div>
                 
-                <div class="input-group">
-                    <label for="confirmPasswordInput">Potwierdź hasło:</label>
-                    <input type="password" id="confirmPasswordInput" placeholder="Powtórz hasło" required>
+                <div class="form-group">
+                    <label for="confirmPassword">Potwierdź hasło:</label>
+                    <input type="password" id="confirmPassword" required>
                 </div>
                 
-                <button type="submit" class="btn secondary-btn" id="savePasswordBtn">💾 Zapisz dane</button>
-                <button type="button" class="btn" id="logoutBtn" style="background:#e74c3c; margin-top:10px;">🚪 Wyloguj</button>
+                <button type="submit" class="btn btn-primary">Zapisz i kontynuuj</button>
+                <div id="errorMessage" class="error-message"></div>
             </form>
         </div>
-        
-        <div id="errorBox" class="error-box hidden"></div>
-        
-        <footer>
-            Wersja 1.0 | © 2024 LIBRUZ
-        </footer>
     </div>
     
-    <!-- Scripts -->
     <script src="js/supabase-client.js"></script>
-    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const form = document.getElementById('changePasswordForm');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Sprawdź czy użytkownik jest tymczasowy
+            const tempUser = JSON.parse(localStorage.getItem('libruz_temp_user'));
+            if (!tempUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (newPassword !== confirmPassword) {
+                    showError('Hasła nie są identyczne');
+                    return;
+                }
+                
+                if (newPassword.length < 8) {
+                    showError('Hasło musi mieć minimum 8 znaków');
+                    return;
+                }
+                
+                try {
+                    // 1. Zmień hasło w Supabase Auth
+                    const { error: updateError } = await supabase.auth.updateUser({
+                        password: newPassword
+                    });
+                    
+                    if (updateError) throw updateError;
+                    
+                    // 2. Zaktualizuj profil
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .update({
+                            first_name: firstName,
+                            last_name: lastName,
+                            temporary_password: false,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', tempUser.id);
+                    
+                    if (profileError) throw profileError;
+                    
+                    // 3. Wyczyść localStorage i przekieruj
+                    localStorage.removeItem('libruz_temp_user');
+                    
+                    // Przekieruj do odpowiedniego panelu
+                    switch(tempUser.role) {
+                        case 'director':
+                            window.location.href = 'director-dashboard.html';
+                            break;
+                        case 'teacher':
+                            window.location.href = 'teacher-dashboard.html';
+                            break;
+                        case 'student':
+                            window.location.href = 'student-dashboard.html';
+                            break;
+                        default:
+                            window.location.href = 'index.html';
+                    }
+                    
+                } catch (error) {
+                    showError('Błąd: ' + error.message);
+                }
+            });
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
