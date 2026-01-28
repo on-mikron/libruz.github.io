@@ -1,162 +1,87 @@
-// ====== LOGIKA LOGOWANIA LIBRUZ ======
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('LIBRUZ System - gotowy!');
-    
+// js/auth.js - PRAWDZIWE LOGOWANIE
+document.addEventListener('DOMContentLoaded', async function() {
     const loginForm = document.getElementById('loginForm');
-    const changePasswordForm = document.getElementById('changePasswordForm');
-    const loginSection = document.getElementById('loginSection');
-    const changePasswordSection = document.getElementById('changePasswordSection');
-    const errorBox = document.getElementById('errorBox');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const errorMessage = document.getElementById('errorMessage');
     
-    // Sprawdź czy użytkownik już zmienił hasło (w localStorage)
-    const hasChangedPassword = localStorage.getItem('libruz_password_changed');
+    // Sprawdź czy użytkownik już zalogowany
+    await checkSession();
     
-    // 1. LOGOWANIE
-    loginForm.addEventListener('submit', function(event) {
-        event.preventDefault();
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        const login = document.getElementById('loginInput').value.trim();
-        const password = document.getElementById('passwordInput').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
         
-        // WALIDACJA
-        if (!login || !password) {
-            showError('❌ Wypełnij wszystkie pola!');
-            return;
-        }
-        
-        // DEMO: Logowanie admina
-        if (login === 'admin@libruz.pl' && password === 'Grahamka321@##') {
-            console.log('Zalogowano admina');
+        try {
+            // 1. Logowanie przez Supabase
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
             
-            // Symulacja: Czy to pierwsze logowanie z tymczasowym hasłem?
-            const isFirstLogin = true; // W prawdziwym systemie sprawdzamy z bazy
+            if (error) throw error;
             
-            if (isFirstLogin && !hasChangedPassword) {
-                // PIERWSZE LOGOWANIE - pokaż formularz zmiany
-                showChangePasswordForm();
-                showInfo('🔐 Witaj! To Twoje pierwsze logowanie. Ustaw swoje dane.');
+            // 2. Pobierz profil użytkownika
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', data.user.id)
+                .single();
+            
+            if (profileError) throw profileError;
+            
+            // 3. Sprawdź czy pierwsze logowanie
+            if (profile.temporary_password) {
+                // Przekieruj do zmiany hasła
+                localStorage.setItem('libruz_temp_user', JSON.stringify(profile));
+                window.location.href = 'change-password.html';
             } else {
-                // NORMALNE LOGOWANIE - przejdź do dashboardu
-                goToDashboard();
+                // Przekieruj do odpowiedniego panelu
+                redirectByRole(profile);
             }
             
-        } else {
-            showError('❌ Nieprawidłowy login lub hasło');
+        } catch (error) {
+            showError('Błąd logowania: ' + error.message);
         }
     });
     
-    // 2. ZMIANA HASŁA (po zalogowaniu)
-    changePasswordForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        const firstName = document.getElementById('firstNameInput').value.trim();
-        const lastName = document.getElementById('lastNameInput').value.trim();
-        const newPassword = document.getElementById('newPasswordInput').value;
-        const confirmPassword = document.getElementById('confirmPasswordInput').value;
-        
-        // WALIDACJA
-        if (!firstName || !lastName) {
-            showError('❌ Podaj imię i nazwisko!');
-            return;
-        }
-        
-        if (newPassword.length < 8) {
-            showError('❌ Hasło musi mieć minimum 8 znaków!');
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            showError('❌ Hasła nie są identyczne!');
-            return;
-        }
-        
-        // ZAPISZ DANE (w localStorage dla demo)
-        localStorage.setItem('libruz_password_changed', 'true');
-        localStorage.setItem('libruz_user_name', firstName + ' ' + lastName);
-        localStorage.setItem('libruz_user_role', 'admin');
-        
-        // Komunikat sukcesu
-        showSuccess('✅ Dane zapisane! Witaj, ' + firstName + ' ' + lastName);
-        
-        // Przekieruj do dashboardu po 2 sekundach
-        setTimeout(() => {
-            goToDashboard();
-        }, 2000);
-    });
-    
-    // 3. WYLOGOWANIE
-    logoutBtn.addEventListener('click', function() {
-        localStorage.removeItem('libruz_password_changed');
-        localStorage.removeItem('libruz_user_name');
-        showLoginForm();
-        showInfo('👋 Wylogowano pomyślnie');
-    });
-    
-    // FUNKCJE POMOCNICZE
-    function showChangePasswordForm() {
-        loginSection.style.display = 'none';
-        changePasswordSection.style.display = 'block';
-        errorBox.classList.add('hidden');
-    }
-    
-    function showLoginForm() {
-        loginSection.style.display = 'block';
-        changePasswordSection.style.display = 'none';
-        errorBox.classList.add('hidden');
-        // Wyczyść formularz
-        loginForm.reset();
-        changePasswordForm.reset();
-    }
-    
-    function goToDashboard() {
-        // Przekieruj do dashboardu
-        showSuccess('✅ Przekierowywanie do panelu...');
-        
-        // W prawdziwym systemie:
-        // window.location.href = 'dashboard.html';
-        
-        // Na razie pokażemy komunikat
-        setTimeout(() => {
-            alert('🏫 PANEL LIBRUZ\n\nWitaj w systemie!\n\nFunkcje do implementacji:\n• Zarządzanie szkołami\n• Dodawanie nauczycieli\n• Generowanie planu lekcji\n• i wiele innych!');
+    async function checkSession() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            // Pobierz profil i przekieruj
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
             
-            // Wróć do logowania (dla demo)
-            showLoginForm();
-        }, 1000);
+            if (profile) {
+                redirectByRole(profile);
+            }
+        }
+    }
+    
+    function redirectByRole(profile) {
+        switch(profile.role) {
+            case 'admin':
+                window.location.href = 'admin-dashboard.html';
+                break;
+            case 'director':
+                window.location.href = 'director-dashboard.html';
+                break;
+            case 'teacher':
+                window.location.href = 'teacher-dashboard.html';
+                break;
+            case 'student':
+                window.location.href = 'student-dashboard.html';
+                break;
+            default:
+                showError('Nieznana rola użytkownika');
+        }
     }
     
     function showError(message) {
-        errorBox.textContent = message;
-        errorBox.style.background = '#ffeaa7';
-        errorBox.style.color = '#d63031';
-        errorBox.style.borderLeftColor = '#d63031';
-        errorBox.classList.remove('hidden');
-        
-        setTimeout(() => {
-            errorBox.classList.add('hidden');
-        }, 5000);
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
     }
-    
-    function showSuccess(message) {
-        errorBox.textContent = message;
-        errorBox.style.background = '#d1ecf1';
-        errorBox.style.color = '#0c5460';
-        errorBox.style.borderLeftColor = '#0c5460';
-        errorBox.classList.remove('hidden');
-    }
-    
-    function showInfo(message) {
-        errorBox.textContent = message;
-        errorBox.style.background = '#d4edda';
-        errorBox.style.color = '#155724';
-        errorBox.style.borderLeftColor = '#155724';
-        errorBox.classList.remove('hidden');
-        
-        setTimeout(() => {
-            errorBox.classList.add('hidden');
-        }, 4000);
-    }
-    
-    // Na starcie pokaż formularz logowania
-    showLoginForm();
 });
