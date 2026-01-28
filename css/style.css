@@ -1,34 +1,50 @@
-/* css/style.css - NAJPROSTSZY CSS */
+/* Podstawowe style LIBRUZ */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
 }
 
 body {
-    background: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
     padding: 20px;
 }
 
-/* LOGOWANIE */
-.auth-container {
-    max-width: 400px;
-    margin: 100px auto;
+.login-box {
     background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: fadeIn 0.5s ease;
 }
 
-.logo {
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    color: #667eea;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 32px;
+}
+
+.subtitle {
+    color: #666;
     text-align: center;
     margin-bottom: 30px;
-}
-
-.logo h1 {
-    color: #1890ff;
-    font-size: 32px;
+    font-size: 14px;
 }
 
 .form-group {
@@ -38,65 +54,62 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 5px;
-    font-weight: bold;
+    color: #333;
+    font-weight: 500;
 }
 
 .form-group input {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
     font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
 }
 
 .btn {
     width: 100%;
-    padding: 12px;
-    background: #1890ff;
+    padding: 14px;
+    background: #667eea;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
+    font-weight: 500;
     cursor: pointer;
+    transition: background 0.3s;
 }
 
 .btn:hover {
-    background: #40a9ff;
+    background: #764ba2;
 }
 
-/* DASHBOARD */
-.dashboard {
-    display: flex;
-    min-height: 100vh;
+.btn-primary {
+    background: #667eea;
 }
 
-.sidebar {
-    width: 250px;
-    background: #001529;
-    color: white;
-    padding: 20px;
+.btn-primary:hover {
+    background: #764ba2;
 }
 
-.content {
-    flex: 1;
-    padding: 20px;
-    background: white;
+.error-message {
+    background: #ffeaea;
+    color: #d63031;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border-left: 4px solid #d63031;
+    display: none;
 }
 
-.user-info {
-    padding: 20px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.menu-item {
-    display: block;
-    padding: 10px;
-    color: white;
-    text-decoration: none;
-    margin: 5px 0;
-    border-radius: 5px;
-}
-
-.menu-item:hover {
-    background: rgba(255,255,255,0.1);
+.login-footer {
+    text-align: center;
+    margin-top: 30px;
+    color: #888;
+    font-size: 14px;
 }
