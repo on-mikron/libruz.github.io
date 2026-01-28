@@ -1,31 +1,24 @@
-/* css/style.css */
+/* css/style.css - NAJPROSTSZY CSS */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-}
-
-.auth-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    background: #f0f2f5;
     padding: 20px;
 }
 
-.auth-box {
-    background: white;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-    width: 100%;
+/* LOGOWANIE */
+.auth-container {
     max-width: 400px;
+    margin: 100px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .logo {
@@ -34,14 +27,8 @@ body {
 }
 
 .logo h1 {
-    color: #3498db;
-    font-size: 2.5em;
-    margin-bottom: 5px;
-}
-
-.logo p {
-    color: #7f8c8d;
-    font-size: 0.9em;
+    color: #1890ff;
+    font-size: 32px;
 }
 
 .form-group {
@@ -51,8 +38,7 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 5px;
-    color: #2c3e50;
-    font-weight: 500;
+    font-weight: bold;
 }
 
 .form-group input {
@@ -63,178 +49,54 @@ body {
     font-size: 16px;
 }
 
-.form-group input:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
 .btn {
-    display: block;
     width: 100%;
     padding: 12px;
+    background: #1890ff;
+    color: white;
     border: none;
     border-radius: 5px;
     font-size: 16px;
-    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s;
 }
 
-.btn-primary {
-    background: #3498db;
+.btn:hover {
+    background: #40a9ff;
+}
+
+/* DASHBOARD */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background: #001529;
     color: white;
+    padding: 20px;
 }
 
-.btn-primary:hover {
-    background: #2980b9;
+.content {
+    flex: 1;
+    padding: 20px;
+    background: white;
 }
 
-.btn-secondary {
-    background: #2ecc71;
-    color: white;
-    margin-top: 10px;
+.user-info {
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.btn-secondary:hover {
-    background: #27ae60;
-}
-
-.btn-logout {
-    background: #e74c3c;
-    color: white;
-    margin-top: 30px;
-}
-
-.btn-logout:hover {
-    background: #c0392b;
-}
-
-.error-message {
-    background: #ffeaea;
-    color: #c0392b;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 15px;
-    border-left: 4px solid #c0392b;
-}
-
-.hidden {
-    display: none;
-}
-
-/* Komponenty dashboardu */
 .menu-item {
     display: block;
-    padding: 12px 15px;
+    padding: 10px;
     color: white;
     text-decoration: none;
+    margin: 5px 0;
     border-radius: 5px;
-    margin-bottom: 5px;
-    transition: all 0.3s;
 }
 
 .menu-item:hover {
     background: rgba(255,255,255,0.1);
-}
-
-/* Modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal {
-    background: white;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.modal-header {
-    padding: 20px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-.modal-footer {
-    padding: 20px;
-    border-top: 1px solid #ddd;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
-
-.close-modal {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #7f8c8d;
-}
-
-/* Notification */
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 20px;
-    background: white;
-    border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transform: translateX(400px);
-    transition: transform 0.3s;
-    z-index: 1001;
-}
-
-.notification.show {
-    transform: translateX(0);
-}
-
-.notification-success {
-    border-left: 4px solid #2ecc71;
-}
-
-.notification-error {
-    border-left: 4px solid #e74c3c;
-}
-
-.notification-info {
-    border-left: 4px solid #3498db;
-}
-
-/* Responsywność */
-@media (max-width: 768px) {
-    .dashboard-container {
-        flex-direction: column;
-    }
-    
-    .sidebar {
-        width: 100%;
-        padding: 10px;
-    }
-    
-    .content {
-        padding: 10px;
-    }
-    
-    .auth-box {
-        padding: 20px;
-    }
 }
