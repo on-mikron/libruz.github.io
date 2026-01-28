@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Nauczyciela</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f6f9; display: flex; margin: 0; }
+        .sidebar { width: 250px; background: white; height: 100vh; padding: 20px; }
+        .content { flex: 1; padding: 30px; }
+        
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        input, textarea, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; }
+        .btn-add { background: #28a745; }
+        .btn-link { background: #17a2b8; font-size: 12px; padding: 5px 10px; margin-bottom: 10px; display: inline-block; }
+        
+        #linksContainer { margin-bottom: 15px; border: 1px dashed #ccc; padding: 10px; background: #fafafa; display: none; }
+        .added-link { background: #e2e6ea; padding: 5px; margin: 2px; display: inline-block; border-radius: 3px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>👨‍🏫 Nauczyciel</h2>
+        <button class="btn" style="background: #dc3545; width:100%;" onclick="window.location.href='index.html'">Wyloguj</button>
+    </div>
+
+    <div class="content">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">📚 Zadaj Pracę Domową</h2>
+            
+            <form onsubmit="addHomework(event)">
+                <label>Przedmiot:</label>
+                <select id="hSubject">
+                    <option>Matematyka</option>
+                    <option>Polski</option>
+                    <option>Historia</option>
+                    <option>Informatyka</option>
+                </select>
+
+                <label>Temat:</label>
+                <input type="text" id="hTopic" required>
+
+                <label>Treść zadania:</label>
+                <textarea id="hDesc" rows="4"></textarea>
+
+                <label>Data oddania:</label>
+                <input type="date" id="hDate" required>
+
+                <div style="margin-top: 10px;">
+                    <label>Materiały dodatkowe (opcjonalne):</label><br>
+                    <button type="button" class="btn btn-link" onclick="toggleLinkInput()">🔗 Dodaj Link dla ucznia</button>
+                    
+                    <div id="linksInputArea" style="display:none; background:#f0f0f0; padding:10px; margin-bottom:10px;">
+                        <input type="text" id="linkUrl" placeholder="Adres WWW (np. https://youtube.com...)">
+                        <input type="text" id="linkText" placeholder="Nazwa przycisku (np. Obejrzyj film)">
+                        <button type="button" class="btn btn-add" style="padding: 5px 10px;" onclick="confirmLink()">Zatwierdź link</button>
+                    </div>
+
+                    <div id="linksPreview"></div> </div>
+                <hr>
+                <button type="submit" class="btn btn-add" style="width: 100%; margin-top: 10px;">Wystaw Zadanie</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentLinks = [];
+
+        function toggleLinkInput() {
+            const area = document.getElementById('linksInputArea');
+            area.style.display = area.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function confirmLink() {
+            const url = document.getElementById('linkUrl').value;
+            const text = document.getElementById('linkText').value || "Link";
+            
+            if(url) {
+                currentLinks.push({ url: url, text: text });
+                
+                // Pokaż podgląd
+                const preview = document.getElementById('linksPreview');
+                preview.innerHTML += `<span class="added-link">🔗 ${text}</span> `;
+                
+                // Wyczyść pola
+                document.getElementById('linkUrl').value = '';
+                document.getElementById('linkText').value = '';
+                document.getElementById('linksInputArea').style.display = 'none';
+            }
+        }
+
+        function addHomework(e) {
+            e.preventDefault();
+            
+            const newHomework = {
+                subject: document.getElementById('hSubject').value,
+                topic: document.getElementById('hTopic').value,
+                desc: document.getElementById('hDesc').value,
+                date: document.getElementById('hDate').value,
+                links: currentLinks // Dodajemy tablicę linków
+            };
+
+            // Zapis do "bazy" (localStorage dla symulacji)
+            let allHomeworks = JSON.parse(localStorage.getItem('homeworks')) || [];
+            allHomeworks.push(newHomework);
+            localStorage.setItem('homeworks', JSON.stringify(allHomeworks));
+
+            alert("✅ Zadanie dodane pomyślnie!");
+            currentLinks = []; // Reset linków
+            document.getElementById('linksPreview').innerHTML = '';
+            e.target.reset();
+        }
+    </script>
+</body>
+</html>
