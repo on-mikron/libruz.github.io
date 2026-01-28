@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Dyrektora</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f6f9; margin: 0; display: flex; }
+        .sidebar { width: 250px; background: white; height: 100vh; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
+        .content { flex: 1; padding: 30px; }
+        .btn { padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px; color: white; margin-right: 5px; }
+        .btn-primary { background: #007bff; }
+        .btn-success { background: #28a745; }
+        .btn-purple { background: #6f42c1; }
+        .btn-danger { background: #dc3545; margin-top: 20px; width: 100%; }
+        
+        input, select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; display: block; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+        
+        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .row { display: flex; gap: 20px; }
+        .col { flex: 1; }
+        
+        h2, h3 { margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2 style="color: #007bff;">Dyrektor</h2>
+        <p id="welcomeMsg">Witaj!</p>
+        <hr>
+        <div style="margin-top: 20px;">
+            <strong>Menu:</strong><br><br>
+            1. Kadra & Wicedyrektorzy<br>
+            2. Zastępstwa
+        </div>
+        <button class="btn btn-danger" onclick="window.location.href='index.html'">Wyloguj</button>
+    </div>
+
+    <div class="content">
+        <div class="card">
+            <h3>👔 Zarządzanie Kadrą (Dyrektor Główny)</h3>
+            <div class="row">
+                <div class="col">
+                    <h4>Dodaj Wicedyrektora</h4>
+                    <form onsubmit="addViceDirector(event)">
+                        <input type="text" id="vName" placeholder="Imię i Nazwisko" required>
+                        <input type="email" id="vEmail" placeholder="Email służbowy" required>
+                        <button class="btn btn-purple">Mianuj Wicedyrektora</button>
+                    </form>
+                </div>
+                <div class="col">
+                    <h4>Lista Dyrekcji</h4>
+                    <ul id="viceList">
+                        <li>Janusz Szef (Główny)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🔄 Dodaj Zastępstwo</h3>
+            <form onsubmit="addSubstitution(event)" style="background: #fff3cd; padding: 15px; border-radius: 5px;">
+                <div class="row">
+                    <div class="col"><input type="date" id="sDate" required></div>
+                    <div class="col">
+                        <select id="sLesson">
+                            <option value="1">Lekcja 1</option>
+                            <option value="2">Lekcja 2</option>
+                            <option value="3">Lekcja 3</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="text" id="sAbsent" placeholder="Nauczyciel nieobecny" required>
+                <input type="text" id="sSub" placeholder="Nauczyciel zastępujący" required>
+                <input type="text" id="sSubject" placeholder="Przedmiot" required>
+                <button class="btn btn-success">Opublikuj Zastępstwo</button>
+            </form>
+
+            <h4>Aktywne Zastępstwa:</h4>
+            <table id="subsTable">
+                <thead><tr><th>Data</th><th>Lekcja</th><th>Kto za kogo</th><th>Przedmiot</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIKA WICEDYREKTORÓW ---
+        function addViceDirector(e) {
+            e.preventDefault();
+            const name = document.getElementById('vName').value;
+            const list = document.getElementById('viceList');
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${name}</strong> <span style="font-size:12px; color:purple;">(Wicedyrektor)</span>`;
+            list.appendChild(li);
+            alert("Dodano nowego wicedyrektora!");
+            e.target.reset();
+        }
+
+        // --- LOGIKA ZASTĘPSTW ---
+        // Na start ładujemy przykładowe dane (symulacja)
+        const substitutions = JSON.parse(localStorage.getItem('subs')) || [];
+
+        function renderSubs() {
+            const tbody = document.querySelector('#subsTable tbody');
+            tbody.innerHTML = '';
+            substitutions.forEach(sub => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${sub.date}</td>
+                        <td>${sub.lesson}</td>
+                        <td>${sub.sub} za ${sub.absent}</td>
+                        <td>${sub.subject}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addSubstitution(e) {
+            e.preventDefault();
+            const newSub = {
+                date: document.getElementById('sDate').value,
+                lesson: document.getElementById('sLesson').value,
+                absent: document.getElementById('sAbsent').value,
+                sub: document.getElementById('sSub').value,
+                subject: document.getElementById('sSubject').value
+            };
+            substitutions.push(newSub);
+            localStorage.setItem('subs', JSON.stringify(substitutions)); // Zapis do pamięci przeglądarki
+            renderSubs();
+            alert("Zastępstwo dodane!");
+            e.target.reset();
+        }
+
+        renderSubs();
+    </script>
+</body>
+</html>
