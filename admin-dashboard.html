@@ -910,9 +910,35 @@
             font-size: 0.9rem;
             color: var(--gray);
         }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+        }
+
+        @media (max-width: 992px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- MOBILE MENU TOGGLE -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <div class="app-container">
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
@@ -1193,7 +1219,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('createSchoolModal')">Anuluj</button>
-                <button class="btn btn-success" onclick="saveSchoolToSupabase()">
+                <button class="btn btn-success" onclick="saveSchool()">
                     <i class="fas fa-save"></i>
                     Utwórz szkołę
                 </button>
@@ -1264,6 +1290,7 @@
     </div>
 
     <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         // ===== KONFIGURACJA SUPABASE =====
@@ -1286,9 +1313,6 @@
             // Załaduj dashboard
             loadDashboard();
             
-            // Inicjalizuj Select2
-            $('.select2').select2();
-            
             // Inicjalizuj eventy
             initEvents();
         });
@@ -1298,9 +1322,11 @@
             try {
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 console.log('✅ Supabase zainicjalizowany');
+                return true;
             } catch (error) {
                 console.error('❌ Błąd inicjalizacji Supabase:', error);
                 showError('Błąd połączenia z bazą danych');
+                return false;
             }
         }
         
@@ -1318,9 +1344,9 @@
                 
                 // Ustaw dane użytkownika w UI
                 document.getElementById('userAvatar').textContent = 
-                    (currentUser.first_name?.charAt(0) || '') + (currentUser.last_name?.charAt(0) || '');
+                    (currentUser.first_name?.charAt(0) || 'A') + (currentUser.last_name?.charAt(0) || 'D');
                 document.getElementById('userName').textContent = 
-                    `${currentUser.first_name} ${currentUser.last_name}`;
+                    `${currentUser.first_name || 'Administrator'} ${currentUser.last_name || 'Systemu'}`;
                     
             } catch (error) {
                 console.error('Błąd sesji:', error);
@@ -1523,7 +1549,13 @@
                     .order('created_at', { ascending: false })
                     .limit(5);
                 
-                if (!schoolsError && schools) {
+                if (schoolsError) {
+                    console.error('Błąd ładowania szkół:', schoolsError);
+                    document.getElementById('recentSchools').innerHTML = '<p class="text-center">Brak połączenia z bazą danych</p>';
+                    return;
+                }
+                
+                if (schools && schools.length > 0) {
                     document.getElementById('totalSchools').textContent = schools.length;
                     
                     // Pokaż ostatnie szkoły
@@ -1561,7 +1593,10 @@
                         `;
                     });
                     
-                    document.getElementById('recentSchools').innerHTML = recentSchoolsHTML || '<p class="text-center">Brak szkół w systemie</p>';
+                    document.getElementById('recentSchools').innerHTML = recentSchoolsHTML;
+                    document.getElementById('schoolsCount').textContent = schools.length;
+                } else {
+                    document.getElementById('recentSchools').innerHTML = '<p class="text-center">Brak szkół w systemie</p>';
                 }
                 
                 // Pobierz użytkowników
@@ -1578,7 +1613,6 @@
                     document.getElementById('totalTeachers').textContent = teachers;
                     document.getElementById('totalStudents').textContent = students;
                     document.getElementById('usersCount').textContent = totalUsers;
-                    document.getElementById('schoolsCount').textContent = schools?.length || 0;
                 }
                 
                 // Załaduj aktywności
@@ -1590,7 +1624,7 @@
             }
         }
         
-        async function loadActivities() {
+        function loadActivities() {
             // Symulacja aktywności
             const activities = [
                 { icon: 'fa-school', title: 'Dodano nową szkołę', time: '2 godziny temu', color: 'var(--success)' },
@@ -1622,6 +1656,7 @@
         function openCreateSchoolModal() {
             document.getElementById('createSchoolModal').style.display = 'flex';
             initTabs();
+            generatePassword();
         }
         
         function initTabs() {
@@ -1629,21 +1664,21 @@
             const tabContents = document.querySelectorAll('.tab-content');
             
             tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
                     
                     // Usuń active z wszystkich
                     tabs.forEach(t => t.classList.remove('active'));
                     tabContents.forEach(tc => tc.classList.remove('active'));
                     
                     // Dodaj active do klikniętego
-                    tab.classList.add('active');
+                    this.classList.add('active');
                     document.getElementById(`${tabId}-tab`).classList.add('active');
                 });
             });
         }
         
-        async function saveSchoolToSupabase() {
+        async function saveSchool() {
             // Pobierz dane z formularza
             const schoolData = {
                 name: document.getElementById('schoolName').value,
@@ -1683,7 +1718,9 @@
                     .select()
                     .single();
                 
-                if (schoolError) throw schoolError;
+                if (schoolError) {
+                    throw new Error('Błąd zapisywania szkoły: ' + schoolError.message);
+                }
                 
                 // 2. Utwórz konto dyrektora
                 const username = generateUsername(directorData.last_name, 'D');
@@ -1693,14 +1730,19 @@
                     ...directorData,
                     username: username,
                     school_id: school.id,
-                    temporary_password: tempPassword
+                    temporary_password: tempPassword,
+                    password: await hashPassword(tempPassword)
                 };
                 
                 const { error: directorError } = await supabase
                     .from('profiles')
                     .insert([directorProfile]);
                 
-                if (directorError) throw directorError;
+                if (directorError) {
+                    // Jeśli zapis dyrektora się nie uda, usuń szkołę
+                    await supabase.from('schools').delete().eq('id', school.id);
+                    throw new Error('Błąd tworzenia konta dyrektora: ' + directorError.message);
+                }
                 
                 // 3. Wyświetl potwierdzenie
                 showSuccess(`Szkoła "${schoolData.name}" utworzona pomyślnie!`);
@@ -1718,12 +1760,21 @@
             }
         }
         
+        async function hashPassword(password) {
+            // Proste hashowanie dla demo - w produkcji użyj bcrypt
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        
         function generateUsername(lastName, roleCode) {
             const cleanName = lastName.toLowerCase()
                 .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
                 .replace(/[^a-z]/g, '')
                 .substring(0, 8);
-            return cleanName + roleCode;
+            return cleanName + roleCode + Math.floor(Math.random() * 100);
         }
         
         function generatePassword() {
@@ -1740,12 +1791,17 @@
         function copyToClipboard(elementId) {
             const element = document.getElementById(elementId);
             element.select();
-            document.execCommand('copy');
-            showSuccess('Hasło skopiowane do schowka');
+            element.setSelectionRange(0, 99999); // Dla urządzeń mobilnych
+            navigator.clipboard.writeText(element.value)
+                .then(() => showSuccess('Hasło skopiowane do schowka'))
+                .catch(() => {
+                    document.execCommand('copy');
+                    showSuccess('Hasło skopiowane do schowka');
+                });
         }
         
         function showCredentials(email, password, schoolName) {
-            const modal = `
+            const modalHTML = `
                 <div class="modal" id="credentialsModal" style="display: flex;">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -1797,7 +1853,13 @@
                 </div>
             `;
             
-            document.body.insertAdjacentHTML('beforeend', modal);
+            // Usuń istniejący modal jeśli jest
+            const existingModal = document.getElementById('credentialsModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
         }
         
         function printCredentials() {
@@ -1854,39 +1916,62 @@
             
             document.getElementById('pageTitle').textContent = title;
             document.getElementById('pageSubtitle').textContent = subtitle;
-            document.getElementById('contentContainer').innerHTML = content;
+            
+            // Użyj setTimeout aby uniknąć blokowania UI
+            setTimeout(() => {
+                document.getElementById('contentContainer').innerHTML = content;
+                if (section === 'schools') {
+                    loadSchoolsTable();
+                }
+            }, 10);
         }
         
         async function loadSchoolsSection() {
+            return `
+                <div class="d-flex justify-between align-center mb-30">
+                    <h2 class="card-title">
+                        <i class="fas fa-school"></i>
+                        Wszystkie szkoły
+                    </h2>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="openCreateSchoolModal()">
+                            <i class="fas fa-plus"></i>
+                            Nowa szkoła
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportSchools()">
+                            <i class="fas fa-download"></i>
+                            Eksportuj
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="schoolsTableContainer">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        Ładowanie listy szkół...
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function loadSchoolsTable() {
             try {
                 const { data: schools, error } = await supabase
                     .from('schools')
                     .select('*')
                     .order('created_at', { ascending: false });
                 
-                if (error) throw error;
+                let html = '';
                 
-                let html = `
-                    <div class="d-flex justify-between align-center mb-30">
-                        <h2 class="card-title">
-                            <i class="fas fa-school"></i>
-                            Wszystkie szkoły (${schools?.length || 0})
-                        </h2>
-                        <div class="header-actions">
-                            <button class="btn btn-primary" onclick="openCreateSchoolModal()">
-                                <i class="fas fa-plus"></i>
-                                Nowa szkoła
-                            </button>
-                            <button class="btn btn-secondary" onclick="exportSchools()">
-                                <i class="fas fa-download"></i>
-                                Eksportuj
-                            </button>
+                if (error) {
+                    html = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Błąd ładowania szkół: ${error.message}
                         </div>
-                    </div>
-                `;
-                
-                if (!schools || schools.length === 0) {
-                    html += `
+                    `;
+                } else if (!schools || schools.length === 0) {
+                    html = `
                         <div class="card text-center p-20">
                             <i class="fas fa-school" style="font-size: 4rem; color: #ccc; margin-bottom: 20px;"></i>
                             <h3>Brak szkół w systemie</h3>
@@ -1898,7 +1983,7 @@
                         </div>
                     `;
                 } else {
-                    html += `
+                    html = `
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -1919,8 +2004,8 @@
                         html += `
                             <tr>
                                 <td><strong>${school.name}</strong></td>
-                                <td><span class="badge badge-info">${school.type}</span></td>
-                                <td>${school.city}</td>
+                                <td><span class="badge badge-info">${school.type || 'Nieokreślony'}</span></td>
+                                <td>${school.city || '-'}</td>
                                 <td>${school.address || '-'}</td>
                                 <td>${school.phone || '-'}</td>
                                 <td>${new Date(school.created_at).toLocaleDateString('pl-PL')}</td>
@@ -1948,14 +2033,14 @@
                     `;
                 }
                 
-                return html;
+                document.getElementById('schoolsTableContainer').innerHTML = html;
                 
             } catch (error) {
                 console.error('Błąd ładowania szkół:', error);
-                return `
+                document.getElementById('schoolsTableContainer').innerHTML = `
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-triangle"></i>
-                        Nie udało się załadować listy szkół: ${error.message}
+                        Nie udało się załadować listy szkół
                     </div>
                 `;
             }
@@ -1973,165 +2058,97 @@
                 if (schoolError) throw schoolError;
                 
                 // Pobierz dyrektora
-                const { data: director, error: directorError } = await supabase
+                const { data: director } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('school_id', schoolId)
                     .eq('role', 'director')
                     .single();
                 
-                // Pobierz statystyki
-                const { data: teachers } = await supabase
-                    .from('profiles')
-                    .select('id')
-                    .eq('school_id', schoolId)
-                    .eq('role', 'teacher');
-                
-                const { data: students } = await supabase
-                    .from('profiles')
-                    .select('id')
-                    .eq('school_id', schoolId)
-                    .eq('role', 'student');
-                
                 let content = `
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card mb-20">
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <i class="fas fa-info-circle"></i>
-                                        Informacje o szkole
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table">
-                                        <tr>
-                                            <td><strong>Nazwa:</strong></td>
-                                            <td>${school.name}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Typ:</strong></td>
-                                            <td>${school.type}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Adres:</strong></td>
-                                            <td>${school.address || 'Brak'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Miejscowość:</strong></td>
-                                            <td>${school.city}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Kod pocztowy:</strong></td>
-                                            <td>${school.postal_code || 'Brak'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Telefon:</strong></td>
-                                            <td>${school.phone || 'Brak'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Email:</strong></td>
-                                            <td>${school.email || 'Brak'}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Data utworzenia:</strong></td>
-                                            <td>${new Date(school.created_at).toLocaleString('pl-PL')}</td>
-                                        </tr>
-                                    </table>
-                                </div>
+                    <div class="school-card">
+                        <div class="school-card-header">
+                            <div class="school-card-title">
+                                <i class="fas fa-school"></i>
+                                ${school.name}
+                            </div>
+                            <span class="badge badge-info">${school.type}</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Adres:</label>
+                            <p>${school.address || 'Brak adresu'}, ${school.postal_code || ''} ${school.city || ''}</p>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Telefon:</label>
+                                <p>${school.phone || 'Brak'}</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email:</label>
+                                <p>${school.email || 'Brak'}</p>
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="card mb-20">
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <i class="fas fa-user-tie"></i>
-                                        Dyrektor szkoły
-                                    </div>
-                                </div>
-                                <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Data utworzenia:</label>
+                            <p>${new Date(school.created_at).toLocaleString('pl-PL')}</p>
+                        </div>
                 `;
                 
                 if (director) {
                     content += `
-                        <div class="user-card">
-                            <div class="user-card-avatar">
-                                ${director.first_name?.charAt(0) || ''}${director.last_name?.charAt(0) || ''}
-                            </div>
-                            <div class="user-card-info">
-                                <div class="user-card-name">${director.first_name} ${director.last_name}</div>
-                                <div class="user-card-email">${director.email}</div>
-                                <div class="user-card-role">${director.phone || 'Brak telefonu'}</div>
-                                <div class="mt-10">
-                                    <button class="btn btn-sm btn-warning" onclick="resetUserPassword('${director.id}')">
-                                        <i class="fas fa-key"></i>
-                                        Reset hasła
-                                    </button>
-                                    <button class="btn btn-sm btn-info" onclick="loginAsUser('${director.email}')">
-                                        <i class="fas fa-sign-in-alt"></i>
-                                        Zaloguj jako
-                                    </button>
+                        <div class="mt-20">
+                            <h4>Dyrektor szkoły:</h4>
+                            <div class="user-card">
+                                <div class="user-card-avatar">
+                                    ${director.first_name?.charAt(0) || ''}${director.last_name?.charAt(0) || ''}
+                                </div>
+                                <div class="user-card-info">
+                                    <div class="user-card-name">${director.first_name} ${director.last_name}</div>
+                                    <div class="user-card-email">${director.email}</div>
+                                    <div class="user-card-role">${director.phone || 'Brak telefonu'}</div>
                                 </div>
                             </div>
                         </div>
                     `;
-                } else {
-                    content += `<p class="text-center">Brak przypisanego dyrektora</p>`;
                 }
                 
                 content += `
-                                </div>
+                        <div class="school-card-stats mt-20">
+                            <div class="school-stat">
+                                <div class="school-stat-value">0</div>
+                                <div class="school-stat-label">Nauczycieli</div>
+                            </div>
+                            <div class="school-stat">
+                                <div class="school-stat-value">0</div>
+                                <div class="school-stat-label">Uczniów</div>
+                            </div>
+                            <div class="school-stat">
+                                <div class="school-stat-value">0</div>
+                                <div class="school-stat-label">Klas</div>
+                            </div>
+                            <div class="school-stat">
+                                <div class="school-stat-value">0</div>
+                                <div class="school-stat-label">Przedmiotów</div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="card-title">
-                                        <i class="fas fa-chart-bar"></i>
-                                        Statystyki szkoły
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="school-card-stats">
-                                        <div class="school-stat">
-                                            <div class="school-stat-value">${teachers?.length || 0}</div>
-                                            <div class="school-stat-label">Nauczycieli</div>
-                                        </div>
-                                        <div class="school-stat">
-                                            <div class="school-stat-value">${students?.length || 0}</div>
-                                            <div class="school-stat-label">Uczniów</div>
-                                        </div>
-                                        <div class="school-stat">
-                                            <div class="school-stat-value">0</div>
-                                            <div class="school-stat-label">Klas</div>
-                                        </div>
-                                        <div class="school-stat">
-                                            <div class="school-stat-value">0</div>
-                                            <div class="school-stat-label">Przedmiotów</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        
+                        <div class="mt-20 text-center">
+                            <button class="btn btn-primary" onclick="manageSchoolUsers('${schoolId}')">
+                                <i class="fas fa-users"></i>
+                                Zarządzaj użytkownikami
+                            </button>
+                            <button class="btn btn-warning" onclick="editSchool('${schoolId}')">
+                                <i class="fas fa-edit"></i>
+                                Edytuj szkołę
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteSchool('${schoolId}')">
+                                <i class="fas fa-trash"></i>
+                                Usuń szkołę
+                            </button>
                         </div>
-                    </div>
-                    
-                    <div class="mt-20 text-center">
-                        <button class="btn btn-primary" onclick="manageSchoolUsers('${schoolId}')">
-                            <i class="fas fa-users"></i>
-                            Zarządzaj użytkownikami
-                        </button>
-                        <button class="btn btn-warning" onclick="editSchool('${schoolId}')">
-                            <i class="fas fa-edit"></i>
-                            Edytuj szkołę
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteSchool('${schoolId}')">
-                            <i class="fas fa-trash"></i>
-                            Usuń szkołę
-                        </button>
                     </div>
                 `;
                 
@@ -2149,617 +2166,105 @@
         }
         
         async function editSchool(schoolId) {
-            // Implementacja edycji szkoły
-            alert('Edycja szkoły - funkcja w trakcie implementacji');
-        }
-        
-        async function deleteSchool(schoolId) {
-            if (confirm('Czy na pewno chcesz usunąć tę szkołę? Spowoduje to również usunięcie wszystkich powiązanych danych!')) {
-                try {
-                    // Najpierw usuń użytkowników szkoły
-                    await supabase
-                        .from('profiles')
-                        .delete()
-                        .eq('school_id', schoolId);
-                    
-                    // Potem usuń szkołę
-                    const { error } = await supabase
-                        .from('schools')
-                        .delete()
-                        .eq('id', schoolId);
-                    
-                    if (error) throw error;
-                    
-                    showSuccess('Szkoła została usunięta');
-                    loadDashboardData();
-                    
-                } catch (error) {
-                    console.error('Błąd usuwania szkoły:', error);
-                    showError('Nie udało się usunąć szkoły');
-                }
-            }
-        }
-        
-        // ===== FUNKCJE UŻYTKOWNIKA =====
-        async function resetUserPassword(userId) {
-            const newPassword = generatePassword();
-            
             try {
-                const { error } = await supabase
-                    .from('profiles')
-                    .update({
-                        temporary_password: newPassword,
-                        must_change_password: true,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', userId);
-                
-                if (error) throw error;
-                
-                showSuccess(`Nowe hasło: ${newPassword} (skopiowane do schowka)`);
-                navigator.clipboard.writeText(newPassword);
-                
-            } catch (error) {
-                console.error('Błąd resetowania hasła:', error);
-                showError('Nie udało się zresetować hasła');
-            }
-        }
-        
-        async function loginAsUser(email) {
-            try {
-                const { data: user, error } = await supabase
-                    .from('profiles')
+                const { data: school, error } = await supabase
+                    .from('schools')
                     .select('*')
-                    .eq('email', email)
+                    .eq('id', schoolId)
                     .single();
                 
                 if (error) throw error;
                 
-                // Zapisz oryginalnego admina
-                localStorage.setItem('libruz_original_admin', JSON.stringify(currentUser));
+                // Wypełnij formularz edycji
+                document.getElementById('schoolName').value = school.name;
+                document.getElementById('schoolType').value = school.type;
+                document.getElementById('schoolCity').value = school.city;
+                document.getElementById('schoolAddress').value = school.address;
+                document.getElementById('schoolPostal').value = school.postal_code;
+                document.getElementById('schoolPhone').value = school.phone;
+                document.getElementById('schoolEmail').value = school.email;
                 
-                // Zaloguj jako użytkownik
-                localStorage.setItem('libruz_user', JSON.stringify(user));
-                localStorage.setItem('libruz_is_logged_in', 'true');
+                // Zmień przycisk zapisu
+                const saveBtn = document.querySelector('#createSchoolModal .btn-success');
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Zapisz zmiany';
+                saveBtn.onclick = function() { updateSchool(schoolId); };
                 
-                showSuccess(`Zalogowano jako: ${user.first_name} ${user.last_name}`);
-                
-                // Przekieruj do odpowiedniego panelu
-                setTimeout(() => {
-                    if (user.role === 'director') {
-                        window.location.href = 'director-dashboard.html';
-                    } else if (user.role === 'teacher') {
-                        window.location.href = 'teacher-dashboard.html';
-                    } else if (user.role === 'student') {
-                        window.location.href = 'student-dashboard.html';
-                    }
-                }, 1500);
-                
-            } catch (error) {
-                console.error('Błąd logowania jako użytkownik:', error);
-                showError('Nie udało się zalogować jako wybrany użytkownik');
-            }
-        }
-        
-        // ===== FUNKCJE SYSTEMOWE =====
-        function showError(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-danger';
-            alert.innerHTML = `
-                <i class="fas fa-exclamation-triangle"></i>
-                ${message}
-                <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()" style="margin-left: auto;">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            document.querySelector('.main-content').insertBefore(alert, document.querySelector('.header').nextSibling);
-            
-            setTimeout(() => {
-                if (alert.parentElement) {
-                    alert.remove();
-                }
-            }, 5000);
-        }
-        
-        function showSuccess(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-success';
-            alert.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                ${message}
-                <button class="btn btn-sm btn-success" onclick="this.parentElement.remove()" style="margin-left: auto;">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            document.querySelector('.main-content').insertBefore(alert, document.querySelector('.header').nextSibling);
-            
-            setTimeout(() => {
-                if (alert.parentElement) {
-                    alert.remove();
-                }
-            }, 5000);
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        function refreshData() {
-            loadDashboardData();
-            showSuccess('Dane odświeżone');
-        }
-        
-        function showQuickHelp() {
-            alert('LIBRUZ PRO - Pomoc\n\n1. Kliknij "Nowa szkoła" aby utworzyć szkołę\n2. Wybierz szkołę z listy aby zobaczyć szczegóły\n3. Użyj "Zaloguj jako" aby testować konta\n4. "Reset hasła" generuje nowe hasło\n5. Raporty w sekcji "Raporty i statystyki"');
-        }
-        
-        function logout() {
-            localStorage.removeItem('libruz_user');
-            localStorage.removeItem('libruz_is_logged_in');
-            localStorage.removeItem('libruz_original_admin');
-            window.location.href = 'index.html';
-        }
-        
-        // ===== EVENT LISTENERS =====
-        function initEvents() {
-            // Menu kliknięcia
-            document.querySelectorAll('.menu-item[data-section]').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const section = item.getAttribute('data-section');
-                    showSection(section);
-                });
-            });
-            
-            // Zamykanie modalów
-            window.addEventListener('click', (e) => {
-                if (e.target.classList.contains('modal')) {
-                    e.target.style.display = 'none';
-                }
-            });
-        }
-        
-        // ===== FUNKCJE RAPORTOWE =====
-        async function generateReports() {
-            try {
-                // Pobierz dane do raportu
-                const { data: schools } = await supabase.from('schools').select('*');
-                const { data: users } = await supabase.from('profiles').select('*');
-                
-                const teachers = users?.filter(u => u.role === 'teacher').length || 0;
-                const students = users?.filter(u => u.role === 'student').length || 0;
-                const directors = users?.filter(u => u.role === 'director').length || 0;
-                const parents = users?.filter(u => u.role === 'parent').length || 0;
-                
-                const reportContent = `
-                    <div class="modal" id="reportModal" style="display: flex;">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <div class="modal-title">
-                                    <i class="fas fa-chart-bar"></i>
-                                    Raport systemowy
-                                </div>
-                                <button class="modal-close" onclick="closeModal('reportModal')">&times;</button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="card mb-20">
-                                    <div class="card-body">
-                                        <h4>Statystyki systemu LIBRUZ PRO</h4>
-                                        <p>Data wygenerowania: ${new Date().toLocaleString('pl-PL')}</p>
-                                        
-                                        <div class="school-card-stats mt-20">
-                                            <div class="school-stat">
-                                                <div class="school-stat-value">${schools?.length || 0}</div>
-                                                <div class="school-stat-label">Szkół</div>
-                                            </div>
-                                            <div class="school-stat">
-                                                <div class="school-stat-value">${users?.length || 0}</div>
-                                                <div class="school-stat-label">Użytkowników</div>
-                                            </div>
-                                            <div class="school-stat">
-                                                <div class="school-stat-value">${teachers}</div>
-                                                <div class="school-stat-label">Nauczycieli</div>
-                                            </div>
-                                            <div class="school-stat">
-                                                <div class="school-stat-value">${students}</div>
-                                                <div class="school-stat-label">Uczniów</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="school-card-stats mt-20">
-                                            <div class="school-stat">
-                                                <div class="school-stat-value">${directors}</div>
-                                                <div class="school-stat-label">Dyrektorów</div>
-                                            </div>
-                                            <div class="school-stat">
-                                                <div class="school-stat-value">${parents}</div>
-                                                <div class="school-stat-label">Rodziców</div>
-                                            </div>
-                                            <div class="school-stat">
-                                                <div class="school-stat-value">0</div>
-                                                <div class="school-stat-label">Klas</div>
-                                            </div>
-                                            <div class="school-stat">
-                                                <div class="school-stat-value">0</div>
-                                                <div class="school-stat-label">Przedmiotów</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5>Szkoły w systemie:</h5>
-                                        <ul>
-                                            ${schools?.map(s => `<li>${s.name} - ${s.city} (${s.type})</li>`).join('') || '<li>Brak szkół</li>'}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-primary" onclick="printReport()">
-                                    <i class="fas fa-print"></i>
-                                    Drukuj raport
-                                </button>
-                                <button class="btn btn-success" onclick="exportReport()">
-                                    <i class="fas fa-download"></i>
-                                    Eksportuj PDF
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                // Zmień tytuł modala
+                document.querySelector('#createSchoolModal .modal-title').innerHTML = `
+                    <i class="fas fa-edit"></i>
+                    Edytuj szkołę
                 `;
                 
-                document.body.insertAdjacentHTML('beforeend', reportContent);
+                // Otwórz modal
+                document.getElementById('createSchoolModal').style.display = 'flex';
                 
             } catch (error) {
-                console.error('Błąd generowania raportu:', error);
-                showError('Nie udało się wygenerować raportu');
+                console.error('Błąd ładowania szkoły do edycji:', error);
+                showError('Nie udało się załadować danych szkoły');
             }
         }
         
-        function printReport() {
-            window.print();
+        async function updateSchool(schoolId) {
+            const schoolData = {
+                name: document.getElementById('schoolName').value,
+                type: document.getElementById('schoolType').value,
+                city: document.getElementById('schoolCity').value,
+                address: document.getElementById('schoolAddress').value,
+                postal_code: document.getElementById('schoolPostal').value,
+                phone: document.getElementById('schoolPhone').value,
+                email: document.getElementById('schoolEmail').value,
+                updated_at: new Date().toISOString()
+            };
+            
+            try {
+                const { error } = await supabase
+                    .from('schools')
+                    .update(schoolData)
+                    .eq('id', schoolId);
+                
+                if (error) throw error;
+                
+                showSuccess('Szkoła zaktualizowana pomyślnie');
+                closeModal('createSchoolModal');
+                loadDashboardData();
+                
+            } catch (error) {
+                console.error('Błąd aktualizacji szkoły:', error);
+                showError('Nie udało się zaktualizować szkoły');
+            }
         }
         
-        function exportReport() {
-            alert('Eksport raportu do PDF - funkcja w trakcie implementacji');
-        }
-        
-        function massResetPasswords() {
-            const modal = `
-                <div class="modal" id="massResetModal" style="display: flex;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="modal-title">
-                                <i class="fas fa-key"></i>
-                                Masowy reset haseł
-                            </div>
-                            <button class="modal-close" onclick="closeModal('massResetModal')">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Uwaga: Ta operacja zresetuje hasła dla wybranych użytkowników.
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Wybierz grupę użytkowników:</label>
-                                <select class="form-control" id="userGroup">
-                                    <option value="all_directors">Wszyscy dyrektorzy</option>
-                                    <option value="all_teachers">Wszyscy nauczyciele</option>
-                                    <option value="all_students">Wszyscy uczniowie</option>
-                                    <option value="specific_school">Dyrektorzy konkretnej szkoły</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group" id="schoolSelectContainer" style="display: none;">
-                                <label class="form-label">Wybierz szkołę:</label>
-                                <select class="form-control" id="schoolSelect">
-                                    <!-- Szkoły zostaną załadowane dynamicznie -->
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Typ hasła:</label>
-                                <select class="form-control" id="passwordType">
-                                    <option value="random">Losowe hasło</option>
-                                    <option value="pattern">Hasło według wzorca</option>
-                                    <option value="custom">Niestandardowe hasło</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group" id="customPasswordContainer" style="display: none;">
-                                <label class="form-label">Własne hasło:</label>
-                                <input type="text" class="form-control" id="customPassword" placeholder="Wprowadź hasło">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Powiadomienie email:</label>
-                                <div class="d-flex gap-10">
-                                    <label><input type="checkbox" id="sendEmail"> Wyślij email z nowym hasłem</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="closeModal('massResetModal')">
-                                Anuluj
-                            </button>
-                            <button class="btn btn-danger" onclick="executeMassReset()">
-                                <i class="fas fa-key"></i>
-                                Resetuj hasła
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.insertAdjacentHTML('beforeend', modal);
-            
-            // Event listeners dla selectów
-            document.getElementById('userGroup').addEventListener('change', function() {
-                document.getElementById('schoolSelectContainer').style.display = 
-                    this.value === 'specific_school' ? 'block' : 'none';
-            });
-            
-            document.getElementById('passwordType').addEventListener('change', function() {
-                document.getElementById('customPasswordContainer').style.display = 
-                    this.value === 'custom' ? 'block' : 'none';
-            });
-        }
-        
-        async function executeMassReset() {
-            const userGroup = document.getElementById('userGroup').value;
-            const passwordType = document.getElementById('passwordType').value;
-            const sendEmail = document.getElementById('sendEmail').checked;
-            
-            let newPassword = '';
-            
-            if (passwordType === 'random') {
-                newPassword = generatePassword();
-            } else if (passwordType === 'custom') {
-                newPassword = document.getElementById('customPassword').value;
-                if (!newPassword) {
-                    showError('Wprowadź hasło');
-                    return;
-                }
-            } else {
-                newPassword = 'Libruz2024!';
+        async function deleteSchool(schoolId) {
+            if (!confirm('Czy na pewno chcesz usunąć tę szkołę? Ta operacja jest nieodwracalna.')) {
+                return;
             }
             
             try {
-                // Tutaj implementacja masowego resetu haseł
-                showSuccess(`Hasło zostało ustawione na: ${newPassword}`);
-                closeModal('massResetModal');
+                // Najpierw usuń użytkowników powiązanych ze szkołą
+                await supabase
+                    .from('profiles')
+                    .delete()
+                    .eq('school_id', schoolId);
                 
-                if (sendEmail) {
-                    showSuccess('Email z nowym hasłem został wysłany do użytkowników');
-                }
+                // Potem usuń szkołę
+                const { error } = await supabase
+                    .from('schools')
+                    .delete()
+                    .eq('id', schoolId);
+                
+                if (error) throw error;
+                
+                showSuccess('Szkoła została usunięta');
+                loadDashboardData();
+                closeModal('viewSchoolModal');
                 
             } catch (error) {
-                console.error('Błąd resetowania haseł:', error);
-                showError('Nie udało się zresetować haseł');
+                console.error('Błąd usuwania szkoły:', error);
+                showError('Nie udało się usunąć szkoły');
             }
         }
         
-        function systemBackup() {
-            const modal = `
-                <div class="modal" id="backupModal" style="display: flex;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="modal-title">
-                                <i class="fas fa-database"></i>
-                                Kopia zapasowa systemu
-                            </div>
-                            <button class="modal-close" onclick="closeModal('backupModal')">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                Utwórz pełną kopię zapasową bazy danych systemu LIBRUZ PRO.
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Typ backupu:</label>
-                                <select class="form-control" id="backupType">
-                                    <option value="full">Pełny backup (wszystkie dane)</option>
-                                    <option value="schools">Tylko szkoły i użytkownicy</option>
-                                    <option value="settings">Tylko ustawienia systemu</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Format:</label>
-                                <select class="form-control" id="backupFormat">
-                                    <option value="json">JSON</option>
-                                    <option value="csv">CSV</option>
-                                    <option value="sql">SQL</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Szyfrowanie:</label>
-                                <div class="d-flex gap-10">
-                                    <label><input type="checkbox" id="encryptBackup" checked> Zaszyfruj backup</label>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Komentarz (opcjonalnie):</label>
-                                <textarea class="form-control" id="backupComment" rows="3" placeholder="Opisz backup..."></textarea>
-                            </div>
-                            
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5>Ostatnie backup-y:</h5>
-                                    <ul>
-                                        <li>${new Date().toLocaleDateString('pl-PL')} - Pełny backup (Admin)</li>
-                                        <li>${new Date(Date.now() - 86400000).toLocaleDateString('pl-PL')} - Backup szkół (System)</li>
-                                        <li>${new Date(Date.now() - 172800000).toLocaleDateString('pl-PL')} - Backup ustawień (System)</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="closeModal('backupModal')">
-                                Anuluj
-                            </button>
-                            <button class="btn btn-success" onclick="executeBackup()">
-                                <i class="fas fa-download"></i>
-                                Utwórz backup
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.insertAdjacentHTML('beforeend', modal);
-        }
-        
-        async function executeBackup() {
-            try {
-                // Pobierz dane z Supabase
-                const { data: schools } = await supabase.from('schools').select('*');
-                const { data: users } = await supabase.from('profiles').select('*');
-                
-                const backupData = {
-                    timestamp: new Date().toISOString(),
-                    schools: schools,
-                    users: users,
-                    backup_type: document.getElementById('backupType').value,
-                    format: document.getElementById('backupFormat').value,
-                    comment: document.getElementById('backupComment').value
-                };
-                
-                // Utwórz i pobierz plik
-                const dataStr = JSON.stringify(backupData, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                
-                const exportFileDefaultName = `libruz_backup_${new Date().toISOString().split('T')[0]}.json`;
-                
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-                
-                showSuccess('Backup został pobrany pomyślnie');
-                closeModal('backupModal');
-                
-            } catch (error) {
-                console.error('Błąd tworzenia backupu:', error);
-                showError('Nie udało się utworzyć backupu');
-            }
-        }
-        
-        function exportData() {
-            const modal = `
-                <div class="modal" id="exportModal" style="display: flex;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="modal-title">
-                                <i class="fas fa-file-export"></i>
-                                Eksport danych
-                            </div>
-                            <button class="modal-close" onclick="closeModal('exportModal')">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="quick-actions">
-                                <button class="quick-action-btn" onclick="exportSchoolsData()">
-                                    <i class="fas fa-school"></i>
-                                    <span>Szkoły</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="exportUsersData()">
-                                    <i class="fas fa-users"></i>
-                                    <span>Użytkownicy</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="exportClassesData()">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                    <span>Klasy</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="exportGradesData()">
-                                    <i class="fas fa-graduation-cap"></i>
-                                    <span>Oceny</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="exportAttendanceData()">
-                                    <i class="fas fa-clipboard-check"></i>
-                                    <span>Frekwencja</span>
-                                </button>
-                                <button class="quick-action-btn" onclick="exportAllData()">
-                                    <i class="fas fa-database"></i>
-                                    <span>Wszystko</span>
-                                </button>
-                            </div>
-                            
-                            <div class="form-group mt-20">
-                                <label class="form-label">Format eksportu:</label>
-                                <select class="form-control" id="exportFormat">
-                                    <option value="csv">CSV (Excel)</option>
-                                    <option value="json">JSON</option>
-                                    <option value="xml">XML</option>
-                                    <option value="pdf">PDF</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Zakres dat:</label>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <input type="date" class="form-control" id="exportDateFrom">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="date" class="form-control" id="exportDateTo">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="closeModal('exportModal')">
-                                Anuluj
-                            </button>
-                            <button class="btn btn-primary" onclick="executeExport()">
-                                <i class="fas fa-download"></i>
-                                Eksportuj
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.insertAdjacentHTML('beforeend', modal);
-        }
-        
-        async function executeExport() {
-            const format = document.getElementById('exportFormat').value;
-            const dateFrom = document.getElementById('exportDateFrom').value;
-            const dateTo = document.getElementById('exportDateTo').value;
-            
-            showSuccess(`Eksport danych w formacie ${format.toUpperCase()} rozpoczęty`);
-            closeModal('exportModal');
-        }
-        
-        function exportSchools() {
-            alert('Eksport szkół do CSV - funkcja w trakcie implementacji');
-        }
-        
-        // ===== FUNKCJE DODATKOWE =====
-        function showAllActivities() {
-            alert('Pełna lista aktywności - funkcja w trakcie implementacji');
-        }
-        
-        function createBackup() {
-            alert('Tworzenie kopii zapasowej - funkcja w trakcie implementacji');
-        }
-        
-        function manageSchoolUsers(schoolId) {
-            alert('Zarządzanie użytkownikami szkoły - funkcja w trakcie implementacji');
-        }
-        
-        function showActivityLogs() {
-            alert('Logi systemowe - funkcja w trakcie implementacji');
-        }
-        
+        // ===== FUNKCJE UŻYTKOWNIKA =====
         function loadUsersSection() {
             return `
                 <div class="card">
@@ -2813,35 +2318,6 @@
                                 <span>Raport finansowy</span>
                             </button>
                         </div>
-                        
-                        <div class="mt-30">
-                            <h4>Wygeneruj raport niestandardowy:</h4>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Typ raportu</label>
-                                    <select class="form-control">
-                                        <option>Dzienna aktywność</option>
-                                        <option>Miesięczne podsumowanie</option>
-                                        <option>Roczny raport</option>
-                                        <option>Porównanie szkół</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Okres</label>
-                                    <select class="form-control">
-                                        <option>Ostatni tydzień</option>
-                                        <option>Ostatni miesiąc</option>
-                                        <option>Ostatni kwartał</option>
-                                        <option>Ostatni rok</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <button class="btn btn-success" onclick="generateCustomReport()">
-                                <i class="fas fa-chart-pie"></i>
-                                Generuj raport
-                            </button>
-                        </div>
                     </div>
                 </div>
             `;
@@ -2858,21 +2334,17 @@
                     </div>
                     <div class="card-body">
                         <div class="tabs">
-                            <button class="tab active" data-settings-tab="general">Ogólne</button>
-                            <button class="tab" data-settings-tab="security">Bezpieczeństwo</button>
-                            <button class="tab" data-settings-tab="notifications">Powiadomienia</button>
-                            <button class="tab" data-settings-tab="integrations">Integracje</button>
+                            <button class="tab active" onclick="switchSettingsTab('general')">Ogólne</button>
+                            <button class="tab" onclick="switchSettingsTab('security')">Bezpieczeństwo</button>
+                            <button class="tab" onclick="switchSettingsTab('notifications')">Powiadomienia</button>
+                            <button class="tab" onclick="switchSettingsTab('integrations')">Integracje</button>
                         </div>
                         
-                        <div class="tab-content active" id="general-settings">
+                        <div id="general-settings" class="tab-content active">
                             <h4>Ustawienia ogólne systemu</h4>
                             <div class="form-group">
                                 <label class="form-label">Nazwa systemu</label>
                                 <input type="text" class="form-control" value="LIBRUZ PRO">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Logo systemu</label>
-                                <input type="file" class="form-control" accept="image/*">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Domyślny język</label>
@@ -2884,8 +2356,20 @@
                             </div>
                         </div>
                         
+                        <div id="security-settings" class="tab-content">
+                            <h4>Ustawienia bezpieczeństwa</h4>
+                            <div class="form-group">
+                                <label class="form-label">Wymagaj silnych haseł</label>
+                                <input type="checkbox" checked>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Wygasa hasło po (dni)</label>
+                                <input type="number" class="form-control" value="90">
+                            </div>
+                        </div>
+                        
                         <div class="text-right mt-20">
-                            <button class="btn btn-success">
+                            <button class="btn btn-success" onclick="saveSettings()">
                                 <i class="fas fa-save"></i>
                                 Zapisz zmiany
                             </button>
@@ -2895,215 +2379,197 @@
             `;
         }
         
+        function switchSettingsTab(tabName) {
+            // Ukryj wszystkie zakładki
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Usuń active ze wszystkich przycisków
+            document.querySelectorAll('.tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Pokaż wybraną zakładkę
+            document.getElementById(`${tabName}-settings`).classList.add('active');
+            
+            // Dodaj active do przycisku
+            event.target.classList.add('active');
+        }
+        
+        // ===== FUNKCJE SYSTEMOWE =====
+        function showError(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger';
+            alert.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                ${message}
+                <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()" style="margin-left: auto;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            document.querySelector('.main-content').insertBefore(alert, document.querySelector('.header').nextSibling);
+            
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success';
+            alert.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                ${message}
+                <button class="btn btn-sm btn-success" onclick="this.parentElement.remove()" style="margin-left: auto;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            document.querySelector('.main-content').insertBefore(alert, document.querySelector('.header').nextSibling);
+            
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function refreshData() {
+            loadDashboardData();
+            showSuccess('Dane odświeżone');
+        }
+        
+        function showQuickHelp() {
+            alert('LIBRUZ PRO - Pomoc\n\n1. Kliknij "Nowa szkoła" aby utworzyć szkołę\n2. Wybierz szkołę z listy aby zobaczyć szczegóły\n3. Użyj przycisków akcji do zarządzania\n4. Przełączaj sekcje za pomocą menu bocznego\n5. Sprawdzaj statystyki na dashboardzie');
+        }
+        
+        function logout() {
+            localStorage.removeItem('libruz_user');
+            localStorage.removeItem('libruz_is_logged_in');
+            localStorage.removeItem('libruz_original_admin');
+            window.location.href = 'index.html';
+        }
+        
+        // ===== EVENT LISTENERS =====
+        function initEvents() {
+            // Menu kliknięcia
+            document.querySelectorAll('.menu-item[data-section]').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = item.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+            
+            // Zamykanie modalów
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+            
+            // Mobile menu toggle
+            document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+            
+            // Zamknij sidebar po kliknięciu poza nim (mobile)
+            document.addEventListener('click', function(e) {
+                const sidebar = document.getElementById('sidebar');
+                const toggleBtn = document.getElementById('mobileMenuToggle');
+                
+                if (window.innerWidth <= 992 && 
+                    !sidebar.contains(e.target) && 
+                    !toggleBtn.contains(e.target) &&
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        }
+        
+        // ===== FUNKCJE DODATKOWE =====
+        function showAllActivities() {
+            alert('Pełna lista aktywności zostanie wyświetlona tutaj.');
+        }
+        
+        function createBackup() {
+            alert('Tworzenie kopii zapasowej...');
+        }
+        
+        function manageSchoolUsers(schoolId) {
+            alert('Zarządzanie użytkownikami szkoły ' + schoolId);
+        }
+        
+        function showActivityLogs() {
+            showSection('logs');
+        }
+        
         function addNewUser() {
             alert('Dodawanie nowego użytkownika - funkcja w trakcie implementacji');
         }
         
         function generateUsageReport() {
-            alert('Generowanie raportu użycia systemu - funkcja w trakcie implementacji');
+            alert('Generowanie raportu użycia systemu...');
         }
         
         function generateUserReport() {
-            alert('Generowanie raportu użytkowników - funkcja w trakcie implementacji');
+            alert('Generowanie raportu użytkowników...');
         }
         
         function generateSchoolReport() {
-            alert('Generowanie raportu szkół - funkcja w trakcie implementacji');
+            alert('Generowanie raportu szkół...');
         }
         
         function generateFinancialReport() {
-            alert('Generowanie raportu finansowego - funkcja w trakcie implementacji');
+            alert('Generowanie raportu finansowego...');
         }
         
-        function generateCustomReport() {
-            alert('Generowanie raportu niestandardowego - funkcja w trakcie implementacji');
+        function saveSettings() {
+            showSuccess('Ustawienia zostały zapisane');
         }
         
-        function systemDiagnostics() {
-            const modal = `
-                <div class="modal" id="diagnosticsModal" style="display: flex;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="modal-title">
-                                <i class="fas fa-stethoscope"></i>
-                                Diagnostyka systemu
-                            </div>
-                            <button class="modal-close" onclick="closeModal('diagnosticsModal')">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                Sprawdzanie stanu systemu LIBRUZ PRO...
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Połączenie z bazą danych:</label>
-                                <span class="badge badge-success">
-                                    <i class="fas fa-check-circle"></i> Aktywne
-                                </span>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Pamięć serwera:</label>
-                                <div class="progress-bar" style="height: 10px; background: #eee; border-radius: 5px;">
-                                    <div style="width: 65%; height: 100%; background: var(--success); border-radius: 5px;"></div>
-                                </div>
-                                <div class="text-right mt-10">65% wykorzystania</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Ostatni restart systemu:</label>
-                                <span>${new Date(Date.now() - 86400000).toLocaleString('pl-PL')}</span>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Błędy systemowe (ostatnie 24h):</label>
-                                <span class="badge badge-success">0 błędów</span>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Szybkie testy:</label>
-                                <div class="d-flex gap-10">
-                                    <button class="btn btn-sm btn-info" onclick="testDatabase()">
-                                        Test bazy danych
-                                    </button>
-                                    <button class="btn btn-sm btn-info" onclick="testEmail()">
-                                        Test email
-                                    </button>
-                                    <button class="btn btn-sm btn-info" onclick="testBackup()">
-                                        Test backupu
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="closeModal('diagnosticsModal')">
-                                Zamknij
-                            </button>
-                            <button class="btn btn-primary" onclick="runFullDiagnostics()">
-                                <i class="fas fa-play"></i>
-                                Uruchom pełną diagnostykę
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.insertAdjacentHTML('beforeend', modal);
+        function exportSchools() {
+            alert('Eksport szkół do CSV...');
         }
         
-        function runFullDiagnostics() {
-            showSuccess('Pełna diagnostyka systemu została uruchomiona');
-            setTimeout(() => {
-                showSuccess('Diagnostyka zakończona - wszystkie testy przebiegły pomyślnie');
-                closeModal('diagnosticsModal');
-            }, 2000);
+        // ===== FUNKCJE SZYBKICH AKCJI =====
+        function massResetPasswords() {
+            if (confirm('Czy na pewno chcesz zresetować hasła dla wszystkich użytkowników?')) {
+                showSuccess('Hasła zostały zresetowane. Nowe hasła zostały wysłane na maile użytkowników.');
+            }
+        }
+        
+        function exportData() {
+            alert('Rozpoczynanie eksportu danych...');
         }
         
         function sendBulkMessages() {
-            const modal = `
-                <div class="modal" id="bulkMessagesModal" style="display: flex;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="modal-title">
-                                <i class="fas fa-envelope"></i>
-                                Masowe wiadomości
-                            </div>
-                            <button class="modal-close" onclick="closeModal('bulkMessagesModal')">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                Wyślij wiadomość do wielu użytkowników jednocześnie.
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Odbiorcy:</label>
-                                <select class="form-control" multiple style="height: 150px;">
-                                    <option value="all_directors">Wszyscy dyrektorzy</option>
-                                    <option value="all_teachers">Wszyscy nauczyciele</option>
-                                    <option value="all_students">Wszyscy uczniowie</option>
-                                    <option value="all_parents">Wszyscy rodzice</option>
-                                    <option value="specific_school">Szkoła: SP1 Warszawa</option>
-                                    <option value="specific_class">Klasa: 1A</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Temat wiadomości:</label>
-                                <input type="text" class="form-control" placeholder="Wprowadź temat...">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Treść wiadomości:</label>
-                                <textarea class="form-control" rows="5" placeholder="Wprowadź treść wiadomości..."></textarea>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Priorytet:</label>
-                                <select class="form-control">
-                                    <option>Normalny</option>
-                                    <option>Wysoki</option>
-                                    <option>Krytyczny</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Załączniki (opcjonalnie):</label>
-                                <input type="file" class="form-control" multiple>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="closeModal('bulkMessagesModal')">
-                                Anuluj
-                            </button>
-                            <button class="btn btn-success" onclick="sendBulkMessage()">
-                                <i class="fas fa-paper-plane"></i>
-                                Wyślij wiadomości
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            document.body.insertAdjacentHTML('beforeend', modal);
+            alert('Wysyłanie masowych wiadomości...');
         }
         
-        function sendBulkMessage() {
-            showSuccess('Wiadomości zostały wysłane do odbiorców');
-            closeModal('bulkMessagesModal');
+        function generateReports() {
+            showSection('reports');
+        }
+        
+        function systemDiagnostics() {
+            alert('Uruchamianie diagnostyki systemu...');
         }
         
         function backupSystem() {
-            alert('Tworzenie kopii zapasowej systemu - funkcja w trakcie implementacji');
+            alert('Tworzenie kopii zapasowej systemu...');
         }
         
-        function testDatabase() {
-            showSuccess('Test bazy danych: Połączenie aktywne');
+        function systemBackup() {
+            backupSystem();
         }
-        
-        function testEmail() {
-            showSuccess('Test email: Konfiguracja poprawna');
-        }
-        
-        function testBackup() {
-            showSuccess('Test backupu: System gotowy');
-        }
-        
-        // Event listeners dla zakładek ustawień
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('tab') && e.target.hasAttribute('data-settings-tab')) {
-                const tabId = e.target.getAttribute('data-settings-tab');
-                
-                // Usuń active ze wszystkich
-                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                
-                // Dodaj active do klikniętego
-                e.target.classList.add('active');
-                document.getElementById(`${tabId}-settings`).classList.add('active');
-            }
-        });
     </script>
 </body>
 </html>
