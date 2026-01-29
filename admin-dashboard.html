@@ -98,178 +98,162 @@
         .card button:hover {
             background: #3a56d4;
         }
-        .loading {
+        .access-denied {
             text-align: center;
-            padding: 50px;
-            color: #666;
+            padding: 100px 20px;
+        }
+        .access-denied h2 {
+            color: #ff3b30;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="loading" class="loading">
-        <h2>⌛ Sprawdzanie sesji...</h2>
-    </div>
-    
-    <div id="content" style="display: none;">
-        <nav class="navbar">
-            <div class="logo">👑 LIBRUZ Admin</div>
-            <div class="user-menu">
-                <div class="user-info" id="userInfo">
-                    <div class="user-avatar" id="avatar">A</div>
-                    <div>
-                        <div id="userName">Administrator</div>
-                        <small id="userRole">Administrator</small>
-                    </div>
-                </div>
-                <button class="btn-logout" onclick="logout()">🚪 Wyloguj</button>
-            </div>
-        </nav>
-        
-        <div class="dashboard">
-            <div class="welcome">
-                <h2 id="welcomeTitle">Witaj w Panelu Administratora!</h2>
-                <p>Zarządzaj systemem szkolnym.</p>
-            </div>
-            
-            <div class="grid">
-                <div class="card">
-                    <h3>🏫 Szkoły</h3>
-                    <p>Dodawaj i zarządzaj szkołami w systemie.</p>
-                    <button onclick="manageSchools()">Zarządzaj szkołami</button>
-                </div>
-                
-                <div class="card">
-                    <h3>👥 Użytkownicy</h3>
-                    <p>Twórz i zarządzaj kontami użytkowników.</p>
-                    <button onclick="manageUsers()">Zarządzaj użytkownikami</button>
-                </div>
-                
-                <div class="card">
-                    <h3>⚙️ System</h3>
-                    <p>Konfiguruj ustawienia systemu.</p>
-                    <button onclick="systemSettings()">Ustawienia</button>
-                </div>
-                
-                <div class="card">
-                    <h3>📊 Raporty</h3>
-                    <p>Generuj raporty i statystyki.</p>
-                    <button onclick="generateReports()">Raporty</button>
-                </div>
-            </div>
+    <div id="app">
+        <!-- Zostanie wypełnione przez JavaScript -->
+        <div class="access-denied" id="accessDenied">
+            <h2>⛔ Brak dostępu</h2>
+            <p>Trwa sprawdzanie uprawnień...</p>
         </div>
     </div>
 
     <script>
-        // SPRAWDŹ SESJĘ
+        // PROSTY SYSTEM SESJI
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔍 Sprawdzam sesję...');
+            console.log('👑 Panel Administratora - inicjalizacja');
             
-            setTimeout(() => {
-                checkSession();
-            }, 500);
+            // 1. Sprawdź czy użytkownik jest zalogowany
+            checkUserSession();
         });
         
-        function checkSession() {
+        function checkUserSession() {
+            const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
+            const userData = localStorage.getItem('libruz_user');
+            
+            console.log('🔍 Sprawdzam sesję:', { isLoggedIn, userData });
+            
+            if (isLoggedIn !== 'true' || !userData) {
+                console.error('❌ Brak sesji - przekierowuję do logowania');
+                redirectToLogin();
+                return;
+            }
+            
             try {
-                // 1. Sprawdź czy jesteśmy zalogowani
-                const isLoggedIn = localStorage.getItem('libruz_logged_in');
-                const userData = localStorage.getItem('libruz_user');
-                
-                if (isLoggedIn !== 'true' || !userData) {
-                    console.error('❌ Brak sesji');
-                    redirectToLogin();
-                    return;
-                }
-                
-                // 2. Sprawdź czas sesji
-                const loginTime = parseInt(localStorage.getItem('libruz_login_time') || '0');
-                const now = Date.now();
-                
-                if (now - loginTime > 24 * 60 * 60 * 1000) {
-                    console.error('❌ Sesja wygasła');
-                    localStorage.clear();
-                    redirectToLogin();
-                    return;
-                }
-                
-                // 3. Sprawdź dane użytkownika
                 const user = JSON.parse(userData);
+                console.log('✅ Użytkownik:', user);
                 
-                if (!user || user.role !== 'admin') {
+                // Sprawdź czy to admin
+                if (user.role !== 'admin') {
                     console.error('❌ Brak uprawnień admina');
-                    redirectToLogin();
+                    showAccessDenied('Tylko administrator ma dostęp do tego panelu');
                     return;
                 }
                 
-                console.log('✅ Sesja poprawna:', user.email);
-                
-                // 4. Pokaż dashboard
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-                
-                // 5. Załaduj dane użytkownika
-                loadUserData(user);
+                // Renderuj dashboard
+                renderDashboard(user);
                 
             } catch (error) {
-                console.error('💥 Błąd sesji:', error);
+                console.error('💥 Błąd parsowania danych:', error);
+                localStorage.clear();
                 redirectToLogin();
             }
         }
         
-        function loadUserData(user) {
-            // Imię i nazwisko
-            document.getElementById('userName').textContent = 
-                (user.first_name || '') + ' ' + (user.last_name || '');
+        function renderDashboard(user) {
+            const app = document.getElementById('app');
             
-            // Rola
-            document.getElementById('userRole').textContent = user.role;
-            
-            // Avatar (inicjały)
-            const firstName = user.first_name || '';
-            const lastName = user.last_name || '';
-            const avatar = document.getElementById('avatar');
-            if (firstName && lastName) {
-                avatar.textContent = firstName.charAt(0) + lastName.charAt(0);
-            } else if (user.email) {
-                avatar.textContent = user.email.charAt(0).toUpperCase();
-            }
-            
-            // Tytuł welcome
-            const welcomeTitle = document.getElementById('welcomeTitle');
-            if (user.first_name) {
-                welcomeTitle.textContent = `Witaj ${user.first_name} w Panelu Administratora!`;
-            } else {
-                welcomeTitle.textContent = 'Witaj w Panelu Administratora!';
-            }
+            app.innerHTML = `
+                <nav class="navbar">
+                    <div class="logo">👑 LIBRUZ Admin</div>
+                    <div class="user-menu">
+                        <div class="user-info">
+                            <div class="user-avatar">${getUserInitials(user)}</div>
+                            <div>
+                                <div>${user.first_name} ${user.last_name}</div>
+                                <small>${user.role}</small>
+                            </div>
+                        </div>
+                        <button class="btn-logout" onclick="logout()">🚪 Wyloguj</button>
+                    </div>
+                </nav>
+                
+                <div class="dashboard">
+                    <div class="welcome">
+                        <h2>Witaj ${user.first_name} w Panelu Administratora!</h2>
+                        <p>Zarządzaj systemem szkolnym LIBRUZ.</p>
+                    </div>
+                    
+                    <div class="grid">
+                        <div class="card">
+                            <h3>🏫 Szkoły</h3>
+                            <p>Dodawaj i zarządzaj szkołami w systemie.</p>
+                            <button onclick="showFeature('szkoły')">Zarządzaj szkołami</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>👥 Użytkownicy</h3>
+                            <p>Twórz i zarządzaj kontami użytkowników.</p>
+                            <button onclick="showFeature('użytkownicy')">Zarządzaj użytkownikami</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>⚙️ System</h3>
+                            <p>Konfiguruj ustawienia systemu.</p>
+                            <button onclick="showFeature('system')">Ustawienia</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>📊 Raporty</h3>
+                            <p>Generuj raporty i statystyki.</p>
+                            <button onclick="showFeature('raporty')">Raporty</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function getUserInitials(user) {
+            const first = user.first_name ? user.first_name.charAt(0) : '';
+            const last = user.last_name ? user.last_name.charAt(0) : '';
+            return (first + last).toUpperCase() || 'A';
+        }
+        
+        function showAccessDenied(message) {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="access-denied">
+                    <h2>⛔ Brak dostępu</h2>
+                    <p>${message}</p>
+                    <button onclick="logout()" style="margin-top: 20px; padding: 10px 20px; background: #4361ee; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Wróć do logowania
+                    </button>
+                </div>
+            `;
         }
         
         function redirectToLogin() {
-            localStorage.removeItem('libruz_logged_in');
-            localStorage.removeItem('libruz_login_time');
-            window.location.href = 'index.html';
+            // Małe opóźnienie żeby widać było co się dzieje
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
         }
         
         function logout() {
-            localStorage.clear();
+            // Wyczyść sesję
+            localStorage.removeItem('libruz_is_logged_in');
+            localStorage.removeItem('libruz_user');
+            
+            // Przekieruj do logowania
             window.location.href = 'index.html';
         }
         
-        // Funkcje panelu admina
-        function manageSchools() {
-            alert('🏫 Zarządzanie szkołami\n\nFunkcja w budowie.\nBędzie możliwość dodawania, edytowania i usuwania szkół.');
+        function showFeature(feature) {
+            alert(`🛠️ ${feature}\n\nFunkcja jest w trakcie rozwoju.`);
         }
         
-        function manageUsers() {
-            alert('👥 Zarządzanie użytkownikami\n\nFunkcja w budowie.\nTworzenie kont dla nauczycieli, uczniów i rodziców.');
-        }
-        
-        function systemSettings() {
-            alert('⚙️ Ustawienia systemu\n\nFunkcja w budowie.\nKonfiguracja systemu, backup danych, logi.');
-        }
-        
-        function generateReports() {
-            alert('📊 Raporty\n\nFunkcja w budowie.\nGenerowanie raportów frekwencji, ocen, aktywności.');
-        }
+        // Eksport funkcji do globalnego scope
+        window.logout = logout;
+        window.showFeature = showFeature;
     </script>
 </body>
 </html>
