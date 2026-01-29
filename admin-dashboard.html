@@ -3,189 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LIBRUZ - Panel Administratora</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        body {
-            background: #f5f5f5;
-            min-height: 100vh;
-        }
-        
-        .header {
-            background: white;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            color: #2575fc;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .main-content {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-        
-        .welcome-box {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .functions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        
-        .function-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-left: 4px solid #2575fc;
-        }
-        
-        .function-card h3 {
-            color: #2575fc;
-            margin-bottom: 15px;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            background: #2575fc;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        
-        .btn:hover {
-            background: #1a68e8;
-        }
-        
-        .btn-logout {
-            background: #ff3b30;
-        }
-        
-        .btn-logout:hover {
-            background: #e0352b;
-        }
-    </style>
+    <title>👑 LIBRUZ - Panel Administratora</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="header">
-        <div class="logo">📚 LIBRUZ - Panel Admina</div>
-        <div class="user-menu">
-            <span id="userName">Administrator</span>
-            <button class="btn btn-logout" onclick="logout()">🚪 Wyloguj</button>
-        </div>
-    </div>
-    
-    <div class="main-content">
-        <div class="welcome-box">
-            <h1>Witaj w Panelu Administratora!</h1>
-            <p>System LIBRUZ - Zarządzaj szkołami, użytkownikami i systemem.</p>
-        </div>
+    <div class="dashboard">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h1>👑 LIBRUZ Admin</h1>
+            </div>
+            <div class="user-menu">
+                <div class="user-info" id="userInfo">
+                    <!-- Zostanie wypełnione przez JavaScript -->
+                </div>
+                <button class="btn btn-logout" onclick="logout()">🚪 Wyloguj</button>
+            </div>
+        </nav>
         
-        <div class="functions-grid">
-            <div class="function-card">
-                <h3>🏫 Zarządzanie szkołami</h3>
-                <p>Dodawaj, edytuj i usuwaj szkoły w systemie.</p>
-                <button class="btn" onclick="manageSchools()">Zarządzaj szkołami</button>
+        <!-- Główna zawartość -->
+        <div class="main-content">
+            <div class="welcome-card">
+                <h2 id="welcomeTitle">Witaj w Panelu Administratora!</h2>
+                <p>Zarządzaj systemem, użytkownikami i szkołami.</p>
             </div>
             
-            <div class="function-card">
-                <h3>👤 Tworzenie dyrektorów</h3>
-                <p>Dodawaj nowych dyrektorów szkół z tymczasowymi hasłami.</p>
-                <button class="btn" onclick="createDirector()">Dodaj dyrektora</button>
-            </div>
-            
-            <div class="function-card">
-                <h3>🔐 Generowanie haseł</h3>
-                <p>Generuj bezpieczne, tymczasowe hasła dla użytkowników.</p>
-                <button class="btn" onclick="generatePassword()">Generuj hasło</button>
-            </div>
-            
-            <div class="function-card">
-                <h3>📊 Przegląd systemu</h3>
-                <p>Sprawdzaj statystyki i aktywność wszystkich szkół.</p>
-                <button class="btn" onclick="viewStatistics()">Zobacz statystyki</button>
+            <div class="grid">
+                <!-- Zarządzanie szkołami -->
+                <div class="card">
+                    <h3>🏫 Szkoły</h3>
+                    <p>Dodawaj, edytuj i usuwaj szkoły w systemie.</p>
+                    <button class="btn btn-primary" onclick="manageSchools()">
+                        Zarządzaj szkołami
+                    </button>
+                </div>
+                
+                <!-- Zarządzanie użytkownikami -->
+                <div class="card">
+                    <h3>👥 Użytkownicy</h3>
+                    <p>Twórz i zarządzaj kontami użytkowników.</p>
+                    <button class="btn btn-primary" onclick="manageUsers()">
+                        Zarządzaj użytkownikami
+                    </button>
+                </div>
+                
+                <!-- System -->
+                <div class="card">
+                    <h3>⚙️ System</h3>
+                    <p>Ustawienia i konfiguracja systemu.</p>
+                    <button class="btn btn-primary" onclick="systemSettings()">
+                        Ustawienia systemu
+                    </button>
+                </div>
+                
+                <!-- Raporty -->
+                <div class="card">
+                    <h3>📊 Raporty</h3>
+                    <p>Generuj raporty i statystyki.</p>
+                    <button class="btn btn-primary" onclick="generateReports()">
+                        Generuj raporty
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/dashboard.js"></script>
     <script>
-        // Sprawdź czy użytkownik jest zalogowany jako admin
-        document.addEventListener('DOMContentLoaded', function() {
-            const userData = localStorage.getItem('libruz_user');
-            
-            if (!userData) {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            const user = JSON.parse(userData);
-            
-            if (user.role !== 'admin') {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // Ustaw imię użytkownika
-            document.getElementById('userName').textContent = 
-                user.first_name + ' ' + user.last_name + ' (Admin)';
-        });
-        
-        // Funkcje panelu
+        // Specjalne funkcje dla admina
         function manageSchools() {
-            alert('🏫 Zarządzanie szkołami\n\nFunkcja w budowie:\n• Lista wszystkich szkół\n• Dodawanie nowej szkoły\n• Przypisywanie dyrektora\n• Podgląd szczegółów');
+            alert('Zarządzanie szkołami\n\nFunkcja w budowie.\nMożliwości:\n• Dodawanie nowych szkół\n• Edycja istniejących\n• Przypisywanie dyrektorów\n• Podgląd statystyk');
         }
         
-        function createDirector() {
-            alert('👤 Tworzenie dyrektora\n\nFunkcja w budowie:\n• Formularz danych dyrektora\n• Generowanie tymczasowego hasła\n• Przypisanie do szkoły\n• Wysyłka danych logowania');
+        function manageUsers() {
+            alert('Zarządzanie użytkownikami\n\nFunkcja w budowie.\nMożliwości:\n• Tworzenie nowych kont\n• Resetowanie haseł\n• Blokowanie kont\n• Przypisywanie ról');
         }
         
-        function generatePassword() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-            let password = '';
-            
-            for (let i = 0; i < 12; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            
-            alert('🔐 Wygenerowane hasło:\n\n' + password + '\n\nSkopiuj to hasło i przekaż użytkownikowi.');
+        function systemSettings() {
+            alert('Ustawienia systemu\n\nFunkcja w budowie.\nMożliwości:\n• Konfiguracja SMTP\n• Backup danych\n• Logi systemowe\n• Integracje API');
         }
         
-        function viewStatistics() {
-            alert('📊 Statystyki systemu\n\nFunkcja w budowie:\n• Liczba szkół\n• Liczba użytkowników\n• Aktywność systemu\n• Logi operacji');
+        function generateReports() {
+            alert('Generowanie raportów\n\nFunkcja w budowie.\nMożliwości:\n• Raport frekwencji\n• Statystyki ocen\n• Aktywność użytkowników\n• Eksport do PDF/Excel');
         }
         
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'index.html';
-        }
+        // Inicjalizacja dashboardu
+        document.addEventListener('DOMContentLoaded', function() {
+            initDashboard('admin');
+        });
     </script>
 </body>
 </html>
