@@ -1,519 +1,168 @@
 <!DOCTYPE html>
-<html lang="pl" data-theme="light">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 LIBRUZ - Logowanie Szkolne</title>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>🔐 LIBRUZ - Logowanie</title>
     <style>
-        /* ====== RESET & BASE ====== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #7209b7;
-            --success: #4cc9f0;
-            --warning: #f8961e;
-            --danger: #f94144;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --gray-light: #e9ecef;
-            
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
-            
-            --radius: 8px;
-            --radius-lg: 12px;
-            --radius-xl: 20px;
-            
-            --transition: all 0.3s ease;
-        }
-
+        
         body {
-            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            color: var(--dark);
         }
-
-        .container {
-            width: 100%;
-            max-width: 450px;
-        }
-
-        /* ====== LOGIN CARD ====== */
-        .login-card {
+        
+        .login-box {
             background: white;
-            border-radius: var(--radius-xl);
             padding: 40px;
-            box-shadow: var(--shadow-xl);
-            animation: fadeIn 0.6s ease-out;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ====== HEADER ====== */
-        .login-header {
+        
+        h1 {
+            color: #4361ee;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 10px;
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
             margin-bottom: 20px;
         }
-
-        .logo-icon {
-            font-size: 2.5rem;
-            color: var(--primary);
-        }
-
-        .logo-text h1 {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .logo-text p {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        /* ====== LOGIN TYPE SELECTOR ====== */
-        .login-type-selector {
-            display: flex;
-            margin-bottom: 30px;
-            background: var(--light);
-            border-radius: var(--radius);
-            padding: 5px;
-        }
-
-        .login-type-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: none;
-            border-radius: var(--radius);
-            font-family: 'Poppins', sans-serif;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .login-type-btn.active {
-            background: white;
-            box-shadow: var(--shadow);
-        }
-
-        /* ====== FORM ====== */
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-label {
+        
+        label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: #333;
+            font-weight: bold;
         }
-
-        .input-group {
-            position: relative;
-        }
-
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-        }
-
-        .form-control {
+        
+        input {
             width: 100%;
-            padding: 15px 15px 15px 45px;
-            border: 2px solid var(--gray-light);
-            border-radius: var(--radius);
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            transition: var(--transition);
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
         }
-
-        .form-control:focus {
+        
+        input:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            border-color: #4361ee;
         }
-
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--gray);
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-
-        /* ====== INFO BOXES ====== */
-        .info-box {
-            background: var(--light);
-            border-left: 4px solid var(--primary);
-            padding: 15px;
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-
-        .info-box h4 {
-            color: var(--primary);
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* ====== OPTIONS ====== */
-        .login-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            font-size: 0.9rem;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .forgot-password {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .forgot-password:hover {
-            text-decoration: underline;
-        }
-
-        /* ====== BUTTONS ====== */
+        
         .btn {
             width: 100%;
-            padding: 17px;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 1.1rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        /* ====== MESSAGES ====== */
-        .alert {
             padding: 15px;
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-            display: none;
-            align-items: center;
-            gap: 10px;
-            animation: shake 0.5s ease;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .alert-error {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+            background: #4361ee;
             color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
         }
-
-        .alert-success {
-            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
-            color: white;
+        
+        .btn:hover {
+            background: #3a56d4;
+            transform: translateY(-2px);
         }
-
-        /* ====== LOADING ====== */
-        .loading {
+        
+        .error {
+            background: #ffeaea;
+            color: #ff3b30;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
             display: none;
-            justify-content: center;
-            margin: 20px 0;
         }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--gray-light);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ====== QUICK LOGIN ====== */
-        .quick-login {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--gray-light);
-        }
-
-        .quick-login-buttons {
+        
+        .demo-buttons {
+            margin-top: 20px;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            margin-top: 15px;
         }
-
-        .quick-btn {
+        
+        .demo-btn {
             padding: 10px;
-            background: var(--light);
-            border: 1px solid var(--gray-light);
-            border-radius: var(--radius);
+            background: #f0f4ff;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            font-size: 14px;
+            transition: 0.3s;
         }
-
-        .quick-btn:hover {
-            background: white;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        /* ====== FOOTER ====== */
-        .login-footer {
-            margin-top: 30px;
-            text-align: center;
-            color: var(--gray);
-            font-size: 0.9rem;
-            padding-top: 20px;
-            border-top: 1px solid var(--gray-light);
-        }
-
-        .version {
-            background: var(--light);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            display: inline-block;
-        }
-
-        /* ====== RESPONSIVE ====== */
-        @media (max-width: 576px) {
-            .login-card {
-                padding: 30px 20px;
-            }
-            
-            .logo-text h1 {
-                font-size: 1.8rem;
-            }
-            
-            .login-options {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-            
-            .quick-login-buttons {
-                grid-template-columns: 1fr;
-            }
+        
+        .demo-btn:hover {
+            border-color: #4361ee;
+            background: #e3e9ff;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="login-card">
-            <!-- Logo i nagłówek -->
-            <div class="login-header">
-                <div class="logo">
-                    <i class="fas fa-book-open logo-icon"></i>
-                    <div class="logo-text">
-                        <h1>LIBRUZ</h1>
-                        <p>System Szkolny - Logowanie</p>
-                    </div>
-                </div>
-                <p>Zaloguj się loginem szkolnym</p>
+    <div class="login-box">
+        <h1>📚 LIBRUZ</h1>
+        <p class="subtitle">System Szkolny - Logowanie</p>
+        
+        <div class="error" id="errorMessage"></div>
+        <div class="success" id="successMessage"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Login / Email:</label>
+                <input type="text" id="identifier" placeholder="login lub email" required>
             </div>
-
-            <!-- Wybór typu logowania -->
-            <div class="login-type-selector">
-                <button type="button" class="login-type-btn active" id="btnUsername">
-                    <i class="fas fa-user"></i> Login
-                </button>
-                <button type="button" class="login-type-btn" id="btnEmail">
-                    <i class="fas fa-envelope"></i> Email
-                </button>
-                <button type="button" class="login-type-btn" id="btnCode">
-                    <i class="fas fa-id-card"></i> Kod
-                </button>
+            
+            <div class="form-group">
+                <label>Hasło:</label>
+                <input type="password" id="password" placeholder="••••••••" required>
             </div>
-
-            <!-- Komunikat o błędzie -->
-            <div class="alert alert-error" id="errorMessage">
-                <i class="fas fa-exclamation-circle"></i>
-                <span id="errorText"></span>
-            </div>
-
-            <!-- Formularz logowania -->
-            <form id="loginForm">
-                <!-- Pole login/email/kod (dynamiczne) -->
-                <div class="form-group" id="identifierGroup">
-                    <label class="form-label" id="identifierLabel">
-                        <i class="fas fa-user"></i> Login
-                    </label>
-                    <div class="input-group">
-                        <i class="fas fa-user" id="identifierIcon"></i>
-                        <input 
-                            type="text" 
-                            id="identifier" 
-                            class="form-control" 
-                            placeholder="np. janek_nowakowski"
-                            required
-                            autocomplete="username"
-                        >
-                    </div>
-                </div>
-
-                <!-- Hasło -->
-                <div class="form-group">
-                    <label class="form-label" for="password">
-                        <i class="fas fa-key"></i> Hasło
-                    </label>
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            class="form-control" 
-                            placeholder="••••••••"
-                            required
-                            autocomplete="current-password"
-                        >
-                        <button type="button" class="password-toggle" id="togglePassword">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Info box dla kodów -->
-                <div class="info-box" id="codeInfo" style="display: none;">
-                    <h4><i class="fas fa-info-circle"></i> Logowanie kodem</h4>
-                    <p><strong>Uczniowie:</strong> Kod klasy + numer (np: 8S001)<br>
-                    <strong>Nauczyciele:</strong> Kod nauczyciela (np: NAUCZ001)</p>
-                </div>
-
-                <div class="login-options">
-                    <label class="remember-me">
-                        <input type="checkbox" id="rememberMe">
-                        <span>Zapamiętaj login</span>
-                    </label>
-                    <a href="#" class="forgot-password" id="forgotPassword">
-                        Zapomniałeś hasła?
-                    </a>
-                </div>
-
-                <button type="submit" class="btn btn-primary" id="loginButton">
-                    <i class="fas fa-sign-in-alt"></i> Zaloguj się
-                </button>
-
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                </div>
-            </form>
-
-            <!-- Szybkie logowanie (dla testów) -->
-            <div class="quick-login">
-                <p style="text-align: center; margin-bottom: 15px; color: var(--gray);">
-                    <small>Testowe konta:</small>
-                </p>
-                <div class="quick-login-buttons">
-                    <button class="quick-btn" data-login="admin" data-pass="AdminSystem123!@#">
-                        <i class="fas fa-crown"></i> Admin
-                    </button>
-                    <button class="quick-btn" data-login="nauczyciel_mat" data-pass="nauczyciel123">
-                        <i class="fas fa-chalkboard-teacher"></i> Nauczyciel
-                    </button>
-                    <button class="quick-btn" data-login="janek_nowakowski" data-pass="uczen123">
-                        <i class="fas fa-graduation-cap"></i> Uczeń
-                    </button>
-                    <button class="quick-btn" data-login="8S001" data-pass="uczen123">
-                        <i class="fas fa-id-card"></i> Kod 8S001
-                    </button>
-                </div>
-            </div>
-
-            <div class="login-footer">
-                <p>© 2024 LIBRUZ System Szkolny</p>
-                <div class="version">Wersja 2.1.0 (Loginy bez @)</div>
-                <p style="margin-top: 10px; font-size: 0.8rem;">
-                    <i class="fas fa-shield-alt"></i> Bezpieczne logowanie
-                </p>
-            </div>
+            
+            <button type="submit" class="btn" id="loginBtn">
+                🔐 Zaloguj się
+            </button>
+        </form>
+        
+        <div class="demo-buttons">
+            <button class="demo-btn" onclick="fillCredentials('admin', 'Admin123!@#')">
+                👑 Admin
+            </button>
+            <button class="demo-btn" onclick="fillCredentials('nauczyciel', 'Nauczyciel123')">
+                👩‍🏫 Nauczyciel
+            </button>
+            <button class="demo-btn" onclick="fillCredentials('uczen', 'Uczen123')">
+                👨‍🎓 Uczeń
+            </button>
+            <button class="demo-btn" onclick="fillCredentials('admin@libruz.pl', 'Admin123!@#')">
+                📧 Admin (email)
+            </button>
         </div>
     </div>
 
@@ -522,489 +171,291 @@
     
     <script>
         // ============================================
-        // KONFIGURACJA SUPABASE
+        // PROSTA WERSJA - 100% DZIAŁAJĄCE PRZYCISKI
         // ============================================
+        
+        // Konfiguracja Supabase
         const SUPABASE_URL = 'https://fupfgshptjghdjpkeaee.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM';
-
+        
         // Inicjalizacja Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log('✅ Supabase zainicjalizowany');
-
-        // ============================================
-        // ELEMENTY DOM
-        // ============================================
-        const loginForm = document.getElementById('loginForm');
-        const identifierInput = document.getElementById('identifier');
-        const passwordInput = document.getElementById('password');
-        const loginButton = document.getElementById('loginButton');
-        const togglePassword = document.getElementById('togglePassword');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorText = document.getElementById('errorText');
-        const loading = document.getElementById('loading');
-        const forgotPassword = document.getElementById('forgotPassword');
-        const identifierLabel = document.getElementById('identifierLabel');
-        const identifierIcon = document.getElementById('identifierIcon');
-        const codeInfo = document.getElementById('codeInfo');
+        console.log('✅ Supabase gotowy');
         
-        // Przyciski typu logowania
-        const btnUsername = document.getElementById('btnUsername');
-        const btnEmail = document.getElementById('btnEmail');
-        const btnCode = document.getElementById('btnCode');
+        // ============================================
+        // FUNKCJE POMOCNICZE
+        // ============================================
         
-        // Szybkie logowanie
-        const quickButtons = document.querySelectorAll('.quick-btn');
-
-        // ============================================
-        // TYP LOGOWANIA
-        // ============================================
-        let loginType = 'username'; // username, email, code
-        
-        function setLoginType(type) {
-            loginType = type;
-            
-            // Resetuj przyciski
-            [btnUsername, btnEmail, btnCode].forEach(btn => btn.classList.remove('active'));
-            
-            // Ustaw aktywny przycisk
-            if (type === 'username') {
-                btnUsername.classList.add('active');
-                identifierLabel.innerHTML = '<i class="fas fa-user"></i> Login';
-                identifierIcon.className = 'fas fa-user';
-                identifierInput.placeholder = 'np. janek_nowakowski';
-                identifierInput.type = 'text';
-                codeInfo.style.display = 'none';
-            } else if (type === 'email') {
-                btnEmail.classList.add('active');
-                identifierLabel.innerHTML = '<i class="fas fa-envelope"></i> Email';
-                identifierIcon.className = 'fas fa-envelope';
-                identifierInput.placeholder = 'np. uczen@szkola.pl';
-                identifierInput.type = 'email';
-                codeInfo.style.display = 'none';
-            } else if (type === 'code') {
-                btnCode.classList.add('active');
-                identifierLabel.innerHTML = '<i class="fas fa-id-card"></i> Kod';
-                identifierIcon.className = 'fas fa-id-card';
-                identifierInput.placeholder = 'np. 8S001 lub NAUCZ001';
-                identifierInput.type = 'text';
-                codeInfo.style.display = 'block';
-            }
-            
-            // Wyczyść pole
-            identifierInput.value = '';
-            identifierInput.focus();
-        }
-
-        // Event listeners dla przycisków typu logowania
-        btnUsername.addEventListener('click', () => setLoginType('username'));
-        btnEmail.addEventListener('click', () => setLoginType('email'));
-        btnCode.addEventListener('click', () => setLoginType('code'));
-
-        // ============================================
-        // SZYBKIE LOGOWANIE
-        // ============================================
-        quickButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const login = button.dataset.login;
-                const pass = button.dataset.pass;
-                
-                // Automatycznie wykryj typ logowania
-                if (login.includes('@')) {
-                    setLoginType('email');
-                } else if (/^\d/.test(login) || login.startsWith('NAUCZ')) {
-                    setLoginType('code');
-                } else {
-                    setLoginType('username');
-                }
-                
-                identifierInput.value = login;
-                passwordInput.value = pass;
-                
-                // Automatycznie zaloguj po 500ms
-                setTimeout(() => {
-                    loginForm.dispatchEvent(new Event('submit'));
-                }, 500);
-            });
-        });
-
-        // ============================================
-        // POKAŻ/UKRYJ HASŁO
-        // ============================================
-        togglePassword.addEventListener('click', () => {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            const icon = togglePassword.querySelector('i');
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
-        });
-
-        // ============================================
-        // WALIDACJA
-        // ============================================
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-
-        function validateIdentifier(identifier) {
-            if (!identifier || identifier.trim() === '') {
-                return 'Wprowadź login/email/kod';
-            }
-            
-            if (loginType === 'email' && !validateEmail(identifier)) {
-                return 'Wprowadź poprawny adres email';
-            }
-            
-            if (loginType === 'code') {
-                if (!/^[A-Z0-9]+$/.test(identifier.toUpperCase())) {
-                    return 'Kod może zawierać tylko litery i cyfry';
-                }
-                if (identifier.length < 3) {
-                    return 'Kod musi mieć minimum 3 znaki';
-                }
-            }
-            
-            if (loginType === 'username') {
-                if (identifier.length < 3) {
-                    return 'Login musi mieć minimum 3 znaki';
-                }
-                if (!/^[a-zA-Z0-9_.-]+$/.test(identifier)) {
-                    return 'Login może zawierać tylko litery, cyfry, _, ., -';
-                }
-            }
-            
-            return null; // Brak błędów
-        }
-
         function showError(message) {
-            errorText.textContent = message;
-            errorMessage.className = 'alert alert-error';
-            errorMessage.style.display = 'flex';
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
             
             setTimeout(() => {
-                errorMessage.style.display = 'none';
+                errorDiv.style.display = 'none';
             }, 5000);
         }
-
+        
         function showSuccess(message) {
-            errorText.textContent = message;
-            errorMessage.className = 'alert alert-success';
-            errorMessage.style.display = 'flex';
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
             
             setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 5000);
+                successDiv.style.display = 'none';
+            }, 3000);
         }
-
-        // ============================================
-        // FUNKCJA ZNAJDŹ EMAIL PO IDENTYFIKATORZE
-        // ============================================
-        async function findEmailByIdentifier(identifier) {
-            try {
-                let query = supabase
-                    .from('profiles')
-                    .select('email')
-                    .eq('is_active', true);
-                
-                // Wyszukaj w zależności od typu
-                if (loginType === 'username') {
-                    query = query.eq('username', identifier.toLowerCase());
-                } else if (loginType === 'email') {
-                    query = query.eq('email', identifier.toLowerCase());
-                } else if (loginType === 'code') {
-                    const codeUpper = identifier.toUpperCase();
-                    query = query.or(`student_code.eq.${codeUpper},teacher_code.eq.${codeUpper}`);
-                }
-                
-                const { data, error } = await query.single();
-                
-                if (error) {
-                    console.error('❌ Nie znaleziono użytkownika:', error);
-                    return null;
-                }
-                
-                return data.email;
-                
-            } catch (error) {
-                console.error('💥 Błąd wyszukiwania:', error);
-                return null;
-            }
+        
+        function fillCredentials(login, password) {
+            document.getElementById('identifier').value = login;
+            document.getElementById('password').value = password;
+            showSuccess(`Wprowadzono: ${login}`);
         }
-
+        
         // ============================================
-        // LOGOWANIE
+        // FUNKCJA LOGOWANIA
         // ============================================
+        
         async function handleLogin(event) {
             event.preventDefault();
             
-            const identifier = identifierInput.value.trim();
-            const password = passwordInput.value;
+            const identifier = document.getElementById('identifier').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
             
-            // Walidacja
-            const validationError = validateIdentifier(identifier);
-            if (validationError) {
-                showError(validationError);
+            if (!identifier || !password) {
+                showError('Wprowadź login i hasło');
                 return;
             }
             
-            if (!password || password.length < 6) {
-                showError('Hasło musi mieć minimum 6 znaków');
-                return;
-            }
-            
-            // Ustaw stan ładowania
-            loginButton.disabled = true;
-            loading.style.display = 'flex';
-            loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logowanie...';
+            // Zmień stan przycisku
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '⌛ Logowanie...';
             
             try {
-                console.log(`🔐 Logowanie (${loginType}):`, identifier);
+                console.log('🔐 Próba logowania:', identifier);
                 
-                // 1. Znajdź email na podstawie identyfikatora
-                const userEmail = await findEmailByIdentifier(identifier);
-                
-                if (!userEmail) {
-                    throw new Error('Nie znaleziono użytkownika. Sprawdź login/email/kod.');
+                // 1. Sprawdź czy to email czy login
+                let email = identifier;
+                if (!identifier.includes('@')) {
+                    // To jest login - znajdź email
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('email')
+                        .or(`username.eq.${identifier},student_code.eq.${identifier},teacher_code.eq.${identifier}`)
+                        .single();
+                    
+                    if (profile && profile.email) {
+                        email = profile.email;
+                        console.log('✅ Znaleziono email:', email);
+                    }
                 }
                 
-                console.log('✅ Znaleziono email:', userEmail);
-                
-                // 2. Logowanie przez Supabase Auth (zawsze z emailem)
+                // 2. Logowanie przez Supabase
                 const { data, error } = await supabase.auth.signInWithPassword({
-                    email: userEmail,
+                    email: email,
                     password: password
                 });
                 
                 if (error) {
-                    console.error('❌ Błąd auth:', error.message);
-                    
                     if (error.message.includes('Invalid login credentials')) {
                         throw new Error('Nieprawidłowy login lub hasło');
-                    } else if (error.message.includes('Email not confirmed')) {
-                        throw new Error('Potwierdź email przed logowaniem');
                     } else {
-                        throw new Error('Błąd logowania: ' + error.message);
+                        throw new Error('Błąd: ' + error.message);
                     }
                 }
                 
                 console.log('✅ Zalogowano:', data.user.email);
                 
-                // 3. Pobierz profil z bazy
-                const { data: profile, error: profileError } = await supabase
+                // 3. Pobierz profil użytkownika
+                const { data: profile } = await supabase
                     .from('profiles')
                     .select('*')
-                    .eq('email', userEmail)
+                    .eq('email', email)
                     .single();
                 
-                if (profileError) {
-                    console.error('❌ Błąd profilu:', profileError);
-                    throw new Error('Błąd pobierania danych użytkownika');
-                }
-                
                 if (!profile) {
-                    throw new Error('Profil użytkownika nie znaleziony');
+                    throw new Error('Profil nie znaleziony');
                 }
                 
-                console.log('👤 Profil:', profile);
-                
-                // 4. Sprawdź czy konto aktywne
-                if (!profile.is_active) {
-                    throw new Error('Konto jest nieaktywne. Skontaktuj się z administratorem.');
-                }
-                
-                // 5. Sprawdź czy pierwsze logowanie
-                if (profile.temporary_password === true) {
-                    console.log('🔐 Pierwsze logowanie - zmiana hasła');
-                    
-                    localStorage.setItem('libruz_temp_user', JSON.stringify(profile));
-                    localStorage.setItem('libruz_user_id', profile.id);
-                    
-                    showSuccess('Ustaw swoje hasło...');
-                    
-                    setTimeout(() => {
-                        window.location.href = 'change-password.html';
-                    }, 1500);
-                    
-                    return;
-                }
-                
-                // 6. Normalne logowanie - zapisz dane
+                // 4. Zapisz dane
                 localStorage.setItem('libruz_user', JSON.stringify(profile));
                 localStorage.setItem('libruz_session', JSON.stringify(data.session));
-                localStorage.setItem('libruz_auth', JSON.stringify({
-                    access_token: data.session.access_token,
-                    refresh_token: data.session.refresh_token
-                }));
                 
-                // Zapamiętaj identyfikator (nie email!)
-                if (document.getElementById('rememberMe').checked) {
-                    localStorage.setItem('libruz_remember_identifier', identifier);
-                    localStorage.setItem('libruz_remember_type', loginType);
-                } else {
-                    localStorage.removeItem('libruz_remember_identifier');
-                    localStorage.removeItem('libruz_remember_type');
-                }
+                showSuccess('✅ Zalogowano! Przekierowuję...');
                 
-                showSuccess('Logowanie udane! Przekierowuję...');
-                
-                // 7. Przekieruj według roli
+                // 5. Przekieruj według roli
                 setTimeout(() => {
-                    redirectByRole(profile);
-                }, 1000);
+                    if (profile.role === 'admin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else if (profile.role === 'teacher') {
+                        window.location.href = 'teacher-dashboard.html';
+                    } else if (profile.role === 'student') {
+                        window.location.href = 'student-dashboard.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 1500);
                 
             } catch (error) {
                 console.error('💥 Błąd:', error);
-                showError(error.message);
+                showError('❌ ' + error.message);
                 
                 // Animacja błędu
-                loginForm.style.animation = 'shake 0.5s ease';
+                const form = document.getElementById('loginForm');
+                form.style.animation = 'shake 0.5s';
                 setTimeout(() => {
-                    loginForm.style.animation = '';
+                    form.style.animation = '';
                 }, 500);
                 
             } finally {
                 // Przywróć przycisk
-                loginButton.disabled = false;
-                loading.style.display = 'none';
-                loginButton.innerHTML = '<i class="fas fa-sign-in-alt"></i> Zaloguj się';
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '🔐 Zaloguj się';
             }
         }
-
+        
         // ============================================
-        // PRZEKIEROWANIE
+        // FUNKCJA TWORZENIA ADMINA (jeśli go nie ma)
         // ============================================
-        function redirectByRole(profile) {
-            let dashboardUrl = 'dashboard.html';
-            
-            switch(profile.role) {
-                case 'admin':
-                    dashboardUrl = 'admin-dashboard.html';
-                    break;
-                case 'director':
-                case 'vice_director':
-                    dashboardUrl = 'director-dashboard.html';
-                    break;
-                case 'teacher':
-                    dashboardUrl = 'teacher-dashboard.html';
-                    break;
-                case 'student':
-                    dashboardUrl = 'student-dashboard.html';
-                    break;
-                case 'parent':
-                    dashboardUrl = 'parent-dashboard.html';
-                    break;
-                default:
-                    console.warn('Nieznana rola:', profile.role);
+        
+        async function createAdminIfNotExists() {
+            try {
+                // Sprawdź czy admin istnieje
+                const { data: existingAdmin } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('role', 'admin')
+                    .single();
+                
+                if (existingAdmin) {
+                    console.log('✅ Admin już istnieje:', existingAdmin.email);
+                    return;
+                }
+                
+                console.log('🛠️ Tworzę admina...');
+                
+                // Stwórz szkołę jeśli nie ma
+                const { data: schools } = await supabase
+                    .from('schools')
+                    .select('id')
+                    .limit(1);
+                
+                let schoolId = null;
+                if (!schools || schools.length === 0) {
+                    const { data: newSchool } = await supabase
+                        .from('schools')
+                        .insert([{ name: 'Szkoła Demo' }])
+                        .select()
+                        .single();
+                    schoolId = newSchool.id;
+                } else {
+                    schoolId = schools[0].id;
+                }
+                
+                // Dodaj profil admina
+                const { error } = await supabase
+                    .from('profiles')
+                    .insert([{
+                        email: 'admin@libruz.pl',
+                        username: 'admin',
+                        first_name: 'Admin',
+                        last_name: 'System',
+                        role: 'admin',
+                        temporary_password: false,
+                        is_active: true,
+                        school_id: schoolId
+                    }]);
+                
+                if (error) {
+                    console.error('❌ Błąd tworzenia admina:', error);
+                } else {
+                    console.log('✅ Admin stworzony!');
+                    console.log('📋 DANE LOGOWANIA:');
+                    console.log('   Login: admin');
+                    console.log('   Email: admin@libruz.pl');
+                    console.log('   Hasło: Admin123!@# (ustaw w Supabase Auth)');
+                }
+                
+            } catch (error) {
+                console.error('💥 Błąd:', error);
             }
-            
-            console.log('📍 Przekierowanie do:', dashboardUrl);
-            window.location.href = dashboardUrl;
         }
-
-        // ============================================
-        // ZAŁADUJ ZAPAMIĘTANY IDENTYFIKATOR
-        // ============================================
-        function loadRememberedIdentifier() {
-            const rememberedIdentifier = localStorage.getItem('libruz_remember_identifier');
-            const rememberedType = localStorage.getItem('libruz_remember_type');
-            
-            if (rememberedIdentifier && rememberedType) {
-                setLoginType(rememberedType);
-                identifierInput.value = rememberedIdentifier;
-                document.getElementById('rememberMe').checked = true;
-            }
-        }
-
-        // ============================================
-        // EVENT LISTENERS
-        // ============================================
-        loginForm.addEventListener('submit', handleLogin);
-
-        identifierInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                passwordInput.focus();
-            }
-        });
-
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleLogin(e);
-            }
-        });
-
+        
         // ============================================
         // INICJALIZACJA
         // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 LIBRUZ zainicjalizowany (loginy bez @)');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 LIBRUZ - System gotowy');
             
-            loadRememberedIdentifier();
-            identifierInput.focus();
+            // Podłącz formularz
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+                console.log('✅ Formularz podłączony');
+            } else {
+                console.error('❌ Nie znaleziono formularza!');
+            }
             
-            // Automatycznie wybierz typ logowania na podstawie inputu
-            identifierInput.addEventListener('input', function() {
-                const value = this.value;
-                if (value.includes('@')) {
-                    setLoginType('email');
-                } else if (/^\d/.test(value) || value.startsWith('NAUCZ')) {
-                    setLoginType('code');
-                }
-            });
+            // Stwórz admina jeśli nie istnieje
+            setTimeout(createAdminIfNotExists, 1000);
+            
+            // Sprawdź czy już zalogowany
+            checkExistingSession();
         });
-
+        
         // ============================================
-        // POMOCNICZE FUNKCJE DLA ADMINA
+        // SPRAWDŹ ISTNIEJĄCĄ SESJĘ
         // ============================================
         
-        // Funkcja do generowania loginów dla istniejących użytkowników
-        async function generateUsernames() {
+        async function checkExistingSession() {
             try {
-                // Pobierz wszystkich użytkowników bez username
-                const { data: users, error } = await supabase
-                    .from('profiles')
-                    .select('id, email, first_name, last_name, role')
-                    .is('username', null);
+                const { data: { session } } = await supabase.auth.getSession();
                 
-                if (error) throw error;
-                
-                console.log(`📝 Generowanie loginów dla ${users.length} użytkowników`);
-                
-                // Dla każdego użytkownika wygeneruj username
-                for (const user of users) {
-                    let username = '';
+                if (session) {
+                    console.log('📱 Znaleziono sesję:', session.user.email);
                     
-                    if (user.role === 'student') {
-                        // Dla uczniów: imię_nazwisko (bez polskich znaków)
-                        username = `${user.first_name.toLowerCase()}_${user.last_name.toLowerCase()}`
-                            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // usuń polskie znaki
-                            .replace(/[^a-z0-9_]/g, ''); // tylko litery, cyfry, podkreślenia
-                    } else {
-                        // Dla innych: imie.nazwisko
-                        username = `${user.first_name.toLowerCase()}.${user.last_name.toLowerCase()}`
-                            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                            .replace(/[^a-z0-9.]/g, '');
-                    }
-                    
-                    // Zaktualizuj w bazie
-                    const { error: updateError } = await supabase
+                    // Pobierz profil
+                    const { data: profile } = await supabase
                         .from('profiles')
-                        .update({ username: username })
-                        .eq('id', user.id);
+                        .select('*')
+                        .eq('email', session.user.email)
+                        .single();
                     
-                    if (!updateError) {
-                        console.log(`✅ ${user.email} -> ${username}`);
+                    if (profile) {
+                        localStorage.setItem('libruz_user', JSON.stringify(profile));
+                        
+                        // Automatyczne przekierowanie
+                        if (profile.role === 'admin') {
+                            window.location.href = 'admin-dashboard.html';
+                        }
                     }
                 }
-                
-                console.log('🎉 Loginy wygenerowane!');
-                
             } catch (error) {
-                console.error('💥 Błąd generowania loginów:', error);
+                console.log('ℹ️ Brak sesji');
             }
         }
         
-        // Uruchom w konsoli przeglądarki: generateUsernames()
-        window.generateUsernames = generateUsernames;
+        // ============================================
+        // DODAJ STYL ANIMACJI SHAKE
+        // ============================================
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
         
     </script>
 </body>
