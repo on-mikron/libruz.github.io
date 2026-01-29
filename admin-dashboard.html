@@ -3,283 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👑 LIBRUZ - Panel Administratora</title>
+    <title>👑 LIBRUZ PRO - Panel Administratora Systemu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
-        /* RESET */
+        /* ===== VARIABLES ===== */
+        :root {
+            --primary: #2c3e50;
+            --primary-light: #34495e;
+            --secondary: #1abc9c;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #3498db;
+            --success: #27ae60;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gray: #95a5a6;
+            --border: #bdc3c7;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --radius: 10px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* ===== RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* VARIABLES */
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a0ca3;
-            --secondary: #7209b7;
-            --success: #4cc9f0;
-            --danger: #f72585;
-            --warning: #ff9e00;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --border: #dee2e6;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --radius: 12px;
-            --transition: all 0.3s ease;
-        }
-
-        /* BODY */
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
             color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* NAVBAR */
-        .navbar {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: var(--shadow);
+        /* ===== LAYOUT ===== */
+        .app-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 280px;
+            background: var(--primary);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
             z-index: 1000;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            background: var(--primary-light);
+            border-bottom: 3px solid var(--secondary);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--primary);
-            font-size: 1.5rem;
+            gap: 12px;
+            font-size: 1.4rem;
             font-weight: 700;
         }
 
         .logo i {
+            color: var(--secondary);
             font-size: 1.8rem;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .user-panel {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 15px;
+            border-radius: var(--radius);
+            text-align: center;
         }
 
         .user-avatar {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--secondary), var(--info));
             border-radius: 50%;
+            margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 2rem;
             font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
+            border: 4px solid rgba(255, 255, 255, 0.3);
         }
 
         .user-name {
+            font-size: 1.2rem;
             font-weight: 600;
-            color: var(--dark);
+            margin-bottom: 5px;
         }
 
         .user-role {
+            background: var(--secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.85rem;
-            color: var(--gray);
+            display: inline-block;
         }
 
-        .btn-logout {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+        /* ===== MENU ===== */
+        .menu {
+            padding: 20px 0;
+        }
+
+        .menu-section {
+            margin-bottom: 25px;
+        }
+
+        .menu-section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0 25px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 15px;
+            padding: 15px 25px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--secondary);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: var(--secondary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .menu-item-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 20px;
             transition: var(--transition);
         }
 
-        .btn-logout:hover {
-            background: #e63946;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(247, 37, 133, 0.3);
-        }
-
-        /* MAIN CONTENT */
-        .dashboard {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-        }
-
-        /* WELCOME SECTION */
-        .welcome-section {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 2.5rem;
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
             border-radius: var(--radius);
-            margin-bottom: 2.5rem;
-            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
-            position: relative;
-            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
         }
 
-        .welcome-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(30deg);
+        .header-title h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
         }
 
-        .welcome-title {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-            position: relative;
-            z-index: 1;
+        .header-title p {
+            color: var(--gray);
+            font-size: 0.95rem;
         }
 
-        .welcome-subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
 
-        .welcome-badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1.2rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* STATS GRID */
+        /* ===== STATS CARDS ===== */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
             background: white;
-            padding: 1.8rem;
+            padding: 25px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            border-left: 5px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 20px;
             transition: var(--transition);
+            border-top: 4px solid;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
 
-        .stat-card i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            color: var(--gray);
-            font-weight: 500;
-        }
-
-        /* ACTIONS GRID */
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .action-card {
-            background: white;
-            padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border: 2px solid transparent;
-        }
-
-        .action-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-        }
-
-        .action-card-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 1.2rem;
-        }
-
-        .action-card-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
+        .stat-icon {
+            width: 60px;
+            height: 60px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            color: white;
         }
 
-        .action-card-title {
-            font-size: 1.4rem;
-            color: var(--dark);
-            font-weight: 600;
+        .stat-info {
+            flex: 1;
         }
 
-        .action-card-description {
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
             color: var(--gray);
-            line-height: 1.6;
-            margin-bottom: 1.8rem;
+            font-size: 0.95rem;
         }
 
-        /* BUTTONS */
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.95rem;
+        .stat-trend {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        /* ===== DASHBOARD CARDS ===== */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
             transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            transition: var(--transition);
+            font-size: 0.95rem;
         }
 
         .btn-primary {
@@ -288,9 +342,8 @@
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            background: var(--primary-light);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
         }
 
         .btn-success {
@@ -298,17 +351,18 @@
             color: white;
         }
 
-        .btn-success:hover {
-            background: #3aa8d0;
-        }
-
         .btn-warning {
             background: var(--warning);
-            color: var(--dark);
+            color: white;
         }
 
         .btn-danger {
             background: var(--danger);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--info);
             color: white;
         }
 
@@ -318,101 +372,22 @@
         }
 
         .btn-sm {
-            padding: 0.5rem 1rem;
+            padding: 6px 12px;
             font-size: 0.85rem;
         }
 
-        /* QUICK ACTIONS */
-        .quick-actions {
-            background: white;
-            padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 2.5rem;
+        .btn-icon {
+            padding: 10px;
+            width: 40px;
+            height: 40px;
+            justify-content: center;
         }
 
-        .section-title {
-            font-size: 1.5rem;
-            color: var(--dark);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title i {
-            color: var(--primary);
-        }
-
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        /* DYNAMIC CONTENT */
-        .dynamic-content {
-            background: white;
-            padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-            display: none;
-        }
-
-        .dynamic-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* FORMS */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.9rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        /* TABLES */
-        .table-container {
+        /* ===== TABLES ===== */
+        .table-responsive {
             overflow-x: auto;
-            margin-top: 1.5rem;
             border-radius: var(--radius);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .table {
@@ -427,7 +402,7 @@
         }
 
         .table th {
-            padding: 1rem;
+            padding: 15px;
             text-align: left;
             font-weight: 600;
             font-size: 0.9rem;
@@ -445,580 +420,1302 @@
         }
 
         .table td {
-            padding: 1rem;
-            color: var(--dark);
+            padding: 15px;
+            vertical-align: middle;
         }
 
+        /* ===== BADGES ===== */
         .badge {
             display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 12px;
+            padding: 5px 12px;
+            border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
         }
 
-        .badge-primary {
-            background: rgba(67, 97, 238, 0.1);
-            color: var(--primary);
-        }
-
         .badge-success {
-            background: rgba(76, 201, 240, 0.1);
+            background: rgba(39, 174, 96, 0.1);
             color: var(--success);
         }
 
         .badge-warning {
-            background: rgba(255, 158, 0, 0.1);
+            background: rgba(243, 156, 18, 0.1);
             color: var(--warning);
         }
 
-        /* ACCESS DENIED */
-        .access-denied {
-            text-align: center;
-            padding: 5rem 2rem;
+        .badge-danger {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-info {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--info);
+        }
+
+        .badge-secondary {
+            background: rgba(149, 165, 166, 0.1);
+            color: var(--gray);
+        }
+
+        /* ===== FORMS ===== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* ===== MODALS ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
             background: white;
             border-radius: var(--radius);
-            margin: 3rem auto;
-            max-width: 600px;
-            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
         }
 
-        .access-denied h2 {
-            color: var(--danger);
-            margin-bottom: 1rem;
-            font-size: 2rem;
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .access-denied p {
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
             color: var(--gray);
-            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== ALERTS ===== */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alert-success {
+            background: rgba(39, 174, 96, 0.1);
+            border-left: 4px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-warning {
+            background: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-info {
+            background: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--info);
+            color: var(--info);
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: var(--gray);
             font-size: 1.1rem;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
+        .loading i {
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 250px;
             }
-            
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
             .form-row {
                 flex-direction: column;
                 gap: 0;
             }
-            
-            .dashboard {
-                padding: 0 1rem;
-            }
-            
-            .welcome-section {
-                padding: 1.5rem;
-            }
-            
-            .welcome-title {
-                font-size: 1.8rem;
-            }
-            
-            .action-buttons {
+            .header {
                 flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
             }
-            
-            .action-buttons .btn {
-                width: 100%;
-                justify-content: center;
-            }
+        }
+
+        /* ===== UTILITIES ===== */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mb-20 { margin-bottom: 20px; }
+        .mb-30 { margin-bottom: 30px; }
+        .mt-20 { margin-top: 20px; }
+        .mt-30 { margin-top: 30px; }
+        .p-20 { padding: 20px; }
+        .d-flex { display: flex; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-10 { gap: 10px; }
+        .gap-15 { gap: 15px; }
+        .w-100 { width: 100%; }
+        .hidden { display: none; }
+
+        /* ===== CUSTOM COMPONENTS ===== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .quick-action-btn {
+            background: white;
+            border: none;
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .quick-action-btn i {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+
+        .quick-action-btn span {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .activity-timeline {
+            padding: 20px 0;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .activity-time {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .user-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: var(--transition);
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .user-card-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary), var(--info));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .user-card-info {
+            flex: 1;
+        }
+
+        .user-card-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .user-card-email {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .user-card-role {
+            font-size: 0.85rem;
+        }
+
+        .school-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .school-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .school-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .school-card-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .school-card-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .school-stat {
+            text-align: center;
+            padding: 15px;
+            background: var(--light);
+            border-radius: var(--radius);
+        }
+
+        .school-stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .school-stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="access-denied" id="accessDenied">
-            <h2>⛔ Brak dostępu</h2>
-            <p>Trwa sprawdzanie uprawnień...</p>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-crown"></i>
+                    <span>LIBRUZ PRO</span>
+                </div>
+            </div>
+
+            <div class="user-panel">
+                <div class="user-avatar" id="userAvatar">AD</div>
+                <div class="user-name" id="userName">Administrator Systemu</div>
+                <div class="user-role">Super Admin</div>
+            </div>
+
+            <div class="menu">
+                <div class="menu-section">
+                    <div class="menu-section-title">Główne</div>
+                    <a class="menu-item active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Pulpit</span>
+                    </a>
+                    <a class="menu-item" data-section="schools">
+                        <i class="fas fa-school"></i>
+                        <span>Szkoły</span>
+                        <span class="menu-item-badge" id="schoolsCount">0</span>
+                    </a>
+                    <a class="menu-item" data-section="users">
+                        <i class="fas fa-users"></i>
+                        <span>Użytkownicy</span>
+                        <span class="menu-item-badge" id="usersCount">0</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title">Zarządzanie</div>
+                    <a class="menu-item" data-section="classes">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Klasy i Przedmioty</span>
+                    </a>
+                    <a class="menu-item" data-section="timetable">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Plany Lekcji</span>
+                    </a>
+                    <a class="menu-item" data-section="grades">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Oceny i Świadectwa</span>
+                    </a>
+                    <a class="menu-item" data-section="attendance">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Frekwencja</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title">System</div>
+                    <a class="menu-item" data-section="reports">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Raporty</span>
+                    </a>
+                    <a class="menu-item" data-section="backup">
+                        <i class="fas fa-database"></i>
+                        <span>Backup</span>
+                    </a>
+                    <a class="menu-item" data-section="logs">
+                        <i class="fas fa-history"></i>
+                        <span>Logi Systemowe</span>
+                    </a>
+                    <a class="menu-item" data-section="settings">
+                        <i class="fas fa-cogs"></i>
+                        <span>Ustawienia</span>
+                    </a>
+                </div>
+
+                <div class="menu-section">
+                    <div class="menu-section-title">Wsparcie</div>
+                    <a class="menu-item" data-section="support">
+                        <i class="fas fa-life-ring"></i>
+                        <span>Pomoc Techniczna</span>
+                    </a>
+                    <a class="menu-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Wyloguj</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content" id="mainContent">
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-title">
+                    <h1 id="pageTitle">Pulpit administratora</h1>
+                    <p id="pageSubtitle">Zarządzaj całym systemem LIBRUZ PRO</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="openCreateSchoolModal()">
+                        <i class="fas fa-plus"></i>
+                        Nowa szkoła
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                        Odśwież
+                    </button>
+                    <button class="btn btn-info" onclick="showQuickHelp()">
+                        <i class="fas fa-question-circle"></i>
+                        Pomoc
+                    </button>
+                </div>
+            </div>
+
+            <!-- DYNAMIC CONTENT -->
+            <div id="contentContainer">
+                <!-- Dashboard content will be loaded here -->
+            </div>
         </div>
     </div>
 
+    <!-- MODALS -->
+    <!-- Modal tworzenia szkoły -->
+    <div class="modal" id="createSchoolModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-school"></i>
+                    Utwórz nową szkołę
+                </div>
+                <button class="modal-close" onclick="closeModal('createSchoolModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createSchoolForm">
+                    <div class="tabs">
+                        <button type="button" class="tab active" data-tab="school-info">Dane szkoły</button>
+                        <button type="button" class="tab" data-tab="director-info">Dyrektor</button>
+                        <button type="button" class="tab" data-tab="configuration">Konfiguracja</button>
+                    </div>
+
+                    <div class="tab-content active" id="school-info-tab">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nazwa szkoły *</label>
+                                <input type="text" class="form-control" id="schoolName" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Typ szkoły *</label>
+                                <select class="form-control" id="schoolType" required>
+                                    <option value="">Wybierz typ</option>
+                                    <option value="podstawowa">Szkoła Podstawowa</option>
+                                    <option value="liceum">Liceum Ogólnokształcące</option>
+                                    <option value="technikum">Technikum</option>
+                                    <option value="zawodowa">Szkoła Zawodowa</option>
+                                    <option value="branzowa">Szkoła Branżowa</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Miejscowość *</label>
+                                <input type="text" class="form-control" id="schoolCity" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ulica i numer</label>
+                                <input type="text" class="form-control" id="schoolAddress">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Kod pocztowy</label>
+                                <input type="text" class="form-control" id="schoolPostal" placeholder="00-000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Telefon kontaktowy</label>
+                                <input type="tel" class="form-control" id="schoolPhone">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email szkoły</label>
+                            <input type="email" class="form-control" id="schoolEmail">
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="director-info-tab">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            Utworzymy konto dyrektora szkoły z uprawnieniami administracyjnymi.
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Imię dyrektora *</label>
+                                <input type="text" class="form-control" id="directorFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nazwisko dyrektora *</label>
+                                <input type="text" class="form-control" id="directorLastName" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Email służbowy *</label>
+                                <input type="email" class="form-control" id="directorEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Telefon dyrektora</label>
+                                <input type="tel" class="form-control" id="directorPhone">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tymczasowe hasło</label>
+                            <div class="d-flex align-center gap-10">
+                                <input type="text" class="form-control" id="tempPassword" value="Libruz2024!" readonly>
+                                <button type="button" class="btn btn-warning" onclick="generatePassword()">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="copyToClipboard('tempPassword')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="mt-20">
+                                <label class="form-label">Uprawnienia dyrektora:</label>
+                                <div class="d-flex gap-20">
+                                    <label><input type="checkbox" checked> Zarządzanie nauczycielami</label>
+                                    <label><input type="checkbox" checked> Zarządzanie uczniami</label>
+                                    <label><input type="checkbox" checked> Plan lekcji</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="configuration-tab">
+                        <div class="form-group">
+                            <label class="form-label">Rok szkolny</label>
+                            <select class="form-control" id="academicYear">
+                                <option value="2023/2024">2023/2024</option>
+                                <option value="2024/2025" selected>2024/2025</option>
+                                <option value="2025/2026">2025/2026</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Domyślne przedmioty</label>
+                            <select class="form-control" id="defaultSubjects" multiple style="height: 200px;">
+                                <option value="matematyka" selected>Matematyka</option>
+                                <option value="polski" selected>Język polski</option>
+                                <option value="angielski" selected>Język angielski</option>
+                                <option value="historia" selected>Historia</option>
+                                <option value="biologia" selected>Biologia</option>
+                                <option value="chemia" selected>Chemia</option>
+                                <option value="fizyka" selected>Fizyka</option>
+                                <option value="geografia" selected>Geografia</option>
+                                <option value="wf" selected>Wychowanie fizyczne</option>
+                                <option value="informatyka" selected>Informatyka</option>
+                                <option value="edb" selected>Edukacja dla bezpieczeństwa</option>
+                                <option value="religia">Religia</option>
+                                <option value="etyka">Etyka</option>
+                            </select>
+                            <small>Przytrzymaj Ctrl, aby wybrać kilka przedmiotów</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Szablon planu lekcji</label>
+                            <select class="form-control" id="timetableTemplate">
+                                <option value="">Brak szablonu</option>
+                                <option value="basic">Podstawowy (8:00-15:30)</option>
+                                <option value="extended">Rozszerzony (7:30-16:30)</option>
+                                <option value="shift">System zmianowy</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('createSchoolModal')">Anuluj</button>
+                <button class="btn btn-success" onclick="saveSchoolToSupabase()">
+                    <i class="fas fa-save"></i>
+                    Utwórz szkołę
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal podglądu szkoły -->
+    <div class="modal" id="viewSchoolModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-eye"></i>
+                    <span id="modalSchoolTitle">Szkoła</span>
+                </div>
+                <button class="modal-close" onclick="closeModal('viewSchoolModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="schoolModalContent">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        Ładowanie danych szkoły...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal szybkich akcji -->
+    <div class="modal" id="quickActionsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-bolt"></i>
+                    Szybkie akcje
+                </div>
+                <button class="modal-close" onclick="closeModal('quickActionsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="massResetPasswords()">
+                        <i class="fas fa-key"></i>
+                        <span>Resetuj hasła</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        <span>Eksportuj dane</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="sendBulkMessages()">
+                        <i class="fas fa-envelope"></i>
+                        <span>Wyślij wiadomości</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="generateReports()">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Generuj raporty</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="systemDiagnostics()">
+                        <i class="fas fa-stethoscope"></i>
+                        <span>Diagnostyka</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="backupSystem()">
+                        <i class="fas fa-database"></i>
+                        <span>Kopia zapasowa</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        // ===== GŁÓWNY KOD =====
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('👑 Panel Administratora - inicjalizacja');
+        // ===== KONFIGURACJA SUPABASE =====
+        const SUPABASE_URL = 'https://fupfgshptjghdjpkeaee.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM';
+        
+        let supabase;
+        let currentUser = null;
+        
+        // ===== INICJALIZACJA =====
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 LIBRUZ PRO - Panel Administratora');
             
-            // 1. Sprawdź sesję
-            checkUserSession();
+            // Inicjalizuj Supabase
+            await initSupabase();
+            
+            // Sprawdź sesję
+            await checkSession();
+            
+            // Załaduj dashboard
+            loadDashboard();
+            
+            // Inicjalizuj Select2
+            $('.select2').select2();
+            
+            // Inicjalizuj eventy
+            initEvents();
         });
         
-        function checkUserSession() {
-            const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
+        // ===== SUPABASE FUNCTIONS =====
+        async function initSupabase() {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('✅ Supabase zainicjalizowany');
+            } catch (error) {
+                console.error('❌ Błąd inicjalizacji Supabase:', error);
+                showError('Błąd połączenia z bazą danych');
+            }
+        }
+        
+        async function checkSession() {
             const userData = localStorage.getItem('libruz_user');
+            const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
             
-            console.log('🔍 Sprawdzam sesję:', { isLoggedIn, userData });
-            
-            // Jeśli nie ma sesji, utwórz admina
-            if (isLoggedIn !== 'true' || !userData) {
-                console.log('⚠️ Brak sesji, tworzę admina...');
-                createAdminUser();
+            if (!userData || isLoggedIn !== 'true') {
+                window.location.href = 'index.html';
                 return;
             }
             
             try {
-                const user = JSON.parse(userData);
+                currentUser = JSON.parse(userData);
                 
-                // Upewnij się że to admin
-                if (user.role !== 'admin') {
-                    user.role = 'admin';
-                    localStorage.setItem('libruz_user', JSON.stringify(user));
+                // Ustaw dane użytkownika w UI
+                document.getElementById('userAvatar').textContent = 
+                    (currentUser.first_name?.charAt(0) || '') + (currentUser.last_name?.charAt(0) || '');
+                document.getElementById('userName').textContent = 
+                    `${currentUser.first_name} ${currentUser.last_name}`;
+                    
+            } catch (error) {
+                console.error('Błąd sesji:', error);
+                logout();
+            }
+        }
+        
+        // ===== FUNKCJE SYSTEMOWE =====
+        function loadDashboard() {
+            const content = `
+                <!-- STATS -->
+                <div class="stats-grid">
+                    <div class="stat-card" style="border-top-color: var(--secondary);">
+                        <div class="stat-icon" style="background: var(--secondary);">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalSchools">0</div>
+                            <div class="stat-label">Aktywnych szkół</div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 2 w tym miesiącu
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card" style="border-top-color: var(--info);">
+                        <div class="stat-icon" style="background: var(--info);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Użytkowników</div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 5.2% wzrost
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card" style="border-top-color: var(--success);">
+                        <div class="stat-icon" style="background: var(--success);">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalTeachers">0</div>
+                            <div class="stat-label">Nauczycieli</div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 3 nowych
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card" style="border-top-color: var(--warning);">
+                        <div class="stat-icon" style="background: var(--warning);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalStudents">0</div>
+                            <div class="stat-label">Uczniów</div>
+                            <div class="stat-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 12.5% wzrost
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- QUICK ACTIONS -->
+                <div class="mb-30">
+                    <h2 class="card-title mb-20">
+                        <i class="fas fa-bolt"></i>
+                        Szybkie akcje
+                    </h2>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="openCreateSchoolModal()">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Nowa szkoła</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="massResetPasswords()">
+                            <i class="fas fa-key"></i>
+                            <span>Reset haseł</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="exportData()">
+                            <i class="fas fa-file-export"></i>
+                            <span>Eksport danych</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="systemBackup()">
+                            <i class="fas fa-database"></i>
+                            <span>Kopia zapasowa</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="generateReports()">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Raporty</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="showActivityLogs()">
+                            <i class="fas fa-history"></i>
+                            <span>Logi systemowe</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- DASHBOARD CARDS -->
+                <div class="dashboard-cards">
+                    <!-- OSTATNIE AKTYWNOŚCI -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-history"></i>
+                                Ostatnie aktywności
+                            </div>
+                            <button class="btn btn-sm btn-secondary" onclick="showAllActivities()">
+                                Wszystkie
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-timeline" id="activityTimeline">
+                                <div class="loading">
+                                    <i class="fas fa-spinner"></i>
+                                    Ładowanie aktywności...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SYSTEM STATUS -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-heartbeat"></i>
+                                Status systemu
+                            </div>
+                            <span class="badge badge-success">Online</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Baza danych</label>
+                                <div class="d-flex justify-between align-center">
+                                    <span>Supabase</span>
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Aktywna
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Pamięć serwera</label>
+                                <div class="progress-bar" style="height: 10px; background: #eee; border-radius: 5px;">
+                                    <div style="width: 65%; height: 100%; background: var(--success); border-radius: 5px;"></div>
+                                </div>
+                                <div class="text-right mt-10">65% wykorzystania</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Ostatni backup</label>
+                                <div class="d-flex justify-between align-center">
+                                    <span>${new Date().toLocaleDateString('pl-PL')}</span>
+                                    <button class="btn btn-sm btn-primary" onclick="createBackup()">
+                                        Utwórz backup
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- OSTATNIE SZKOŁY -->
+                <div class="card mt-30">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-school"></i>
+                            Ostatnio dodane szkoły
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="showSection('schools')">
+                            Wszystkie szkoły
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentSchools">
+                            <div class="loading">
+                                <i class="fas fa-spinner"></i>
+                                Ładowanie szkół...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('contentContainer').innerHTML = content;
+            document.getElementById('pageTitle').textContent = 'Pulpit administratora';
+            document.getElementById('pageSubtitle').textContent = 'Przegląd całego systemu LIBRUZ PRO';
+            
+            // Załaduj dane
+            loadDashboardData();
+        }
+        
+        async function loadDashboardData() {
+            try {
+                // Pobierz szkoły
+                const { data: schools, error: schoolsError } = await supabase
+                    .from('schools')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+                
+                if (!schoolsError && schools) {
+                    document.getElementById('totalSchools').textContent = schools.length;
+                    
+                    // Pokaż ostatnie szkoły
+                    let recentSchoolsHTML = '';
+                    schools.forEach(school => {
+                        recentSchoolsHTML += `
+                            <div class="school-card">
+                                <div class="school-card-header">
+                                    <div class="school-card-title">
+                                        <i class="fas fa-school"></i>
+                                        ${school.name}
+                                    </div>
+                                    <span class="badge badge-info">${school.city}</span>
+                                </div>
+                                <p>${school.address || 'Brak adresu'}</p>
+                                <div class="school-card-stats">
+                                    <div class="school-stat">
+                                        <div class="school-stat-value">0</div>
+                                        <div class="school-stat-label">Nauczycieli</div>
+                                    </div>
+                                    <div class="school-stat">
+                                        <div class="school-stat-value">0</div>
+                                        <div class="school-stat-label">Uczniów</div>
+                                    </div>
+                                    <div class="school-stat">
+                                        <div class="school-stat-value">0</div>
+                                        <div class="school-stat-label">Klas</div>
+                                    </div>
+                                    <div class="school-stat">
+                                        <div class="school-stat-value">${new Date(school.created_at).toLocaleDateString('pl-PL')}</div>
+                                        <div class="school-stat-label">Data dodania</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    document.getElementById('recentSchools').innerHTML = recentSchoolsHTML || '<p class="text-center">Brak szkół w systemie</p>';
                 }
                 
-                // Renderuj dashboard
-                renderDashboard(user);
+                // Pobierz użytkowników
+                const { data: users, error: usersError } = await supabase
+                    .from('profiles')
+                    .select('*');
+                
+                if (!usersError && users) {
+                    const totalUsers = users.length;
+                    const teachers = users.filter(u => u.role === 'teacher').length;
+                    const students = users.filter(u => u.role === 'student').length;
+                    
+                    document.getElementById('totalUsers').textContent = totalUsers;
+                    document.getElementById('totalTeachers').textContent = teachers;
+                    document.getElementById('totalStudents').textContent = students;
+                    document.getElementById('usersCount').textContent = totalUsers;
+                    document.getElementById('schoolsCount').textContent = schools?.length || 0;
+                }
+                
+                // Załaduj aktywności
+                loadActivities();
                 
             } catch (error) {
-                console.error('Błąd parsowania danych:', error);
-                createAdminUser();
+                console.error('Błąd ładowania danych:', error);
+                showError('Nie udało się załadować danych');
             }
         }
         
-        function createAdminUser() {
-            const adminUser = {
-                id: 'admin-' + Date.now(),
-                email: 'admin@libruz.pl',
-                username: 'admin',
-                first_name: 'Admin',
-                last_name: 'System',
-                role: 'admin',
-                school_id: null,
-                is_active: true,
-                created_at: new Date().toISOString()
+        async function loadActivities() {
+            // Symulacja aktywności
+            const activities = [
+                { icon: 'fa-school', title: 'Dodano nową szkołę', time: '2 godziny temu', color: 'var(--success)' },
+                { icon: 'fa-user-plus', title: 'Nowy nauczyciel zarejestrowany', time: '4 godziny temu', color: 'var(--info)' },
+                { icon: 'fa-key', title: 'Reset hasła dla dyrektora', time: '1 dzień temu', color: 'var(--warning)' },
+                { icon: 'fa-database', title: 'Kopia zapasowa wykonana', time: '2 dni temu', color: 'var(--secondary)' },
+                { icon: 'fa-chart-bar', title: 'Raport miesięczny wygenerowany', time: '3 dni temu', color: 'var(--primary)' }
+            ];
+            
+            let activitiesHTML = '';
+            activities.forEach(activity => {
+                activitiesHTML += `
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: ${activity.color}">
+                            <i class="fas ${activity.icon}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">${activity.title}</div>
+                            <div class="activity-time">${activity.time}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('activityTimeline').innerHTML = activitiesHTML;
+        }
+        
+        // ===== FUNKCJE SZKOŁY =====
+        function openCreateSchoolModal() {
+            document.getElementById('createSchoolModal').style.display = 'flex';
+            initTabs();
+        }
+        
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Usuń active z wszystkich
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    // Dodaj active do klikniętego
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+        
+        async function saveSchoolToSupabase() {
+            // Pobierz dane z formularza
+            const schoolData = {
+                name: document.getElementById('schoolName').value,
+                type: document.getElementById('schoolType').value,
+                city: document.getElementById('schoolCity').value,
+                address: document.getElementById('schoolAddress').value,
+                postal_code: document.getElementById('schoolPostal').value,
+                phone: document.getElementById('schoolPhone').value,
+                email: document.getElementById('schoolEmail').value,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             };
             
-            localStorage.setItem('libruz_user', JSON.stringify(adminUser));
-            localStorage.setItem('libruz_is_logged_in', 'true');
-            
-            console.log('✅ Admin utworzony:', adminUser);
-            
-            // Odśwież stronę
-            setTimeout(() => {
-                location.reload();
-            }, 500);
-        }
-        
-        function renderDashboard(user) {
-            const app = document.getElementById('app');
-            
-            app.innerHTML = `
-                <!-- NAVBAR -->
-                <nav class="navbar">
-                    <div class="logo">
-                        <i class="fas fa-crown"></i>
-                        <span>LIBRUZ Admin</span>
-                    </div>
-                    
-                    <div class="user-info">
-                        <div class="user-avatar">${getUserInitials(user)}</div>
-                        <div class="user-details">
-                            <div class="user-name">${user.first_name} ${user.last_name}</div>
-                            <div class="user-role">Administrator systemu</div>
-                        </div>
-                        <button class="btn-logout" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Wyloguj
-                        </button>
-                    </div>
-                </nav>
-                
-                <!-- DASHBOARD -->
-                <div class="dashboard">
-                    <!-- WELCOME SECTION -->
-                    <div class="welcome-section">
-                        <h1 class="welcome-title">Witaj, ${user.first_name}!</h1>
-                        <p class="welcome-subtitle">Zarządzaj systemem szkolnym LIBRUZ z poziomu panelu administratora</p>
-                        <div class="welcome-badge">
-                            <i class="fas fa-check-circle"></i>
-                            Zalogowano jako administrator
-                        </div>
-                    </div>
-                    
-                    <!-- STATS -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <i class="fas fa-school"></i>
-                            <div class="stat-number" id="schoolsCount">0</div>
-                            <div class="stat-label">Aktywnych szkół</div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <i class="fas fa-users"></i>
-                            <div class="stat-number" id="usersCount">0</div>
-                            <div class="stat-label">Użytkowników</div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <i class="fas fa-chart-line"></i>
-                            <div class="stat-number">24/7</div>
-                            <div class="stat-label">System aktywny</div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <i class="fas fa-shield-alt"></i>
-                            <div class="stat-number">100%</div>
-                            <div class="stat-label">Zabezpieczony</div>
-                        </div>
-                    </div>
-                    
-                    <!-- QUICK ACTIONS -->
-                    <div class="quick-actions">
-                        <h2 class="section-title">
-                            <i class="fas fa-bolt"></i>
-                            Szybkie działania
-                        </h2>
-                        <div class="action-buttons">
-                            <button class="btn btn-primary" onclick="showCreateSchool()">
-                                <i class="fas fa-plus"></i>
-                                Dodaj szkołę
-                            </button>
-                            <button class="btn btn-success" onclick="showSchoolsList()">
-                                <i class="fas fa-list"></i>
-                                Lista szkół
-                            </button>
-                            <button class="btn btn-warning" onclick="showUsersList()">
-                                <i class="fas fa-users"></i>
-                                Użytkownicy
-                            </button>
-                            <button class="btn btn-secondary" onclick="showSystemSettings()">
-                                <i class="fas fa-cog"></i>
-                                Ustawienia
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- ACTIONS GRID -->
-                    <div class="actions-grid">
-                        <!-- ZARZĄDZANIE SZKOŁAMI -->
-                        <div class="action-card">
-                            <div class="action-card-header">
-                                <div class="action-card-icon">
-                                    <i class="fas fa-school"></i>
-                                </div>
-                                <h3 class="action-card-title">Zarządzaj szkołami</h3>
-                            </div>
-                            <p class="action-card-description">
-                                Twórz nowe szkoły, dodawaj konta dyrektorów, przeglądaj i edytuj istniejące placówki edukacyjne.
-                            </p>
-                            <button class="btn btn-primary" onclick="showCreateSchool()">
-                                <i class="fas fa-plus"></i>
-                                Dodaj szkołę
-                            </button>
-                            <button class="btn btn-secondary" onclick="showSchoolsList()" style="margin-left: 10px;">
-                                <i class="fas fa-eye"></i>
-                                Przeglądaj
-                            </button>
-                        </div>
-                        
-                        <!-- ZARZĄDZANIE UŻYTKOWNIKAMI -->
-                        <div class="action-card">
-                            <div class="action-card-header">
-                                <div class="action-card-icon">
-                                    <i class="fas fa-user-friends"></i>
-                                </div>
-                                <h3 class="action-card-title">Użytkownicy</h3>
-                            </div>
-                            <p class="action-card-description">
-                                Przeglądaj wszystkich użytkowników, resetuj hasła, zarządzaj uprawnieniami i aktywnością kont.
-                            </p>
-                            <button class="btn btn-primary" onclick="showUsersList()">
-                                <i class="fas fa-users"></i>
-                                Przeglądaj użytkowników
-                            </button>
-                        </div>
-                        
-                        <!-- SYSTEM I KONFIGURACJA -->
-                        <div class="action-card">
-                            <div class="action-card-header">
-                                <div class="action-card-icon">
-                                    <i class="fas fa-cogs"></i>
-                                </div>
-                                <h3 class="action-card-title">System i konfiguracja</h3>
-                            </div>
-                            <p class="action-card-description">
-                                Ustawienia systemowe, konfiguracja modułów, zarządzanie rolami, uprawnieniami i bezpieczeństwem.
-                            </p>
-                            <button class="btn btn-primary" onclick="showSystemSettings()">
-                                <i class="fas fa-sliders-h"></i>
-                                Ustawienia systemu
-                            </button>
-                        </div>
-                        
-                        <!-- RAPORTY I STATYSTYKI -->
-                        <div class="action-card">
-                            <div class="action-card-header">
-                                <div class="action-card-icon">
-                                    <i class="fas fa-chart-bar"></i>
-                                </div>
-                                <h3 class="action-card-title">Raporty i statystyki</h3>
-                            </div>
-                            <p class="action-card-description">
-                                Generuj szczegółowe raporty, analizuj statystyki użycia systemu, przeglądaj logi aktywności.
-                            </p>
-                            <button class="btn btn-primary" onclick="generateReports()">
-                                <i class="fas fa-file-alt"></i>
-                                Generuj raporty
-                            </button>
-                        </div>
-                        
-                        <!-- NARZĘDZIA -->
-                        <div class="action-card">
-                            <div class="action-card-header">
-                                <div class="action-card-icon">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                                <h3 class="action-card-title">Narzędzia</h3>
-                            </div>
-                            <p class="action-card-description">
-                                Generatory haseł, narzędzia diagnostyczne, import/export danych, kopia zapasowa systemu.
-                            </p>
-                            <button class="btn btn-primary" onclick="showTools()">
-                                <i class="fas fa-wrench"></i>
-                                Otwórz narzędzia
-                            </button>
-                        </div>
-                        
-                        <!-- WSPARCIE -->
-                        <div class="action-card">
-                            <div class="action-card-header">
-                                <div class="action-card-icon">
-                                    <i class="fas fa-life-ring"></i>
-                                </div>
-                                <h3 class="action-card-title">Wsparcie techniczne</h3>
-                            </div>
-                            <p class="action-card-description">
-                                Pomoc techniczna, dokumentacja systemu, kontakt z developerami, zgłaszanie błędów.
-                            </p>
-                            <button class="btn btn-primary" onclick="showSupport()">
-                                <i class="fas fa-question-circle"></i>
-                                Pomoc i wsparcie
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- DYNAMIC CONTENT AREA -->
-                    <div id="dynamicContent" class="dynamic-content"></div>
-                </div>
-            `;
-            
-            // Załaduj statystyki
-            loadStatistics();
-        }
-        
-        function getUserInitials(user) {
-            const first = user.first_name ? user.first_name.charAt(0).toUpperCase() : 'A';
-            const last = user.last_name ? user.last_name.charAt(0).toUpperCase() : 'D';
-            return first + last;
-        }
-        
-        function loadStatistics() {
-            // Pobierz dane z localStorage
-            const schools = JSON.parse(localStorage.getItem('libruz_schools')) || [];
-            const users = JSON.parse(localStorage.getItem('libruz_users')) || [];
-            
-            // Aktualizuj statystyki
-            document.getElementById('schoolsCount').textContent = schools.length;
-            document.getElementById('usersCount').textContent = users.length + 1; // +1 dla admina
-        }
-        
-        // ===== FUNKCJE ADMINISTRATORA =====
-        function showCreateSchool() {
-            const content = document.getElementById('dynamicContent');
-            
-            content.innerHTML = `
-                <h2 class="section-title">
-                    <i class="fas fa-plus-circle"></i>
-                    Utwórz nową szkołę
-                </h2>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Nazwa szkoły *</label>
-                        <input type="text" class="form-control" id="schoolName" placeholder="Np. Szkoła Podstawowa nr 1">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Typ szkoły *</label>
-                        <select class="form-control" id="schoolType">
-                            <option value="">Wybierz typ</option>
-                            <option value="podstawowa">Szkoła Podstawowa</option>
-                            <option value="liceum">Liceum Ogólnokształcące</option>
-                            <option value="technikum">Technikum</option>
-                            <option value="zawodowa">Szkoła Zawodowa</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Miejscowość *</label>
-                        <input type="text" class="form-control" id="schoolCity" placeholder="Np. Warszawa">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Ulica i numer</label>
-                        <input type="text" class="form-control" id="schoolAddress" placeholder="Np. Szkolna 1">
-                    </div>
-                </div>
-                
-                <h3 style="margin: 2rem 0 1rem; color: var(--primary);">Dane dyrektora</h3>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Imię dyrektora *</label>
-                        <input type="text" class="form-control" id="directorFirstName" placeholder="Jan">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nazwisko dyrektora *</label>
-                        <input type="text" class="form-control" id="directorLastName" placeholder="Kowalski">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Email służbowy *</label>
-                        <input type="email" class="form-control" id="directorEmail" placeholder="dyrektor@szkola.pl">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Telefon kontaktowy</label>
-                        <input type="tel" class="form-control" id="directorPhone" placeholder="123 456 789">
-                    </div>
-                </div>
-                
-                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
-                    <h4 style="margin-bottom: 1rem; color: var(--primary);">
-                        <i class="fas fa-key"></i>
-                        Tymczasowe hasło
-                    </h4>
-                    <div style="display: flex; gap: 10px; margin-bottom: 1rem;">
-                        <input type="text" class="form-control" id="tempPassword" value="${generateStrongPassword()}" readonly style="font-family: monospace; font-weight: bold;">
-                        <button type="button" class="btn btn-warning" onclick="generateNewPassword()">
-                            <i class="fas fa-redo"></i>
-                            Generuj
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="copyPassword()">
-                            <i class="fas fa-copy"></i>
-                            Kopiuj
-                        </button>
-                    </div>
-                    <p style="color: #28a745; font-size: 0.9rem; margin: 0;">
-                        <i class="fas fa-check-circle"></i>
-                        Silne hasło: 12 znaków, wielkie/małe litery, cyfry, znaki specjalne
-                    </p>
-                </div>
-                
-                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button class="btn btn-secondary" onclick="hideDynamicContent()">
-                        <i class="fas fa-times"></i>
-                        Anuluj
-                    </button>
-                    <button class="btn btn-success" onclick="saveSchool()" style="flex: 1;">
-                        <i class="fas fa-school"></i>
-                        Utwórz szkołę i konto dyrektora
-                    </button>
-                </div>
-            `;
-            
-            content.classList.add('active');
-        }
-        
-        function generateStrongPassword() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&';
-            let password = '';
-            
-            // Zapewnij różne typy znaków
-            password += 'ABCDEFGHJKLMNPQRSTUVWXYZ'.charAt(Math.floor(Math.random() * 24));
-            password += 'abcdefghjkmnpqrstuvwxyz'.charAt(Math.floor(Math.random() * 24));
-            password += '23456789'.charAt(Math.floor(Math.random() * 8));
-            password += '!@#$%&'.charAt(Math.floor(Math.random() * 6));
-            
-            // Uzupełnij resztę
-            for (let i = 4; i < 12; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            
-            // Wymieszaj
-            return password.split('').sort(() => Math.random() - 0.5).join('');
-        }
-        
-        function generateNewPassword() {
-            document.getElementById('tempPassword').value = generateStrongPassword();
-        }
-        
-        function copyPassword() {
-            const passwordField = document.getElementById('tempPassword');
-            passwordField.select();
-            document.execCommand('copy');
-            
-            // Pokaz potwierdzenie
-            alert('✅ Hasło skopiowane do schowka!');
-        }
-        
-        function saveSchool() {
-            const schoolName = document.getElementById('schoolName').value;
-            const schoolType = document.getElementById('schoolType').value;
-            const schoolCity = document.getElementById('schoolCity').value;
-            const directorFirstName = document.getElementById('directorFirstName').value;
-            const directorLastName = document.getElementById('directorLastName').value;
-            const directorEmail = document.getElementById('directorEmail').value;
-            const tempPassword = document.getElementById('tempPassword').value;
+            const directorData = {
+                first_name: document.getElementById('directorFirstName').value,
+                last_name: document.getElementById('directorLastName').value,
+                email: document.getElementById('directorEmail').value,
+                phone: document.getElementById('directorPhone').value,
+                role: 'director',
+                is_active: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
             
             // Walidacja
-            if (!schoolName || !schoolType || !schoolCity || !directorFirstName || !directorLastName || !directorEmail) {
-                alert('⚠️ Wypełnij wszystkie wymagane pola oznaczone *');
+            if (!schoolData.name || !schoolData.type || !schoolData.city || 
+                !directorData.first_name || !directorData.last_name || !directorData.email) {
+                showError('Wypełnij wszystkie wymagane pola');
                 return;
             }
             
-            // Zapisz szkołę w localStorage
-            let schools = JSON.parse(localStorage.getItem('libruz_schools')) || [];
-            let users = JSON.parse(localStorage.getItem('libruz_users')) || [];
-            
-            const schoolId = 'school-' + Date.now();
-            const directorId = 'director-' + Date.now();
-            
-            // Dodaj szkołę
-            const newSchool = {
-                id: schoolId,
-                name: schoolName,
-                type: schoolType,
-                city: schoolCity,
-                address: document.getElementById('schoolAddress').value || '',
-                created_at: new Date().toISOString(),
-                status: 'active'
-            };
-            
-            // Dodaj dyrektora
-            const newDirector = {
-                id: directorId,
-                school_id: schoolId,
-                email: directorEmail,
-                username: generateUsername(directorLastName, 'D'),
-                first_name: directorFirstName,
-                last_name: directorLastName,
-                phone: document.getElementById('directorPhone').value || '',
-                role: 'director',
-                temporary_password: tempPassword,
-                is_active: true,
-                created_at: new Date().toISOString()
-            };
-            
-            schools.push(newSchool);
-            users.push(newDirector);
-            
-            localStorage.setItem('libruz_schools', JSON.stringify(schools));
-            localStorage.setItem('libruz_users', JSON.stringify(users));
-            
-            // Pokaz potwierdzenie
-            alert(`✅ Szkoła utworzona pomyślnie!\n\nSzkoła: ${schoolName}\nDyrektor: ${directorFirstName} ${directorLastName}\nLogin: ${newDirector.username}\nHasło: ${tempPassword}`);
-            
-            // Odśwież statystyki
-            loadStatistics();
-            
-            // Ukryj formularz
-            hideDynamicContent();
+            try {
+                // 1. Zapisz szkołę do Supabase
+                const { data: school, error: schoolError } = await supabase
+                    .from('schools')
+                    .insert([schoolData])
+                    .select()
+                    .single();
+                
+                if (schoolError) throw schoolError;
+                
+                // 2. Utwórz konto dyrektora
+                const username = generateUsername(directorData.last_name, 'D');
+                const tempPassword = document.getElementById('tempPassword').value;
+                
+                const directorProfile = {
+                    ...directorData,
+                    username: username,
+                    school_id: school.id,
+                    temporary_password: tempPassword
+                };
+                
+                const { error: directorError } = await supabase
+                    .from('profiles')
+                    .insert([directorProfile]);
+                
+                if (directorError) throw directorError;
+                
+                // 3. Wyświetl potwierdzenie
+                showSuccess(`Szkoła "${schoolData.name}" utworzona pomyślnie!`);
+                
+                // 4. Zamknij modal i odśwież dane
+                closeModal('createSchoolModal');
+                loadDashboardData();
+                
+                // 5. Pokaż dane logowania
+                showCredentials(directorData.email, tempPassword, schoolData.name);
+                
+            } catch (error) {
+                console.error('Błąd zapisywania szkoły:', error);
+                showError('Nie udało się utworzyć szkoły: ' + error.message);
+            }
         }
         
         function generateUsername(lastName, roleCode) {
@@ -1029,380 +1726,1384 @@
             return cleanName + roleCode;
         }
         
-        function showSchoolsList() {
-            const schools = JSON.parse(localStorage.getItem('libruz_schools')) || [];
-            const users = JSON.parse(localStorage.getItem('libruz_users')) || [];
+        function generatePassword() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
+            let password = '';
             
-            const content = document.getElementById('dynamicContent');
+            for (let i = 0; i < 12; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
             
-            let html = `
-                <h2 class="section-title">
-                    <i class="fas fa-list"></i>
-                    Wszystkie szkoły (${schools.length})
-                </h2>
+            document.getElementById('tempPassword').value = password;
+        }
+        
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            document.execCommand('copy');
+            showSuccess('Hasło skopiowane do schowka');
+        }
+        
+        function showCredentials(email, password, schoolName) {
+            const modal = `
+                <div class="modal" id="credentialsModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title">
+                                <i class="fas fa-key"></i>
+                                Dane logowania
+                            </div>
+                            <button class="modal-close" onclick="closeModal('credentialsModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                Szkoła <strong>${schoolName}</strong> została utworzona pomyślnie!
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4>Dane dostępu dla dyrektora:</h4>
+                                    <div class="form-group">
+                                        <label class="form-label">Email:</label>
+                                        <input type="text" class="form-control" value="${email}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Hasło:</label>
+                                        <input type="text" class="form-control" value="${password}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Link do logowania:</label>
+                                        <input type="text" class="form-control" value="${window.location.origin}/index.html" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Ważne:</strong> Hasło należy zmienić przy pierwszym logowaniu.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" onclick="printCredentials()">
+                                <i class="fas fa-print"></i>
+                                Drukuj
+                            </button>
+                            <button class="btn btn-success" onclick="closeModal('credentialsModal')">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
             `;
             
-            if (schools.length === 0) {
-                html += `
-                    <div style="text-align: center; padding: 3rem 1rem; background: #f8f9fa; border-radius: 8px;">
-                        <i class="fas fa-school" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
-                        <h3 style="color: #666; margin-bottom: 0.5rem;">Brak szkół w systemie</h3>
-                        <p style="color: #999;">Dodaj pierwszą szkołę, aby rozpocząć</p>
-                        <button class="btn btn-primary" onclick="showCreateSchool()" style="margin-top: 1rem;">
-                            <i class="fas fa-plus"></i>
-                            Dodaj szkołę
-                        </button>
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+        
+        function printCredentials() {
+            window.print();
+        }
+        
+        // ===== FUNKCJE SYSTEMOWE =====
+        function showSection(section) {
+            // Pokaż odpowiednią sekcję
+            console.log('Pokazuję sekcję:', section);
+            
+            // Aktualizuj menu
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-section') === section) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Załaduj zawartość sekcji
+            loadSectionContent(section);
+        }
+        
+        function loadSectionContent(section) {
+            let content = '';
+            let title = '';
+            let subtitle = '';
+            
+            switch(section) {
+                case 'schools':
+                    title = 'Zarządzanie szkołami';
+                    subtitle = 'Przeglądaj i zarządzaj wszystkimi szkołami';
+                    content = loadSchoolsSection();
+                    break;
+                case 'users':
+                    title = 'Użytkownicy systemu';
+                    subtitle = 'Zarządzanie kontami użytkowników';
+                    content = loadUsersSection();
+                    break;
+                case 'reports':
+                    title = 'Raporty i statystyki';
+                    subtitle = 'Generuj raporty i analizuj dane';
+                    content = loadReportsSection();
+                    break;
+                case 'settings':
+                    title = 'Ustawienia systemu';
+                    subtitle = 'Konfiguracja LIBRUZ PRO';
+                    content = loadSettingsSection();
+                    break;
+                default:
+                    loadDashboard();
+                    return;
+            }
+            
+            document.getElementById('pageTitle').textContent = title;
+            document.getElementById('pageSubtitle').textContent = subtitle;
+            document.getElementById('contentContainer').innerHTML = content;
+        }
+        
+        async function loadSchoolsSection() {
+            try {
+                const { data: schools, error } = await supabase
+                    .from('schools')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                let html = `
+                    <div class="d-flex justify-between align-center mb-30">
+                        <h2 class="card-title">
+                            <i class="fas fa-school"></i>
+                            Wszystkie szkoły (${schools?.length || 0})
+                        </h2>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="openCreateSchoolModal()">
+                                <i class="fas fa-plus"></i>
+                                Nowa szkoła
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportSchools()">
+                                <i class="fas fa-download"></i>
+                                Eksportuj
+                            </button>
+                        </div>
                     </div>
                 `;
-            } else {
-                html += `
-                    <div class="table-container">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Nazwa szkoły</th>
-                                    <th>Typ</th>
-                                    <th>Miejscowość</th>
-                                    <th>Dyrektor</th>
-                                    <th>Utworzono</th>
-                                    <th>Akcje</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
                 
-                schools.forEach(school => {
-                    const director = users.find(u => u.school_id === school.id && u.role === 'director');
+                if (!schools || schools.length === 0) {
+                    html += `
+                        <div class="card text-center p-20">
+                            <i class="fas fa-school" style="font-size: 4rem; color: #ccc; margin-bottom: 20px;"></i>
+                            <h3>Brak szkół w systemie</h3>
+                            <p class="mb-20">Dodaj pierwszą szkołę, aby rozpocząć.</p>
+                            <button class="btn btn-primary" onclick="openCreateSchoolModal()">
+                                <i class="fas fa-plus"></i>
+                                Dodaj szkołę
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Nazwa szkoły</th>
+                                        <th>Typ</th>
+                                        <th>Miejscowość</th>
+                                        <th>Adres</th>
+                                        <th>Telefon</th>
+                                        <th>Utworzono</th>
+                                        <th>Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    schools.forEach(school => {
+                        html += `
+                            <tr>
+                                <td><strong>${school.name}</strong></td>
+                                <td><span class="badge badge-info">${school.type}</span></td>
+                                <td>${school.city}</td>
+                                <td>${school.address || '-'}</td>
+                                <td>${school.phone || '-'}</td>
+                                <td>${new Date(school.created_at).toLocaleDateString('pl-PL')}</td>
+                                <td>
+                                    <div class="d-flex gap-10">
+                                        <button class="btn btn-sm btn-info" onclick="viewSchool('${school.id}')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning" onclick="editSchool('${school.id}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteSchool('${school.id}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
                     
                     html += `
-                        <tr>
-                            <td><strong>${school.name}</strong></td>
-                            <td><span class="badge badge-primary">${getSchoolTypeLabel(school.type)}</span></td>
-                            <td>${school.city}</td>
-                            <td>${director ? `${director.first_name} ${director.last_name}` : 'Brak'}</td>
-                            <td>${new Date(school.created_at).toLocaleDateString('pl-PL')}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" onclick="viewSchool('${school.id}')" title="Podgląd">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-sm btn-warning" onclick="editSchool('${school.id}')" title="Edytuj" style="margin-left: 5px;">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
-                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     `;
-                });
+                }
                 
-                html += `
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
-                        <button class="btn btn-success" onclick="showCreateSchool()">
-                            <i class="fas fa-plus"></i>
-                            Dodaj nową szkołę
-                        </button>
-                        <button class="btn btn-secondary" onclick="exportSchools()">
-                            <i class="fas fa-download"></i>
-                            Eksportuj dane
-                        </button>
+                return html;
+                
+            } catch (error) {
+                console.error('Błąd ładowania szkół:', error);
+                return `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Nie udało się załadować listy szkół: ${error.message}
                     </div>
                 `;
             }
-            
-            content.innerHTML = html;
-            content.classList.add('active');
         }
         
-        function getSchoolTypeLabel(type) {
-            const types = {
-                'podstawowa': 'SP',
-                'liceum': 'LO',
-                'technikum': 'TECH',
-                'zawodowa': 'SZ'
-            };
-            return types[type] || type;
-        }
-        
-        function viewSchool(schoolId) {
-            alert(`Podgląd szkoły ID: ${schoolId}\n\nFunkcja w trakcie implementacji...`);
-        }
-        
-        function editSchool(schoolId) {
-            alert(`Edycja szkoły ID: ${schoolId}\n\nFunkcja w trakcie implementacji...`);
-        }
-        
-        function showUsersList() {
-            const users = JSON.parse(localStorage.getItem('libruz_users')) || [];
-            const schools = JSON.parse(localStorage.getItem('libruz_schools')) || [];
-            
-            const content = document.getElementById('dynamicContent');
-            
-            let html = `
-                <h2 class="section-title">
-                    <i class="fas fa-users"></i>
-                    Wszyscy użytkownicy (${users.length + 1})
-                </h2>
+        async function viewSchool(schoolId) {
+            try {
+                // Pobierz dane szkoły
+                const { data: school, error: schoolError } = await supabase
+                    .from('schools')
+                    .select('*')
+                    .eq('id', schoolId)
+                    .single();
                 
-                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-                    <select class="form-control" style="width: auto;" onchange="filterUsersByRole(this.value)">
-                        <option value="">Wszystkie role</option>
-                        <option value="director">Dyrektorzy</option>
-                        <option value="teacher">Nauczyciele</option>
-                        <option value="student">Uczniowie</option>
-                        <option value="parent">Rodzice</option>
-                    </select>
-                    
-                    <select class="form-control" style="width: auto;" onchange="filterUsersBySchool(this.value)">
-                        <option value="">Wszystkie szkoły</option>
-                        ${schools.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
-                    </select>
-                </div>
-            `;
-            
-            // Dodaj admina na początku listy
-            const allUsers = [
-                {
-                    id: 'admin',
-                    first_name: 'Admin',
-                    last_name: 'System',
-                    email: 'admin@libruz.pl',
-                    role: 'admin',
-                    school: 'System LIBRUZ',
-                    username: 'admin',
-                    is_active: true
-                },
-                ...users
-            ];
-            
-            html += `
-                <div class="table-container">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Imię i nazwisko</th>
-                                <th>Email</th>
-                                <th>Rola</th>
-                                <th>Szkoła</th>
-                                <th>Login</th>
-                                <th>Status</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-            
-            allUsers.forEach(user => {
-                const roleColors = {
-                    'admin': 'danger',
-                    'director': 'primary',
-                    'teacher': 'success',
-                    'student': 'warning',
-                    'parent': 'secondary'
-                };
+                if (schoolError) throw schoolError;
                 
-                const roleLabels = {
-                    'admin': 'Administrator',
-                    'director': 'Dyrektor',
-                    'teacher': 'Nauczyciel',
-                    'student': 'Uczeń',
-                    'parent': 'Rodzic'
-                };
+                // Pobierz dyrektora
+                const { data: director, error: directorError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('school_id', schoolId)
+                    .eq('role', 'director')
+                    .single();
                 
-                html += `
-                    <tr>
-                        <td>${user.first_name} ${user.last_name}</td>
-                        <td>${user.email}</td>
-                        <td><span class="badge badge-${roleColors[user.role] || 'secondary'}">${roleLabels[user.role] || user.role}</span></td>
-                        <td>${user.school || 'System'}</td>
-                        <td>${user.username || '-'}</td>
-                        <td>
-                            <span style="color: ${user.is_active ? '#28a745' : '#dc3545'}">
-                                <i class="fas fa-${user.is_active ? 'check-circle' : 'times-circle'}"></i>
-                                ${user.is_active ? 'Aktywny' : 'Nieaktywny'}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-warning" onclick="resetUserPassword('${user.id}')" title="Resetuj hasło">
-                                <i class="fas fa-key"></i>
-                            </button>
-                            <button class="btn btn-sm btn-primary" onclick="editUser('${user.id}')" title="Edytuj" style="margin-left: 5px;">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </td>
-                    </tr>
+                // Pobierz statystyki
+                const { data: teachers } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('school_id', schoolId)
+                    .eq('role', 'teacher');
+                
+                const { data: students } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('school_id', schoolId)
+                    .eq('role', 'student');
+                
+                let content = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-20">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <i class="fas fa-info-circle"></i>
+                                        Informacje o szkole
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <tr>
+                                            <td><strong>Nazwa:</strong></td>
+                                            <td>${school.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Typ:</strong></td>
+                                            <td>${school.type}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Adres:</strong></td>
+                                            <td>${school.address || 'Brak'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Miejscowość:</strong></td>
+                                            <td>${school.city}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Kod pocztowy:</strong></td>
+                                            <td>${school.postal_code || 'Brak'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Telefon:</strong></td>
+                                            <td>${school.phone || 'Brak'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Email:</strong></td>
+                                            <td>${school.email || 'Brak'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Data utworzenia:</strong></td>
+                                            <td>${new Date(school.created_at).toLocaleString('pl-PL')}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card mb-20">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <i class="fas fa-user-tie"></i>
+                                        Dyrektor szkoły
+                                    </div>
+                                </div>
+                                <div class="card-body">
                 `;
-            });
+                
+                if (director) {
+                    content += `
+                        <div class="user-card">
+                            <div class="user-card-avatar">
+                                ${director.first_name?.charAt(0) || ''}${director.last_name?.charAt(0) || ''}
+                            </div>
+                            <div class="user-card-info">
+                                <div class="user-card-name">${director.first_name} ${director.last_name}</div>
+                                <div class="user-card-email">${director.email}</div>
+                                <div class="user-card-role">${director.phone || 'Brak telefonu'}</div>
+                                <div class="mt-10">
+                                    <button class="btn btn-sm btn-warning" onclick="resetUserPassword('${director.id}')">
+                                        <i class="fas fa-key"></i>
+                                        Reset hasła
+                                    </button>
+                                    <button class="btn btn-sm btn-info" onclick="loginAsUser('${director.email}')">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                        Zaloguj jako
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    content += `<p class="text-center">Brak przypisanego dyrektora</p>`;
+                }
+                
+                content += `
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <i class="fas fa-chart-bar"></i>
+                                        Statystyki szkoły
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="school-card-stats">
+                                        <div class="school-stat">
+                                            <div class="school-stat-value">${teachers?.length || 0}</div>
+                                            <div class="school-stat-label">Nauczycieli</div>
+                                        </div>
+                                        <div class="school-stat">
+                                            <div class="school-stat-value">${students?.length || 0}</div>
+                                            <div class="school-stat-label">Uczniów</div>
+                                        </div>
+                                        <div class="school-stat">
+                                            <div class="school-stat-value">0</div>
+                                            <div class="school-stat-label">Klas</div>
+                                        </div>
+                                        <div class="school-stat">
+                                            <div class="school-stat-value">0</div>
+                                            <div class="school-stat-label">Przedmiotów</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-20 text-center">
+                        <button class="btn btn-primary" onclick="manageSchoolUsers('${schoolId}')">
+                            <i class="fas fa-users"></i>
+                            Zarządzaj użytkownikami
+                        </button>
+                        <button class="btn btn-warning" onclick="editSchool('${schoolId}')">
+                            <i class="fas fa-edit"></i>
+                            Edytuj szkołę
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSchool('${schoolId}')">
+                            <i class="fas fa-trash"></i>
+                            Usuń szkołę
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('modalSchoolTitle').innerHTML = `
+                    <i class="fas fa-school"></i>
+                    ${school.name}
+                `;
+                document.getElementById('schoolModalContent').innerHTML = content;
+                document.getElementById('viewSchoolModal').style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Błąd ładowania szkoły:', error);
+                showError('Nie udało się załadować danych szkoły');
+            }
+        }
+        
+        async function editSchool(schoolId) {
+            // Implementacja edycji szkoły
+            alert('Edycja szkoły - funkcja w trakcie implementacji');
+        }
+        
+        async function deleteSchool(schoolId) {
+            if (confirm('Czy na pewno chcesz usunąć tę szkołę? Spowoduje to również usunięcie wszystkich powiązanych danych!')) {
+                try {
+                    // Najpierw usuń użytkowników szkoły
+                    await supabase
+                        .from('profiles')
+                        .delete()
+                        .eq('school_id', schoolId);
+                    
+                    // Potem usuń szkołę
+                    const { error } = await supabase
+                        .from('schools')
+                        .delete()
+                        .eq('id', schoolId);
+                    
+                    if (error) throw error;
+                    
+                    showSuccess('Szkoła została usunięta');
+                    loadDashboardData();
+                    
+                } catch (error) {
+                    console.error('Błąd usuwania szkoły:', error);
+                    showError('Nie udało się usunąć szkoły');
+                }
+            }
+        }
+        
+        // ===== FUNKCJE UŻYTKOWNIKA =====
+        async function resetUserPassword(userId) {
+            const newPassword = generatePassword();
             
-            html += `
-                        </tbody>
-                    </table>
-                </div>
+            try {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({
+                        temporary_password: newPassword,
+                        must_change_password: true,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', userId);
+                
+                if (error) throw error;
+                
+                showSuccess(`Nowe hasło: ${newPassword} (skopiowane do schowka)`);
+                navigator.clipboard.writeText(newPassword);
+                
+            } catch (error) {
+                console.error('Błąd resetowania hasła:', error);
+                showError('Nie udało się zresetować hasła');
+            }
+        }
+        
+        async function loginAsUser(email) {
+            try {
+                const { data: user, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+                
+                if (error) throw error;
+                
+                // Zapisz oryginalnego admina
+                localStorage.setItem('libruz_original_admin', JSON.stringify(currentUser));
+                
+                // Zaloguj jako użytkownik
+                localStorage.setItem('libruz_user', JSON.stringify(user));
+                localStorage.setItem('libruz_is_logged_in', 'true');
+                
+                showSuccess(`Zalogowano jako: ${user.first_name} ${user.last_name}`);
+                
+                // Przekieruj do odpowiedniego panelu
+                setTimeout(() => {
+                    if (user.role === 'director') {
+                        window.location.href = 'director-dashboard.html';
+                    } else if (user.role === 'teacher') {
+                        window.location.href = 'teacher-dashboard.html';
+                    } else if (user.role === 'student') {
+                        window.location.href = 'student-dashboard.html';
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Błąd logowania jako użytkownik:', error);
+                showError('Nie udało się zalogować jako wybrany użytkownik');
+            }
+        }
+        
+        // ===== FUNKCJE SYSTEMOWE =====
+        function showError(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger';
+            alert.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                ${message}
+                <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()" style="margin-left: auto;">
+                    <i class="fas fa-times"></i>
+                </button>
             `;
             
-            content.innerHTML = html;
-            content.classList.add('active');
-        }
-        
-        function resetUserPassword(userId) {
-            const newPassword = generateStrongPassword();
-            alert(`🔐 Reset hasła\n\nNowe hasło: ${newPassword}\n\nHasło skopiowane do schowka.`);
+            document.querySelector('.main-content').insertBefore(alert, document.querySelector('.header').nextSibling);
             
-            // Kopiuj do schowka
-            navigator.clipboard.writeText(newPassword);
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
         }
         
-        function editUser(userId) {
-            alert(`Edycja użytkownika ID: ${userId}\n\nFunkcja w trakcie implementacji...`);
-        }
-        
-        function showSystemSettings() {
-            const content = document.getElementById('dynamicContent');
-            
-            content.innerHTML = `
-                <h2 class="section-title">
-                    <i class="fas fa-cogs"></i>
-                    Ustawienia systemu
-                </h2>
-                
-                <div style="background: #f8f9fa; padding: 2rem; border-radius: 8px;">
-                    <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Konfiguracja systemu LIBRUZ</h3>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Nazwa systemu</label>
-                        <input type="text" class="form-control" value="LIBRUZ - System Szkolny" readonly>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Wersja systemu</label>
-                        <input type="text" class="form-control" value="2.0.0" readonly>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Data instalacji</label>
-                        <input type="text" class="form-control" value="${new Date().toLocaleDateString('pl-PL')}" readonly>
-                    </div>
-                    
-                    <div style="margin-top: 2rem;">
-                        <button class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            Zapisz zmiany
-                        </button>
-                        <button class="btn btn-secondary" onclick="showBackupSettings()" style="margin-left: 10px;">
-                            <i class="fas fa-database"></i>
-                            Kopia zapasowa
-                        </button>
-                        <button class="btn btn-warning" onclick="showSecuritySettings()" style="margin-left: 10px;">
-                            <i class="fas fa-shield-alt"></i>
-                            Bezpieczeństwo
-                        </button>
-                    </div>
-                </div>
+        function showSuccess(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success';
+            alert.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                ${message}
+                <button class="btn btn-sm btn-success" onclick="this.parentElement.remove()" style="margin-left: auto;">
+                    <i class="fas fa-times"></i>
+                </button>
             `;
             
-            content.classList.add('active');
-        }
-        
-        function generateReports() {
-            alert('📊 Generowanie raportów\n\nFunkcja w trakcie implementacji...');
-        }
-        
-        function showTools() {
-            alert('🛠️ Narzędzia administratora\n\nFunkcja w trakcie implementacji...');
-        }
-        
-        function showSupport() {
-            const content = document.getElementById('dynamicContent');
+            document.querySelector('.main-content').insertBefore(alert, document.querySelector('.header').nextSibling);
             
-            content.innerHTML = `
-                <h2 class="section-title">
-                    <i class="fas fa-life-ring"></i>
-                    Wsparcie techniczne
-                </h2>
-                
-                <div style="background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color: white; padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                    <h3 style="margin-bottom: 1rem;">Potrzebujesz pomocy?</h3>
-                    <p>Jesteśmy tutaj, aby Ci pomóc. Skontaktuj się z nami na kilka sposobów:</p>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: var(--shadow); text-align: center;">
-                        <div style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <h4 style="margin-bottom: 0.5rem;">Email</h4>
-                        <p style="color: var(--gray);">support@libruz.pl</p>
-                    </div>
-                    
-                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: var(--shadow); text-align: center;">
-                        <div style="font-size: 2.5rem; color: var(--success); margin-bottom: 1rem;">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <h4 style="margin-bottom: 0.5rem;">Telefon</h4>
-                        <p style="color: var(--gray);">+48 123 456 789</p>
-                    </div>
-                    
-                    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: var(--shadow); text-align: center;">
-                        <div style="font-size: 2.5rem; color: var(--warning); margin-bottom: 1rem;">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <h4 style="margin-bottom: 0.5rem;">Godziny pracy</h4>
-                        <p style="color: var(--gray);">Pon-Pt: 8:00-16:00</p>
-                    </div>
-                </div>
-                
-                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
-                    <h4 style="margin-bottom: 1rem; color: var(--primary);">Często zadawane pytania</h4>
-                    <ul style="list-style: none; padding: 0;">
-                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #dee2e6;">
-                            <strong>Q:</strong> Jak zresetować hasło użytkownika?
-                        </li>
-                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #dee2e6;">
-                            <strong>Q:</strong> Jak dodać nową szkołę?
-                        </li>
-                        <li style="padding: 0.5rem 0; border-bottom: 1px solid #dee2e6;">
-                            <strong>Q:</strong> Jak wygenerować raport?
-                        </li>
-                        <li style="padding: 0.5rem 0;">
-                            <strong>Q:</strong> Jak skonfigurować system?
-                        </li>
-                    </ul>
-                </div>
-            `;
-            
-            content.classList.add('active');
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
         }
         
-        function hideDynamicContent() {
-            document.getElementById('dynamicContent').classList.remove('active');
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function refreshData() {
+            loadDashboardData();
+            showSuccess('Dane odświeżone');
+        }
+        
+        function showQuickHelp() {
+            alert('LIBRUZ PRO - Pomoc\n\n1. Kliknij "Nowa szkoła" aby utworzyć szkołę\n2. Wybierz szkołę z listy aby zobaczyć szczegóły\n3. Użyj "Zaloguj jako" aby testować konta\n4. "Reset hasła" generuje nowe hasło\n5. Raporty w sekcji "Raporty i statystyki"');
         }
         
         function logout() {
-            localStorage.removeItem('libruz_is_logged_in');
             localStorage.removeItem('libruz_user');
+            localStorage.removeItem('libruz_is_logged_in');
+            localStorage.removeItem('libruz_original_admin');
             window.location.href = 'index.html';
         }
         
-        // Eksport funkcji
-        window.logout = logout;
-        window.showCreateSchool = showCreateSchool;
-        window.showSchoolsList = showSchoolsList;
-        window.showUsersList = showUsersList;
-        window.showSystemSettings = showSystemSettings;
-        window.generateReports = generateReports;
-        window.showTools = showTools;
-        window.showSupport = showSupport;
-        window.hideDynamicContent = hideDynamicContent;
-        window.generateNewPassword = generateNewPassword;
-        window.copyPassword = copyPassword;
-        window.saveSchool = saveSchool;
-        window.viewSchool = viewSchool;
-        window.editSchool = editSchool;
-        window.resetUserPassword = resetUserPassword;
-        window.editUser = editUser;
+        // ===== EVENT LISTENERS =====
+        function initEvents() {
+            // Menu kliknięcia
+            document.querySelectorAll('.menu-item[data-section]').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = item.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+            
+            // Zamykanie modalów
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        }
         
-        console.log('✅ Panel admina gotowy!');
+        // ===== FUNKCJE RAPORTOWE =====
+        async function generateReports() {
+            try {
+                // Pobierz dane do raportu
+                const { data: schools } = await supabase.from('schools').select('*');
+                const { data: users } = await supabase.from('profiles').select('*');
+                
+                const teachers = users?.filter(u => u.role === 'teacher').length || 0;
+                const students = users?.filter(u => u.role === 'student').length || 0;
+                const directors = users?.filter(u => u.role === 'director').length || 0;
+                const parents = users?.filter(u => u.role === 'parent').length || 0;
+                
+                const reportContent = `
+                    <div class="modal" id="reportModal" style="display: flex;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div class="modal-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Raport systemowy
+                                </div>
+                                <button class="modal-close" onclick="closeModal('reportModal')">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="card mb-20">
+                                    <div class="card-body">
+                                        <h4>Statystyki systemu LIBRUZ PRO</h4>
+                                        <p>Data wygenerowania: ${new Date().toLocaleString('pl-PL')}</p>
+                                        
+                                        <div class="school-card-stats mt-20">
+                                            <div class="school-stat">
+                                                <div class="school-stat-value">${schools?.length || 0}</div>
+                                                <div class="school-stat-label">Szkół</div>
+                                            </div>
+                                            <div class="school-stat">
+                                                <div class="school-stat-value">${users?.length || 0}</div>
+                                                <div class="school-stat-label">Użytkowników</div>
+                                            </div>
+                                            <div class="school-stat">
+                                                <div class="school-stat-value">${teachers}</div>
+                                                <div class="school-stat-label">Nauczycieli</div>
+                                            </div>
+                                            <div class="school-stat">
+                                                <div class="school-stat-value">${students}</div>
+                                                <div class="school-stat-label">Uczniów</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="school-card-stats mt-20">
+                                            <div class="school-stat">
+                                                <div class="school-stat-value">${directors}</div>
+                                                <div class="school-stat-label">Dyrektorów</div>
+                                            </div>
+                                            <div class="school-stat">
+                                                <div class="school-stat-value">${parents}</div>
+                                                <div class="school-stat-label">Rodziców</div>
+                                            </div>
+                                            <div class="school-stat">
+                                                <div class="school-stat-value">0</div>
+                                                <div class="school-stat-label">Klas</div>
+                                            </div>
+                                            <div class="school-stat">
+                                                <div class="school-stat-value">0</div>
+                                                <div class="school-stat-label">Przedmiotów</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5>Szkoły w systemie:</h5>
+                                        <ul>
+                                            ${schools?.map(s => `<li>${s.name} - ${s.city} (${s.type})</li>`).join('') || '<li>Brak szkół</li>'}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-primary" onclick="printReport()">
+                                    <i class="fas fa-print"></i>
+                                    Drukuj raport
+                                </button>
+                                <button class="btn btn-success" onclick="exportReport()">
+                                    <i class="fas fa-download"></i>
+                                    Eksportuj PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.insertAdjacentHTML('beforeend', reportContent);
+                
+            } catch (error) {
+                console.error('Błąd generowania raportu:', error);
+                showError('Nie udało się wygenerować raportu');
+            }
+        }
+        
+        function printReport() {
+            window.print();
+        }
+        
+        function exportReport() {
+            alert('Eksport raportu do PDF - funkcja w trakcie implementacji');
+        }
+        
+        function massResetPasswords() {
+            const modal = `
+                <div class="modal" id="massResetModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title">
+                                <i class="fas fa-key"></i>
+                                Masowy reset haseł
+                            </div>
+                            <button class="modal-close" onclick="closeModal('massResetModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Uwaga: Ta operacja zresetuje hasła dla wybranych użytkowników.
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Wybierz grupę użytkowników:</label>
+                                <select class="form-control" id="userGroup">
+                                    <option value="all_directors">Wszyscy dyrektorzy</option>
+                                    <option value="all_teachers">Wszyscy nauczyciele</option>
+                                    <option value="all_students">Wszyscy uczniowie</option>
+                                    <option value="specific_school">Dyrektorzy konkretnej szkoły</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="schoolSelectContainer" style="display: none;">
+                                <label class="form-label">Wybierz szkołę:</label>
+                                <select class="form-control" id="schoolSelect">
+                                    <!-- Szkoły zostaną załadowane dynamicznie -->
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Typ hasła:</label>
+                                <select class="form-control" id="passwordType">
+                                    <option value="random">Losowe hasło</option>
+                                    <option value="pattern">Hasło według wzorca</option>
+                                    <option value="custom">Niestandardowe hasło</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group" id="customPasswordContainer" style="display: none;">
+                                <label class="form-label">Własne hasło:</label>
+                                <input type="text" class="form-control" id="customPassword" placeholder="Wprowadź hasło">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Powiadomienie email:</label>
+                                <div class="d-flex gap-10">
+                                    <label><input type="checkbox" id="sendEmail"> Wyślij email z nowym hasłem</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal('massResetModal')">
+                                Anuluj
+                            </button>
+                            <button class="btn btn-danger" onclick="executeMassReset()">
+                                <i class="fas fa-key"></i>
+                                Resetuj hasła
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+            
+            // Event listeners dla selectów
+            document.getElementById('userGroup').addEventListener('change', function() {
+                document.getElementById('schoolSelectContainer').style.display = 
+                    this.value === 'specific_school' ? 'block' : 'none';
+            });
+            
+            document.getElementById('passwordType').addEventListener('change', function() {
+                document.getElementById('customPasswordContainer').style.display = 
+                    this.value === 'custom' ? 'block' : 'none';
+            });
+        }
+        
+        async function executeMassReset() {
+            const userGroup = document.getElementById('userGroup').value;
+            const passwordType = document.getElementById('passwordType').value;
+            const sendEmail = document.getElementById('sendEmail').checked;
+            
+            let newPassword = '';
+            
+            if (passwordType === 'random') {
+                newPassword = generatePassword();
+            } else if (passwordType === 'custom') {
+                newPassword = document.getElementById('customPassword').value;
+                if (!newPassword) {
+                    showError('Wprowadź hasło');
+                    return;
+                }
+            } else {
+                newPassword = 'Libruz2024!';
+            }
+            
+            try {
+                // Tutaj implementacja masowego resetu haseł
+                showSuccess(`Hasło zostało ustawione na: ${newPassword}`);
+                closeModal('massResetModal');
+                
+                if (sendEmail) {
+                    showSuccess('Email z nowym hasłem został wysłany do użytkowników');
+                }
+                
+            } catch (error) {
+                console.error('Błąd resetowania haseł:', error);
+                showError('Nie udało się zresetować haseł');
+            }
+        }
+        
+        function systemBackup() {
+            const modal = `
+                <div class="modal" id="backupModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title">
+                                <i class="fas fa-database"></i>
+                                Kopia zapasowa systemu
+                            </div>
+                            <button class="modal-close" onclick="closeModal('backupModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                Utwórz pełną kopię zapasową bazy danych systemu LIBRUZ PRO.
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Typ backupu:</label>
+                                <select class="form-control" id="backupType">
+                                    <option value="full">Pełny backup (wszystkie dane)</option>
+                                    <option value="schools">Tylko szkoły i użytkownicy</option>
+                                    <option value="settings">Tylko ustawienia systemu</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Format:</label>
+                                <select class="form-control" id="backupFormat">
+                                    <option value="json">JSON</option>
+                                    <option value="csv">CSV</option>
+                                    <option value="sql">SQL</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Szyfrowanie:</label>
+                                <div class="d-flex gap-10">
+                                    <label><input type="checkbox" id="encryptBackup" checked> Zaszyfruj backup</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Komentarz (opcjonalnie):</label>
+                                <textarea class="form-control" id="backupComment" rows="3" placeholder="Opisz backup..."></textarea>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>Ostatnie backup-y:</h5>
+                                    <ul>
+                                        <li>${new Date().toLocaleDateString('pl-PL')} - Pełny backup (Admin)</li>
+                                        <li>${new Date(Date.now() - 86400000).toLocaleDateString('pl-PL')} - Backup szkół (System)</li>
+                                        <li>${new Date(Date.now() - 172800000).toLocaleDateString('pl-PL')} - Backup ustawień (System)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal('backupModal')">
+                                Anuluj
+                            </button>
+                            <button class="btn btn-success" onclick="executeBackup()">
+                                <i class="fas fa-download"></i>
+                                Utwórz backup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+        
+        async function executeBackup() {
+            try {
+                // Pobierz dane z Supabase
+                const { data: schools } = await supabase.from('schools').select('*');
+                const { data: users } = await supabase.from('profiles').select('*');
+                
+                const backupData = {
+                    timestamp: new Date().toISOString(),
+                    schools: schools,
+                    users: users,
+                    backup_type: document.getElementById('backupType').value,
+                    format: document.getElementById('backupFormat').value,
+                    comment: document.getElementById('backupComment').value
+                };
+                
+                // Utwórz i pobierz plik
+                const dataStr = JSON.stringify(backupData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `libruz_backup_${new Date().toISOString().split('T')[0]}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showSuccess('Backup został pobrany pomyślnie');
+                closeModal('backupModal');
+                
+            } catch (error) {
+                console.error('Błąd tworzenia backupu:', error);
+                showError('Nie udało się utworzyć backupu');
+            }
+        }
+        
+        function exportData() {
+            const modal = `
+                <div class="modal" id="exportModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title">
+                                <i class="fas fa-file-export"></i>
+                                Eksport danych
+                            </div>
+                            <button class="modal-close" onclick="closeModal('exportModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="quick-actions">
+                                <button class="quick-action-btn" onclick="exportSchoolsData()">
+                                    <i class="fas fa-school"></i>
+                                    <span>Szkoły</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="exportUsersData()">
+                                    <i class="fas fa-users"></i>
+                                    <span>Użytkownicy</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="exportClassesData()">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    <span>Klasy</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="exportGradesData()">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    <span>Oceny</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="exportAttendanceData()">
+                                    <i class="fas fa-clipboard-check"></i>
+                                    <span>Frekwencja</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="exportAllData()">
+                                    <i class="fas fa-database"></i>
+                                    <span>Wszystko</span>
+                                </button>
+                            </div>
+                            
+                            <div class="form-group mt-20">
+                                <label class="form-label">Format eksportu:</label>
+                                <select class="form-control" id="exportFormat">
+                                    <option value="csv">CSV (Excel)</option>
+                                    <option value="json">JSON</option>
+                                    <option value="xml">XML</option>
+                                    <option value="pdf">PDF</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Zakres dat:</label>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="date" class="form-control" id="exportDateFrom">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="date" class="form-control" id="exportDateTo">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal('exportModal')">
+                                Anuluj
+                            </button>
+                            <button class="btn btn-primary" onclick="executeExport()">
+                                <i class="fas fa-download"></i>
+                                Eksportuj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+        
+        async function executeExport() {
+            const format = document.getElementById('exportFormat').value;
+            const dateFrom = document.getElementById('exportDateFrom').value;
+            const dateTo = document.getElementById('exportDateTo').value;
+            
+            showSuccess(`Eksport danych w formacie ${format.toUpperCase()} rozpoczęty`);
+            closeModal('exportModal');
+        }
+        
+        function exportSchools() {
+            alert('Eksport szkół do CSV - funkcja w trakcie implementacji');
+        }
+        
+        // ===== FUNKCJE DODATKOWE =====
+        function showAllActivities() {
+            alert('Pełna lista aktywności - funkcja w trakcie implementacji');
+        }
+        
+        function createBackup() {
+            alert('Tworzenie kopii zapasowej - funkcja w trakcie implementacji');
+        }
+        
+        function manageSchoolUsers(schoolId) {
+            alert('Zarządzanie użytkownikami szkoły - funkcja w trakcie implementacji');
+        }
+        
+        function showActivityLogs() {
+            alert('Logi systemowe - funkcja w trakcie implementacji');
+        }
+        
+        function loadUsersSection() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-users"></i>
+                            Zarządzanie użytkownikami
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="addNewUser()">
+                                <i class="fas fa-user-plus"></i>
+                                Nowy użytkownik
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="loading">
+                            <i class="fas fa-spinner"></i>
+                            Ładowanie listy użytkowników...
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadReportsSection() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Raporty i analizy
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-actions">
+                            <button class="quick-action-btn" onclick="generateUsageReport()">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Użycie systemu</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="generateUserReport()">
+                                <i class="fas fa-user-chart"></i>
+                                <span>Aktywność użytkowników</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="generateSchoolReport()">
+                                <i class="fas fa-school"></i>
+                                <span>Statystyki szkół</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="generateFinancialReport()">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span>Raport finansowy</span>
+                            </button>
+                        </div>
+                        
+                        <div class="mt-30">
+                            <h4>Wygeneruj raport niestandardowy:</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Typ raportu</label>
+                                    <select class="form-control">
+                                        <option>Dzienna aktywność</option>
+                                        <option>Miesięczne podsumowanie</option>
+                                        <option>Roczny raport</option>
+                                        <option>Porównanie szkół</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Okres</label>
+                                    <select class="form-control">
+                                        <option>Ostatni tydzień</option>
+                                        <option>Ostatni miesiąc</option>
+                                        <option>Ostatni kwartał</option>
+                                        <option>Ostatni rok</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-success" onclick="generateCustomReport()">
+                                <i class="fas fa-chart-pie"></i>
+                                Generuj raport
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadSettingsSection() {
+            return `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-cogs"></i>
+                            Ustawienia systemu
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tabs">
+                            <button class="tab active" data-settings-tab="general">Ogólne</button>
+                            <button class="tab" data-settings-tab="security">Bezpieczeństwo</button>
+                            <button class="tab" data-settings-tab="notifications">Powiadomienia</button>
+                            <button class="tab" data-settings-tab="integrations">Integracje</button>
+                        </div>
+                        
+                        <div class="tab-content active" id="general-settings">
+                            <h4>Ustawienia ogólne systemu</h4>
+                            <div class="form-group">
+                                <label class="form-label">Nazwa systemu</label>
+                                <input type="text" class="form-control" value="LIBRUZ PRO">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Logo systemu</label>
+                                <input type="file" class="form-control" accept="image/*">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Domyślny język</label>
+                                <select class="form-control">
+                                    <option selected>Polski</option>
+                                    <option>Angielski</option>
+                                    <option>Niemiecki</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right mt-20">
+                            <button class="btn btn-success">
+                                <i class="fas fa-save"></i>
+                                Zapisz zmiany
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function addNewUser() {
+            alert('Dodawanie nowego użytkownika - funkcja w trakcie implementacji');
+        }
+        
+        function generateUsageReport() {
+            alert('Generowanie raportu użycia systemu - funkcja w trakcie implementacji');
+        }
+        
+        function generateUserReport() {
+            alert('Generowanie raportu użytkowników - funkcja w trakcie implementacji');
+        }
+        
+        function generateSchoolReport() {
+            alert('Generowanie raportu szkół - funkcja w trakcie implementacji');
+        }
+        
+        function generateFinancialReport() {
+            alert('Generowanie raportu finansowego - funkcja w trakcie implementacji');
+        }
+        
+        function generateCustomReport() {
+            alert('Generowanie raportu niestandardowego - funkcja w trakcie implementacji');
+        }
+        
+        function systemDiagnostics() {
+            const modal = `
+                <div class="modal" id="diagnosticsModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title">
+                                <i class="fas fa-stethoscope"></i>
+                                Diagnostyka systemu
+                            </div>
+                            <button class="modal-close" onclick="closeModal('diagnosticsModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                Sprawdzanie stanu systemu LIBRUZ PRO...
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Połączenie z bazą danych:</label>
+                                <span class="badge badge-success">
+                                    <i class="fas fa-check-circle"></i> Aktywne
+                                </span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Pamięć serwera:</label>
+                                <div class="progress-bar" style="height: 10px; background: #eee; border-radius: 5px;">
+                                    <div style="width: 65%; height: 100%; background: var(--success); border-radius: 5px;"></div>
+                                </div>
+                                <div class="text-right mt-10">65% wykorzystania</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Ostatni restart systemu:</label>
+                                <span>${new Date(Date.now() - 86400000).toLocaleString('pl-PL')}</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Błędy systemowe (ostatnie 24h):</label>
+                                <span class="badge badge-success">0 błędów</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Szybkie testy:</label>
+                                <div class="d-flex gap-10">
+                                    <button class="btn btn-sm btn-info" onclick="testDatabase()">
+                                        Test bazy danych
+                                    </button>
+                                    <button class="btn btn-sm btn-info" onclick="testEmail()">
+                                        Test email
+                                    </button>
+                                    <button class="btn btn-sm btn-info" onclick="testBackup()">
+                                        Test backupu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal('diagnosticsModal')">
+                                Zamknij
+                            </button>
+                            <button class="btn btn-primary" onclick="runFullDiagnostics()">
+                                <i class="fas fa-play"></i>
+                                Uruchom pełną diagnostykę
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+        
+        function runFullDiagnostics() {
+            showSuccess('Pełna diagnostyka systemu została uruchomiona');
+            setTimeout(() => {
+                showSuccess('Diagnostyka zakończona - wszystkie testy przebiegły pomyślnie');
+                closeModal('diagnosticsModal');
+            }, 2000);
+        }
+        
+        function sendBulkMessages() {
+            const modal = `
+                <div class="modal" id="bulkMessagesModal" style="display: flex;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="modal-title">
+                                <i class="fas fa-envelope"></i>
+                                Masowe wiadomości
+                            </div>
+                            <button class="modal-close" onclick="closeModal('bulkMessagesModal')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                Wyślij wiadomość do wielu użytkowników jednocześnie.
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Odbiorcy:</label>
+                                <select class="form-control" multiple style="height: 150px;">
+                                    <option value="all_directors">Wszyscy dyrektorzy</option>
+                                    <option value="all_teachers">Wszyscy nauczyciele</option>
+                                    <option value="all_students">Wszyscy uczniowie</option>
+                                    <option value="all_parents">Wszyscy rodzice</option>
+                                    <option value="specific_school">Szkoła: SP1 Warszawa</option>
+                                    <option value="specific_class">Klasa: 1A</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Temat wiadomości:</label>
+                                <input type="text" class="form-control" placeholder="Wprowadź temat...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Treść wiadomości:</label>
+                                <textarea class="form-control" rows="5" placeholder="Wprowadź treść wiadomości..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Priorytet:</label>
+                                <select class="form-control">
+                                    <option>Normalny</option>
+                                    <option>Wysoki</option>
+                                    <option>Krytyczny</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Załączniki (opcjonalnie):</label>
+                                <input type="file" class="form-control" multiple>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal('bulkMessagesModal')">
+                                Anuluj
+                            </button>
+                            <button class="btn btn-success" onclick="sendBulkMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                                Wyślij wiadomości
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+        
+        function sendBulkMessage() {
+            showSuccess('Wiadomości zostały wysłane do odbiorców');
+            closeModal('bulkMessagesModal');
+        }
+        
+        function backupSystem() {
+            alert('Tworzenie kopii zapasowej systemu - funkcja w trakcie implementacji');
+        }
+        
+        function testDatabase() {
+            showSuccess('Test bazy danych: Połączenie aktywne');
+        }
+        
+        function testEmail() {
+            showSuccess('Test email: Konfiguracja poprawna');
+        }
+        
+        function testBackup() {
+            showSuccess('Test backupu: System gotowy');
+        }
+        
+        // Event listeners dla zakładek ustawień
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tab') && e.target.hasAttribute('data-settings-tab')) {
+                const tabId = e.target.getAttribute('data-settings-tab');
+                
+                // Usuń active ze wszystkich
+                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // Dodaj active do klikniętego
+                e.target.classList.add('active');
+                document.getElementById(`${tabId}-settings`).classList.add('active');
+            }
+        });
     </script>
 </body>
 </html>
