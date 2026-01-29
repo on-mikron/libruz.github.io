@@ -123,26 +123,20 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 LIBRUZ - System logowania');
             
-            const supabase = window.supabase.createClient(
-                'https://fupfgshptjghdjpkeaee.supabase.co',
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM'
-            );
+            // 1. SPRAWDŹ CZY JUŻ ZALOGOWANY
+            checkIfAlreadyLoggedIn();
             
+            // 2. OBSŁUGA FORMULARZA
             const loginForm = document.getElementById('loginForm');
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
             const loginBtn = document.getElementById('loginBtn');
             const alertDiv = document.getElementById('alert');
             
-            // 1. Sprawdź czy już zalogowany
-            checkSession();
-            
-            // 2. Obsługa formularza
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -158,43 +152,25 @@
                 loginBtn.innerHTML = '<span>⌛ Logowanie...</span>';
                 
                 try {
-                    // Sprawdź czy użytkownik istnieje w bazie
-                    const { data: profile, error } = await supabase
-                        .from('profiles')
-                        .select('*')
-                        .eq('email', email)
-                        .eq('is_active', true)
-                        .single();
+                    // Symulacja logowania (w prawdziwym systemie byłoby połączenie z bazą)
+                    const user = await simulateLogin(email, password);
                     
-                    if (error || !profile) {
-                        showAlert('Nieprawidłowy email lub konto nieaktywne', 'error');
+                    if (!user) {
+                        showAlert('Nieprawidłowy email lub hasło', 'error');
                         return;
                     }
                     
-                    // Sprawdź hasło
-                    const passwords = {
-                        'admin@libruz.pl': 'admin123',
-                        'dyrektor@sp1.pl': 'dyrektor123',
-                        'nauczyciel@sp1.pl': 'nauczyciel123',
-                        'uczen@sp1.pl': 'uczen123',
-                        'rodzic@sp1.pl': 'rodzic123'
-                    };
+                    // ZAPISZ DANE UŻYTKOWNIKA
+                    localStorage.setItem('libruz_user', JSON.stringify(user));
+                    localStorage.setItem('libruz_is_logged_in', 'true');
                     
-                    if (passwords[email] !== password) {
-                        showAlert('Nieprawidłowe hasło', 'error');
-                        return;
-                    }
-                    
-                    // Zapisz dane
-                    localStorage.setItem('libruz_user', JSON.stringify(profile));
-                    localStorage.setItem('libruz_logged_in', 'true');
-                    localStorage.setItem('libruz_login_time', Date.now().toString());
+                    console.log('✅ Zalogowano:', user.email);
                     
                     showAlert('Zalogowano pomyślnie! Przekierowuję...', 'success');
                     
-                    // Przekieruj
+                    // PRZEKIERUJ
                     setTimeout(() => {
-                        redirectToDashboard(profile.role);
+                        redirectToDashboard(user.role);
                     }, 1000);
                     
                 } catch (error) {
@@ -206,41 +182,75 @@
                 }
             });
             
-            async function checkSession() {
-                try {
-                    const isLoggedIn = localStorage.getItem('libruz_logged_in');
-                    const userData = localStorage.getItem('libruz_user');
-                    
-                    if (isLoggedIn === 'true' && userData) {
-                        const user = JSON.parse(userData);
-                        const loginTime = parseInt(localStorage.getItem('libruz_login_time') || '0');
-                        const now = Date.now();
-                        
-                        // Sprawdź czy sesja nie wygasła (24 godziny)
-                        if (now - loginTime < 24 * 60 * 60 * 1000) {
-                            console.log('🔄 Auto-login dla:', user.email);
-                            redirectToDashboard(user.role);
-                        } else {
-                            localStorage.clear();
-                        }
+            async function simulateLogin(email, password) {
+                // Dane testowe - w prawdziwym systemie pobierasz z bazy
+                const testUsers = {
+                    'admin@libruz.pl': {
+                        email: 'admin@libruz.pl',
+                        username: 'admin',
+                        first_name: 'Adam',
+                        last_name: 'Administrator',
+                        role: 'admin',
+                        password: 'admin123'
+                    },
+                    'dyrektor@sp1.pl': {
+                        email: 'dyrektor@sp1.pl',
+                        username: 'dyrektor',
+                        first_name: 'Jan',
+                        last_name: 'Kowalski',
+                        role: 'director',
+                        password: 'dyrektor123'
+                    },
+                    'nauczyciel@sp1.pl': {
+                        email: 'nauczyciel@sp1.pl',
+                        username: 'nauczyciel',
+                        first_name: 'Anna',
+                        last_name: 'Nowak',
+                        role: 'teacher',
+                        password: 'nauczyciel123'
                     }
-                } catch (error) {
-                    console.log('Brak sesji');
+                };
+                
+                // Symulacja opóźnienia sieci
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const user = testUsers[email];
+                if (user && user.password === password) {
+                    // Usuń hasło z obiektu użytkownika
+                    const { password: _, ...userWithoutPassword } = user;
+                    return userWithoutPassword;
+                }
+                
+                return null;
+            }
+            
+            function checkIfAlreadyLoggedIn() {
+                const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
+                const userData = localStorage.getItem('libruz_user');
+                
+                if (isLoggedIn === 'true' && userData) {
+                    try {
+                        const user = JSON.parse(userData);
+                        console.log('🔄 Użytkownik już zalogowany:', user.email);
+                        redirectToDashboard(user.role);
+                    } catch (e) {
+                        localStorage.clear();
+                    }
                 }
             }
             
             function redirectToDashboard(role) {
                 let dashboard = 'dashboard.html';
                 
-                switch(role) {
-                    case 'admin': dashboard = 'admin-dashboard.html'; break;
-                    case 'director': dashboard = 'director-dashboard.html'; break;
-                    case 'teacher': dashboard = 'teacher-dashboard.html'; break;
-                    case 'student': dashboard = 'student-dashboard.html'; break;
-                    case 'parent': dashboard = 'parent-dashboard.html'; break;
+                if (role === 'admin') {
+                    dashboard = 'admin-dashboard.html';
+                } else if (role === 'director') {
+                    dashboard = 'director-dashboard.html';
+                } else if (role === 'teacher') {
+                    dashboard = 'teacher-dashboard.html';
                 }
                 
-                console.log('Przekierowanie do:', dashboard);
+                console.log('📍 Przekierowanie do:', dashboard);
                 window.location.href = dashboard;
             }
             
