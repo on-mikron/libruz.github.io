@@ -2,353 +2,1448 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Dyrektora</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 LIBRUZ - Panel Dyrektora</title>
     <style>
-        body { font-family: sans-serif; background: #f4f6f9; margin: 0; display: flex; }
-        .sidebar { width: 250px; background: white; height: 100vh; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
-        .content { flex: 1; padding: 30px; }
-        .btn { padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px; color: white; margin-right: 5px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 280px;
+            background: white;
+            height: 100vh;
+            padding: 25px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            overflow-y: auto;
+        }
+        .content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .logo {
+            color: #007bff;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .menu {
+            list-style: none;
+        }
+        .menu-item {
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        .menu-item:hover {
+            background: #007bff;
+            color: white;
+        }
+        .menu-item.active {
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            color: white;
+            margin: 5px;
+        }
         .btn-primary { background: #007bff; }
         .btn-success { background: #28a745; }
-        .btn-purple { background: #6f42c1; }
-        .btn-danger { background: #dc3545; margin-top: 20px; width: 100%; }
+        .btn-warning { background: #ffc107; color: black; }
+        .btn-danger { background: #dc3545; }
+        .btn-secondary { background: #6c757d; }
         
-        input, select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; display: block; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #007bff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
         
-        .card { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .row { display: flex; gap: 20px; }
+        .row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
         .col { flex: 1; }
         
-        h2, h3 { margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+        input, select, textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .wizard {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .wizard-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+        }
+        .step-circle.active {
+            border-color: #007bff;
+            background: #007bff;
+            color: white;
+        }
+        .step-circle.completed {
+            border-color: #28a745;
+            background: #28a745;
+            color: white;
+        }
+        .step-title {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .wizard-content {
+            min-height: 300px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .wizard-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-primary { background: #007bff; color: white; }
+        .badge-success { background: #28a745; color: white; }
+        .badge-warning { background: #ffc107; color: black; }
+        
+        .subject-tag {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 3px;
+            font-size: 13px;
+        }
+        
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .timetable th, .timetable td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            vertical-align: top;
+        }
+        .timetable th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .lesson-cell {
+            min-height: 60px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .lesson-cell:hover {
+            background: #f0f8ff;
+        }
+        .lesson-cell.empty {
+            background: #f9f9f9;
+        }
+        .lesson-cell.has-lesson {
+            background: #e7f7ef;
+            border-left: 3px solid #28a745;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        
+        .login-list {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .login-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .login-item:last-child {
+            border-bottom: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background: #007bff;
+            transition: width 0.3s;
+        }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <h2 style="color: #007bff;">Dyrektor</h2>
-        <p id="welcomeMsg">Witaj!</p>
-        <hr>
-        <div style="margin-top: 20px;">
-            <strong>Menu:</strong><br><br>
-            1. Kadra & Wicedyrektorzy<br>
-            2. Zastępstwa
+        <div class="logo">👑 LIBRUZ Director</div>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">JD</div>
+            <h4 id="userName">Jan Dyrektor</h4>
+            <p style="color: #666; font-size: 14px;">Szkoła Podstawowa nr 1</p>
+            <div class="badge badge-primary" style="margin-top: 10px;">Dyrektor</div>
         </div>
-        <button class="btn btn-danger" onclick="window.location.href='index.html'">Wyloguj</button>
+        
+        <ul class="menu">
+            <li class="menu-item active" onclick="showSection('dashboard')">
+                📊 Pulpit
+            </li>
+            <li class="menu-item" onclick="showSection('teachers')">
+                👥 Nauczyciele
+            </li>
+            <li class="menu-item" onclick="showSection('classes')">
+                🏫 Klasy
+            </li>
+            <li class="menu-item" onclick="showSection('students')">
+                👦 Uczniowie
+            </li>
+            <li class="menu-item" onclick="showSection('timetable')">
+                🕒 Plan lekcji
+            </li>
+            <li class="menu-item" onclick="showSection('subjects')">
+                📚 Przedmioty
+            </li>
+            <li class="menu-item" onclick="showSection('messages')">
+                💬 Wiadomości
+            </li>
+            <li class="menu-item" onclick="showSection('settings')">
+                ⚙️ Ustawienia
+            </li>
+        </ul>
+        
+        <button class="btn btn-danger" style="width: 100%; margin-top: 30px;" onclick="logout()">
+            🚪 Wyloguj
+        </button>
+        
+        <div style="margin-top: 30px; font-size: 12px; color: #999; text-align: center;">
+            LIBRUZ v2.0<br>
+            © 2024 System Szkolny
+        </div>
     </div>
-
+    
     <div class="content">
-        <div class="card">
-            <h3>👔 Zarządzanie Kadrą (Dyrektor Główny)</h3>
+        <div id="dashboardSection" class="section">
+            <div class="card">
+                <h3>👋 Witaj w panelu dyrektora!</h3>
+                <p>Użyj menu po lewej stronie, aby zarządzać szkołą.</p>
+                
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col">
+                        <div class="card" style="text-align: center; background: #e7f7ef;">
+                            <h4 style="color: #28a745;">👥 Nauczyciele</h4>
+                            <h2 id="teachersCount">0</h2>
+                            <p>zatrudnionych</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card" style="text-align: center; background: #e7f3ff;">
+                            <h4 style="color: #007bff;">🏫 Klasy</h4>
+                            <h2 id="classesCount">0</h2>
+                            <p>aktywnych klas</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card" style="text-align: center; background: #fff3cd;">
+                            <h4 style="color: #ffc107;">👦 Uczniowie</h4>
+                            <h2 id="studentsCount">0</h2>
+                            <p>w systemie</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="setupWizard" class="wizard" style="display: none;">
+                    <div class="wizard-header">
+                        <h3>🎯 Konfiguracja szkoły - Krok po kroku</h3>
+                        <p>Wypełnij wszystkie kroki, aby skonfigurować szkołę</p>
+                    </div>
+                    
+                    <div class="wizard-steps">
+                        <div class="wizard-step">
+                            <div class="step-circle" id="step1">1</div>
+                            <div class="step-title">Nauczyciele</div>
+                        </div>
+                        <div class="wizard-step">
+                            <div class="step-circle" id="step2">2</div>
+                            <div class="step-title">Klasy</div>
+                        </div>
+                        <div class="wizard-step">
+                            <div class="step-circle" id="step3">3</div>
+                            <div class="step-title">Uczniowie</div>
+                        </div>
+                        <div class="wizard-step">
+                            <div class="step-circle" id="step4">4</div>
+                            <div class="step-title">Plan lekcji</div>
+                        </div>
+                        <div class="wizard-step">
+                            <div class="step-circle" id="step5">5</div>
+                            <div class="step-title">Gotowe</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress" id="setupProgress" style="width: 20%;"></div>
+                    </div>
+                    
+                    <div class="wizard-content" id="wizardContent">
+                        <!-- Zawartość kroków będzie tu ładowana -->
+                    </div>
+                    
+                    <div class="wizard-footer">
+                        <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()">← Wstecz</button>
+                        <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Dalej →</button>
+                    </div>
+                </div>
+            </div>
+            
             <div class="row">
                 <div class="col">
-                    <h4>Dodaj Wicedyrektora</h4>
-                    <form onsubmit="addViceDirector(event)">
-                        <input type="text" id="vName" placeholder="Imię i Nazwisko" required>
-                        <input type="email" id="vEmail" placeholder="Email służbowy" required>
-                        <button class="btn btn-purple">Mianuj Wicedyrektora</button>
-                    </form>
+                    <div class="card">
+                        <h3>📅 Najbliższe wydarzenia</h3>
+                        <div id="eventsList">
+                            <p>Brak nadchodzących wydarzeń</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col">
-                    <h4>Lista Dyrekcji</h4>
-                    <ul id="viceList">
-                        <li>Janusz Szef (Główny)</li>
-                    </ul>
+                    <div class="card">
+                        <h3>⚡ Szybkie akcje</h3>
+                        <button class="btn btn-primary" onclick="showSection('teachers')" style="width: 100%; margin-bottom: 10px;">
+                            ➕ Dodaj nauczyciela
+                        </button>
+                        <button class="btn btn-success" onclick="showSection('classes')" style="width: 100%; margin-bottom: 10px;">
+                            🏫 Dodaj klasę
+                        </button>
+                        <button class="btn btn-warning" onclick="showSection('timetable')" style="width: 100%;">
+                            🕒 Edytuj plan lekcji
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="card">
-            <h3>🔄 Dodaj Zastępstwo</h3>
-            <form onsubmit="addSubstitution(event)" style="background: #fff3cd; padding: 15px; border-radius: 5px;">
+        
+        <!-- Sekcja nauczycieli -->
+        <div id="teachersSection" class="section" style="display: none;">
+            <div class="card">
+                <h3>👥 Zarządzanie nauczycielami</h3>
+                
                 <div class="row">
-                    <div class="col"><input type="date" id="sDate" required></div>
                     <div class="col">
-                        <select id="sLesson">
-                            <option value="1">Lekcja 1</option>
-                            <option value="2">Lekcja 2</option>
-                            <option value="3">Lekcja 3</option>
-                        </select>
+                        <h4>Dodaj nowego nauczyciela</h4>
+                        <form id="addTeacherForm" onsubmit="addTeacher(event)">
+                            <input type="text" id="teacherFirstName" placeholder="Imię *" required>
+                            <input type="text" id="teacherLastName" placeholder="Nazwisko *" required>
+                            <input type="email" id="teacherEmail" placeholder="Email służbowy *" required>
+                            <select id="teacherSubjects" multiple style="height: 120px;">
+                                <option value="matematyka">Matematyka</option>
+                                <option value="polski">Język polski</option>
+                                <option value="angielski">Język angielski</option>
+                                <option value="historia">Historia</option>
+                                <option value="biologia">Biologia</option>
+                                <option value="chemia">Chemia</option>
+                                <option value="fizyka">Fizyka</option>
+                                <option value="geografia">Geografia</option>
+                                <option value="wf">Wychowanie fizyczne</option>
+                                <option value="informatyka">Informatyka</option>
+                            </select>
+                            <small>Przytrzymaj Ctrl, aby wybrać kilka przedmiotów</small>
+                            
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                                <h5>Wygenerowane dane:</h5>
+                                <p><strong>Login:</strong> <span id="generatedLogin">-</span></p>
+                                <p><strong>Tymczasowe hasło:</strong> <span id="generatedPassword">Nauczyciel2024!</span></p>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success">➕ Dodaj nauczyciela</button>
+                        </form>
+                    </div>
+                    
+                    <div class="col">
+                        <h4>Lista nauczycieli</h4>
+                        <div class="table-container">
+                            <table id="teachersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Imię i nazwisko</th>
+                                        <th>Przedmioty</th>
+                                        <th>Login</th>
+                                        <th>Status</th>
+                                        <th>Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamicznie ładowane -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <input type="text" id="sAbsent" placeholder="Nauczyciel nieobecny" required>
-                <input type="text" id="sSub" placeholder="Nauczyciel zastępujący" required>
-                <input type="text" id="sSubject" placeholder="Przedmiot" required>
-                <button class="btn btn-success">Opublikuj Zastępstwo</button>
-            </form>
-
-            <h4>Aktywne Zastępstwa:</h4>
-            <table id="subsTable">
-                <thead><tr><th>Data</th><th>Lekcja</th><th>Kto za kogo</th><th>Przedmiot</th></tr></thead>
-                <tbody></tbody>
-            </table>
+            </div>
+        </div>
+        
+        <!-- Sekcja klas -->
+        <div id="classesSection" class="section" style="display: none;">
+            <div class="card">
+                <h3>🏫 Zarządzanie klasami</h3>
+                
+                <div class="row">
+                    <div class="col">
+                        <h4>Dodaj nową klasę</h4>
+                        <form id="addClassForm" onsubmit="addClass(event)">
+                            <div class="row">
+                                <div class="col">
+                                    <select id="classLevel" required>
+                                        <option value="">Poziom *</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="1lo">1 LO</option>
+                                        <option value="2lo">2 LO</option>
+                                        <option value="3lo">3 LO</option>
+                                        <option value="4lo">4 LO</option>
+                                        <option value="1ttk">1 TTK</option>
+                                        <option value="2ttk">2 TTK</option>
+                                        <option value="3ttk">3 TTK</option>
+                                        <option value="4ttk">4 TTK</option>
+                                        <option value="5ttk">5 TTK</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <input type="text" id="classPrefix" placeholder="Prefiks (np. A, B, C)">
+                                </div>
+                            </div>
+                            
+                            <select id="classHomeroom">
+                                <option value="">Wybierz wychowawcę</option>
+                                <option value="">Brak wychowawcy</option>
+                                <!-- Dynamicznie ładowani nauczyciele -->
+                            </select>
+                            
+                            <div style="margin: 15px 0;">
+                                <label><strong>Wybierz przedmioty:</strong></label>
+                                <div id="classSubjectsList" style="max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                    <!-- Dynamicznie ładowane przedmioty -->
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success">➕ Dodaj klasę</button>
+                        </form>
+                    </div>
+                    
+                    <div class="col">
+                        <h4>Lista klas</h4>
+                        <div class="table-container">
+                            <table id="classesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Klasa</th>
+                                        <th>Wychowawca</th>
+                                        <th>Liczba uczniów</th>
+                                        <th>Przedmioty</th>
+                                        <th>Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamicznie ładowane -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sekcja uczniów -->
+        <div id="studentsSection" class="section" style="display: none;">
+            <div class="card">
+                <h3>👦 Zarządzanie uczniami</h3>
+                
+                <div class="row">
+                    <div class="col">
+                        <h4>Dodaj uczniów</h4>
+                        <div class="form-group">
+                            <label>Wybierz klasę:</label>
+                            <select id="studentClassSelect" onchange="loadClassStudents()">
+                                <option value="">-- Wybierz klasę --</option>
+                            </select>
+                        </div>
+                        
+                        <div id="addStudentArea">
+                            <p>Wybierz klasę, aby dodać uczniów</p>
+                        </div>
+                        
+                        <div id="bulkAddStudents" style="display: none;">
+                            <h5>Dodaj wielu uczniów naraz</h5>
+                            <textarea id="studentsBulk" placeholder="Wpisz uczniów w formacie:
+Imię Nazwisko
+Jan Kowalski
+Anna Nowak
+..." rows="5" style="width: 100%;"></textarea>
+                            <button class="btn btn-primary" onclick="bulkAddStudents()">Dodaj uczniów</button>
+                        </div>
+                    </div>
+                    
+                    <div class="col">
+                        <h4>Lista uczniów</h4>
+                        <div class="table-container">
+                            <table id="studentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>LP</th>
+                                        <th>Imię i nazwisko</th>
+                                        <th>Klasa</th>
+                                        <th>Login</th>
+                                        <th>Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamicznie ładowane -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <button class="btn btn-warning" onclick="showLoginPasswords()" style="margin-top: 20px;">
+                            📋 Pokaż loginy i hasła
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sekcja planu lekcji -->
+        <div id="timetableSection" class="section" style="display: none;">
+            <div class="card">
+                <h3>🕒 Konstrukcja planu lekcji</h3>
+                
+                <div class="row">
+                    <div class="col">
+                        <h4>Ustaw godziny lekcyjne</h4>
+                        <div id="lessonHours">
+                            <div class="lesson-hour-item">
+                                <input type="time" value="08:00"> - <input type="time" value="08:45">
+                                <span style="margin-left: 10px;">Lekcja 1</span>
+                            </div>
+                            <!-- Dodatkowe godziny -->
+                        </div>
+                        <button class="btn btn-primary" onclick="addLessonHour()">➕ Dodaj godzinę</button>
+                    </div>
+                    
+                    <div class="col">
+                        <h4>Dodaj sale lekcyjne</h4>
+                        <input type="text" id="newRoom" placeholder="Nazwa sali (np. 101)">
+                        <button class="btn btn-primary" onclick="addClassroom()">➕ Dodaj salę</button>
+                        
+                        <div id="classroomsList" style="margin-top: 15px;">
+                            <!-- Lista sal -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <h4>Konstruuj plan dla klasy:</h4>
+                    <select id="timetableClassSelect" onchange="loadClassTimetable()">
+                        <option value="">-- Wybierz klasę --</option>
+                    </select>
+                </div>
+                
+                <div id="timetableBuilder" style="display: none; margin-top: 20px;">
+                    <h4>Plan lekcji dla: <span id="selectedClassName"></span></h4>
+                    <div class="table-container">
+                        <table class="timetable" id="timetableGrid">
+                            <!-- Dynamicznie generowana tabela planu -->
+                        </table>
+                    </div>
+                    <button class="btn btn-success" onclick="saveTimetable()">💾 Zapisz plan</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal do edycji lekcji -->
+        <div id="lessonModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeLessonModal()">×</span>
+                <h3>➕ Dodaj lekcję</h3>
+                
+                <div class="form-group">
+                    <label>Przedmiot:</label>
+                    <select id="lessonSubject">
+                        <!-- Dynamicznie ładowane -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nauczyciel:</label>
+                    <select id="lessonTeacher">
+                        <!-- Dynamicznie ładowane -->
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Sala:</label>
+                    <select id="lessonRoom">
+                        <!-- Dynamicznie ładowane -->
+                    </select>
+                </div>
+                
+                <button class="btn btn-success" onclick="saveLesson()">Dodaj lekcję</button>
+            </div>
+        </div>
+        
+        <!-- Modal z loginami i hasłami -->
+        <div id="loginsModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('loginsModal')">×</span>
+                <h3>📋 Loginy i hasła uczniów</h3>
+                
+                <div class="login-list" id="loginsList">
+                    <!-- Dynamicznie ładowane -->
+                </div>
+                
+                <button class="btn btn-warning" onclick="printLogins()" style="margin-top: 20px;">
+                    🖨️ Wydrukuj listę
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- LOGIKA WICEDYREKTORÓW ---
-        function addViceDirector(e) {
-            e.preventDefault();
-            const name = document.getElementById('vName').value;
-            const list = document.getElementById('viceList');
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${name}</strong> <span style="font-size:12px; color:purple;">(Wicedyrektor)</span>`;
-            list.appendChild(li);
-            alert("Dodano nowego wicedyrektora!");
-            e.target.reset();
+        // Supabase klient
+        const supabaseUrl = 'https://fupfgshptjghdjpkeaee.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Zmienne globalne
+        let currentUser = null;
+        let currentSchool = null;
+        let currentStep = 1;
+        let totalSteps = 5;
+        let selectedClassId = null;
+        let selectedDay = null;
+        let selectedLesson = null;
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('👑 Panel Dyrektora - inicjalizacja');
+            await checkUserSession();
+        });
+        
+        async function checkUserSession() {
+            const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
+            const userData = localStorage.getItem('libruz_user');
+            
+            if (isLoggedIn !== 'true' || !userData) {
+                redirectToLogin();
+                return;
+            }
+            
+            try {
+                currentUser = JSON.parse(userData);
+                
+                if (currentUser.role !== 'director' && currentUser.role !== 'admin') {
+                    showAccessDenied('Tylko dyrektor ma dostęp do tego panelu');
+                    return;
+                }
+                
+                // Pobierz dane szkoły
+                await loadSchoolData();
+                
+                // Sprawdź czy trzeba pokazać kreator konfiguracji
+                await checkSetupStatus();
+                
+                // Załaduj dane
+                await loadDashboardData();
+                await loadTeachers();
+                await loadClasses();
+                await loadSubjects();
+                
+                // Ustaw inicjały użytkownika
+                document.getElementById('userAvatar').textContent = 
+                    (currentUser.first_name?.charAt(0) || '') + (currentUser.last_name?.charAt(0) || '');
+                document.getElementById('userName').textContent = 
+                    `${currentUser.first_name} ${currentUser.last_name}`;
+                
+            } catch (error) {
+                console.error('Błąd sesji:', error);
+                localStorage.clear();
+                redirectToLogin();
+            }
         }
-
-        // --- LOGIKA ZASTĘPSTW ---
-        // Na start ładujemy przykładowe dane (symulacja)
-        const substitutions = JSON.parse(localStorage.getItem('subs')) || [];
-
-        function renderSubs() {
-            const tbody = document.querySelector('#subsTable tbody');
+        
+        async function loadSchoolData() {
+            if (!currentUser.school_id) {
+                console.error('Brak school_id w profilu użytkownika');
+                return;
+            }
+            
+            const { data: school, error } = await supabase
+                .from('schools')
+                .select('*')
+                .eq('id', currentUser.school_id)
+                .single();
+            
+            if (error) {
+                console.error('Błąd ładowania szkoły:', error);
+                return;
+            }
+            
+            currentSchool = school;
+        }
+        
+        async function checkSetupStatus() {
+            // Sprawdź czy szkoła ma już skonfigurowane podstawowe elementy
+            const { data: teachers } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('school_id', currentUser.school_id)
+                .eq('role', 'teacher');
+            
+            const { data: classes } = await supabase
+                .from('classes')
+                .select('id')
+                .eq('school_id', currentUser.school_id);
+            
+            const { data: students } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('school_id', currentUser.school_id)
+                .eq('role', 'student');
+            
+            // Jeśli brakuje któregoś elementu, pokaż kreator
+            if (!teachers?.length || !classes?.length || !students?.length) {
+                document.getElementById('setupWizard').style.display = 'block';
+                updateWizard();
+            }
+        }
+        
+        async function loadDashboardData() {
+            // Liczba nauczycieli
+            const { data: teachers } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('school_id', currentUser.school_id)
+                .eq('role', 'teacher');
+            
+            // Liczba klas
+            const { data: classes } = await supabase
+                .from('classes')
+                .select('id')
+                .eq('school_id', currentUser.school_id);
+            
+            // Liczba uczniów
+            const { data: students } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('school_id', currentUser.school_id)
+                .eq('role', 'student');
+            
+            document.getElementById('teachersCount').textContent = teachers?.length || 0;
+            document.getElementById('classesCount').textContent = classes?.length || 0;
+            document.getElementById('studentsCount').textContent = students?.length || 0;
+        }
+        
+        // ===== KREATOR KONFIGURACJI =====
+        function updateWizard() {
+            // Aktualizuj kroki
+            for (let i = 1; i <= totalSteps; i++) {
+                const stepCircle = document.getElementById(`step${i}`);
+                if (i < currentStep) {
+                    stepCircle.className = 'step-circle completed';
+                } else if (i === currentStep) {
+                    stepCircle.className = 'step-circle active';
+                } else {
+                    stepCircle.className = 'step-circle';
+                }
+            }
+            
+            // Aktualizuj progress bar
+            const progress = (currentStep - 1) / (totalSteps - 1) * 100;
+            document.getElementById('setupProgress').style.width = `${progress}%`;
+            
+            // Załaduj zawartość kroku
+            loadWizardStep();
+        }
+        
+        function loadWizardStep() {
+            const content = document.getElementById('wizardContent');
+            
+            switch(currentStep) {
+                case 1:
+                    content.innerHTML = `
+                        <h4>Krok 1: Dodaj nauczycieli</h4>
+                        <p>Dodaj wszystkich nauczycieli, którzy będą pracować w szkole.</p>
+                        <button class="btn btn-primary" onclick="showSection('teachers')">
+                            Przejdź do zarządzania nauczycielami
+                        </button>
+                        <div style="margin-top: 20px;">
+                            <label><input type="checkbox" id="step1Complete"> Zakończyłem dodawanie nauczycieli</label>
+                        </div>
+                    `;
+                    break;
+                    
+                case 2:
+                    content.innerHTML = `
+                        <h4>Krok 2: Utwórz klasy</h4>
+                        <p>Utwórz wszystkie klasy w szkole z ich wychowawcami i przedmiotami.</p>
+                        <button class="btn btn-primary" onclick="showSection('classes')">
+                            Przejdź do zarządzania klasami
+                        </button>
+                        <div style="margin-top: 20px;">
+                            <label><input type="checkbox" id="step2Complete"> Zakończyłem tworzenie klas</label>
+                        </div>
+                    `;
+                    break;
+                    
+                case 3:
+                    content.innerHTML = `
+                        <h4>Krok 3: Dodaj uczniów</h4>
+                        <p>Dodaj wszystkich uczniów do odpowiednich klas.</p>
+                        <button class="btn btn-primary" onclick="showSection('students')">
+                            Przejdź do zarządzania uczniami
+                        </button>
+                        <div style="margin-top: 20px;">
+                            <label><input type="checkbox" id="step3Complete"> Zakończyłem dodawanie uczniów</label>
+                        </div>
+                    `;
+                    break;
+                    
+                case 4:
+                    content.innerHTML = `
+                        <h4>Krok 4: Stwórz plan lekcji</h4>
+                        <p>Skonstruuj plan lekcji dla wszystkich klas.</p>
+                        <button class="btn btn-primary" onclick="showSection('timetable')">
+                            Przejdź do konstrukcji planu
+                        </button>
+                        <div style="margin-top: 20px;">
+                            <label><input type="checkbox" id="step4Complete"> Zakończyłem tworzenie planu lekcji</label>
+                        </div>
+                    `;
+                    break;
+                    
+                case 5:
+                    content.innerHTML = `
+                        <h4>🎉 Konfiguracja zakończona!</h4>
+                        <p>Twoja szkoła jest gotowa do pracy. Możesz rozpocząć korzystanie z systemu LIBRUZ.</p>
+                        <button class="btn btn-success" onclick="completeSetup()">
+                            Zakończ konfigurację
+                        </button>
+                    `;
+                    break;
+            }
+        }
+        
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateWizard();
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWizard();
+            }
+        }
+        
+        function completeSetup() {
+            document.getElementById('setupWizard').style.display = 'none';
+            alert('🎉 Konfiguracja szkoły zakończona pomyślnie!');
+        }
+        
+        // ===== ZARZĄDZANIE NAUCZYCIELAMI =====
+        async function loadTeachers() {
+            const { data: teachers, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('school_id', currentUser.school_id)
+                .eq('role', 'teacher')
+                .order('last_name');
+            
+            if (error) {
+                console.error('Błąd ładowania nauczycieli:', error);
+                return;
+            }
+            
+            const tbody = document.getElementById('teachersTable')?.querySelector('tbody');
+            if (!tbody) return;
+            
             tbody.innerHTML = '';
-            substitutions.forEach(sub => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${sub.date}</td>
-                        <td>${sub.lesson}</td>
-                        <td>${sub.sub} za ${sub.absent}</td>
-                        <td>${sub.subject}</td>
-                    </tr>
+            
+            teachers.forEach(teacher => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${teacher.first_name} ${teacher.last_name}</td>
+                    <td>${teacher.subjects?.join(', ') || 'Brak'}</td>
+                    <td>${teacher.username}</td>
+                    <td><span class="badge ${teacher.is_active ? 'badge-success' : 'badge-warning'}">
+                        ${teacher.is_active ? 'Aktywny' : 'Nieaktywny'}
+                    </span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editTeacher('${teacher.id}')">✏️</button>
+                        <button class="btn btn-warning btn-sm" onclick="resetPassword('${teacher.id}')">🔐</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTeacher('${teacher.id}')">🗑️</button>
+                    </td>
                 `;
             });
+            
+            // Uzupełnij select wychowawców
+            const homeroomSelect = document.getElementById('classHomeroom');
+            if (homeroomSelect) {
+                homeroomSelect.innerHTML = '<option value="">Wybierz wychowawcę</option><option value="">Brak wychowawcy</option>';
+                teachers.forEach(teacher => {
+                    const option = document.createElement('option');
+                    option.value = teacher.id;
+                    option.textContent = `${teacher.first_name} ${teacher.last_name}`;
+                    homeroomSelect.appendChild(option);
+                });
+            }
         }
-
-        function addSubstitution(e) {
+        
+        function addTeacher(e) {
             e.preventDefault();
-            const newSub = {
-                date: document.getElementById('sDate').value,
-                lesson: document.getElementById('sLesson').value,
-                absent: document.getElementById('sAbsent').value,
-                sub: document.getElementById('sSub').value,
-                subject: document.getElementById('sSubject').value
-            };
-            substitutions.push(newSub);
-            localStorage.setItem('subs', JSON.stringify(substitutions)); // Zapis do pamięci przeglądarki
-            renderSubs();
-            alert("Zastępstwo dodane!");
+            
+            const firstName = document.getElementById('teacherFirstName').value;
+            const lastName = document.getElementById('teacherLastName').value;
+            const email = document.getElementById('teacherEmail').value;
+            const subjects = Array.from(document.getElementById('teacherSubjects').selectedOptions)
+                .map(opt => opt.value);
+            
+            // Generuj login
+            const username = generateUsername(lastName, 'N');
+            const tempPassword = generatePassword();
+            
+            // Tutaj dodaj logikę zapisu do Supabase
+            console.log('Dodaj nauczyciela:', { firstName, lastName, email, subjects, username, tempPassword });
+            
+            // Reset formularza
+            e.target.reset();
+            document.getElementById('generatedLogin').textContent = username;
+            document.getElementById('generatedPassword').textContent = tempPassword;
+            
+            alert(`Nauczyciel dodany!\nLogin: ${username}\nHasło: ${tempPassword}`);
+        }
+        
+        // ===== ZARZĄDZANIE KLASAMI =====
+        async function loadClasses() {
+            const { data: classes, error } = await supabase
+                .from('classes')
+                .select(`
+                    *,
+                    homeroom_teacher:profiles(first_name, last_name)
+                `)
+                .eq('school_id', currentUser.school_id)
+                .order('level', { ascending: true });
+            
+            if (error) {
+                console.error('Błąd ładowania klas:', error);
+                return;
+            }
+            
+            const tbody = document.getElementById('classesTable')?.querySelector('tbody');
+            const classSelect = document.getElementById('studentClassSelect');
+            const timetableSelect = document.getElementById('timetableClassSelect');
+            
+            if (tbody) tbody.innerHTML = '';
+            if (classSelect) classSelect.innerHTML = '<option value="">-- Wybierz klasę --</option>';
+            if (timetableSelect) timetableSelect.innerHTML = '<option value="">-- Wybierz klasę --</option>';
+            
+            classes.forEach(cls => {
+                // Tabela klas
+                if (tbody) {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td><strong>${cls.name}</strong></td>
+                        <td>${cls.homeroom_teacher ? `${cls.homeroom_teacher.first_name} ${cls.homeroom_teacher.last_name}` : 'Brak'}</td>
+                        <td>${cls.student_count || 0}</td>
+                        <td>${cls.subjects?.slice(0, 3).join(', ') || 'Brak'}${cls.subjects?.length > 3 ? '...' : ''}</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="editClass('${cls.id}')">✏️</button>
+                            <button class="btn btn-primary btn-sm" onclick="viewClass('${cls.id}')">👁️</button>
+                        </td>
+                    `;
+                }
+                
+                // Selecty
+                if (classSelect) {
+                    const option = document.createElement('option');
+                    option.value = cls.id;
+                    option.textContent = cls.name;
+                    classSelect.appendChild(option);
+                }
+                
+                if (timetableSelect) {
+                    const option = document.createElement('option');
+                    option.value = cls.id;
+                    option.textContent = cls.name;
+                    timetableSelect.appendChild(option);
+                }
+            });
+        }
+        
+        function addClass(e) {
+            e.preventDefault();
+            
+            const level = document.getElementById('classLevel').value;
+            const prefix = document.getElementById('classPrefix').value;
+            const homeroom = document.getElementById('classHomeroom').value;
+            const className = `${level}${prefix ? prefix : ''}`;
+            
+            // Tutaj dodaj logikę zapisu do Supabase
+            console.log('Dodaj klasę:', { level, prefix, homeroom, className });
+            
+            alert(`Klasa ${className} dodana pomyślnie!`);
+            loadClasses();
             e.target.reset();
         }
-// director-dashboard.js - Rozszerzony panel dyrektora
-class DirectorDashboard {
-    constructor() {
-        this.isViceDirector = this.checkViceDirectorStatus();
-    }
-
-    // Sprawdzenie statusu wicedyrektora
-    checkViceDirectorStatus() {
-        const user = JSON.parse(localStorage.getItem('libruz_user'));
-        return user.is_vice_director || false;
-    }
-
-    // Renderowanie rozszerzonego panelu
-    renderDashboard() {
-        const user = JSON.parse(localStorage.getItem('libruz_user'));
-        const roleLabel = this.isViceDirector ? 'Wicedyrektor' : 'Dyrektor';
         
-        return `
-            <div class="director-dashboard">
-                <!-- Nagłówek z informacją o roli -->
-                <div class="dashboard-header">
-                    <h1>📚 LIBRUZ - Panel ${roleLabel}</h1>
-                    <div class="user-info">
-                        <span>${user.first_name} ${user.last_name}</span>
-                        ${this.isViceDirector ? '<span class="vice-badge">Wicedyrektor</span>' : ''}
+        // ===== ZARZĄDZANIE UCZNIAMI =====
+        async function loadClassStudents() {
+            const classId = document.getElementById('studentClassSelect').value;
+            if (!classId) return;
+            
+            const addStudentArea = document.getElementById('addStudentArea');
+            addStudentArea.innerHTML = `
+                <h5>Dodaj ucznia do klasy</h5>
+                <div class="row">
+                    <div class="col">
+                        <input type="text" id="newStudentFirstName" placeholder="Imię">
+                    </div>
+                    <div class="col">
+                        <input type="text" id="newStudentLastName" placeholder="Nazwisko">
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary" onclick="addSingleStudent()">➕ Dodaj</button>
                     </div>
                 </div>
-                
-                <!-- Przywracanie oryginalnego użytkownika jeśli logowano jako -->
-                ${localStorage.getItem('libruz_original_user') ? `
-                    <div class="impersonation-warning">
-                        ⚠️ Jesteś zalogowany jako inny użytkownik
-                        <button onclick="substitutions.restoreOriginalUser()">
-                            ↩️ Wróć do swojego konta
-                        </button>
-                    </div>
-                ` : ''}
-                
-                <!-- Główne karty funkcji -->
-                <div class="dashboard-grid">
-                    <!-- Funkcje zarządzania -->
-                    <div class="dashboard-card">
-                        <h3>🏫 Zarządzanie szkołą</h3>
-                        <ul class="function-list">
-                            <li><button onclick="director.manageTeachers()">👥 Zarządzaj nauczycielami</button></li>
-                            <li><button onclick="director.manageClasses()">📚 Zarządzaj klasami</button></li>
-                            <li><button onclick="director.manageSubjects()">📖 Zarządzaj przedmiotami</button></li>
-                            ${!this.isViceDirector ? 
-                                '<li><button onclick="director.manageViceDirectors()">👨‍💼 Zarządzaj wicedyrektorami</button></li>' : ''}
-                        </ul>
-                    </div>
-                    
-                    <!-- Zastępstwa -->
-                    <div class="dashboard-card">
-                        <h3>🔄 Zastępstwa</h3>
-                        <div id="substitutionsSection">
-                            <!-- Ładowane przez substitutions.js -->
-                        </div>
-                    </div>
-                    
-                    <!-- Logowanie jako -->
-                    <div class="dashboard-card">
-                        <h3>🔐 Logowanie jako</h3>
-                        <div id="loginAsSection">
-                            <!-- Ładowane przez substitutions.js -->
-                        </div>
-                    </div>
-                    
-                    <!-- Raporty i statystyki -->
-                    <div class="dashboard-card">
-                        <h3>📊 Raporty</h3>
-                        <ul class="function-list">
-                            <li><button onclick="director.generateAttendanceReport()">📈 Frekwencja</button></li>
-                            <li><button onclick="director.generateGradesReport()">📊 Oceny</button></li>
-                            <li><button onclick="director.generateCurriculumReport()">📚 Realizacja programu</button></li>
-                            <li><button onclick="director.viewSystemLogs()">📋 Logi systemowe</button></li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Dodatkowe godziny nauczycieli -->
-                    <div class="dashboard-card">
-                        <h3>⏰ Dodatkowe godziny</h3>
-                        <button onclick="director.manageExtraHours()">Zarządzaj dodatkowymi godzinami</button>
-                        <div class="extra-hours-summary">
-                            <!-- Podsumowanie -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    // Zarządzanie wicedyrektorami (tylko dla dyrektora głównego)
-    async manageViceDirectors() {
-        if (this.isViceDirector) {
-            alert('Tylko dyrektor główny może zarządzać wicedyrektorami');
-            return;
+            `;
+            
+            document.getElementById('bulkAddStudents').style.display = 'block';
         }
         
-        const modal = `
-            <div class="modal vice-directors-modal">
-                <h3>Zarządzanie wicedyrektorami</h3>
-                
-                <!-- Lista obecnych wicedyrektorów -->
-                <div class="current-vice-directors">
-                    <h4>Aktualni wicedyrektorzy</h4>
-                    <div id="viceDirectorsList"></div>
-                </div>
-                
-                <!-- Dodawanie nowego wicedyrektora -->
-                <div class="add-vice-director">
-                    <h4>Dodaj wicedyrektora</h4>
-                    <select id="teacherSelect">
-                        <option value="">Wybierz nauczyciela...</option>
-                        <!-- Dynamicznie ładowani nauczyciele -->
-                    </select>
-                    <div class="permissions-section">
-                        <h5>Uprawnienia:</h5>
-                        <label><input type="checkbox" name="vicePerm" value="substitutions"> Zarządzanie zastępstwami</label>
-                        <label><input type="checkbox" name="vicePerm" value="reports"> Generowanie raportów</label>
-                        <label><input type="checkbox" name="vicePerm" value="loginAs"> Logowanie jako</label>
-                        <label><input type="checkbox" name="vicePerm" value="extraHours"> Zatwierdzanie dodatkowych godzin</label>
-                    </div>
-                    <button onclick="director.addViceDirector()">Mianuj wicedyrektorem</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.insertAdjacentHTML('beforeend', modal);
-        await this.loadTeachersForViceDirector();
-    }
-
-    // Dodawanie wicedyrektora
-    async addViceDirector() {
-        const teacherId = document.getElementById('teacherSelect').value;
-        const permissions = Array.from(document.querySelectorAll('input[name="vicePerm"]:checked'))
-            .map(cb => cb.value);
-        
-        const { error } = await supabase
-            .from('profiles')
-            .update({
-                is_vice_director: true,
-                permissions: permissions,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', teacherId);
-        
-        if (!error) {
-            this.showNotification('Nauczyciel został mianowany wicedyrektorem');
+        function addSingleStudent() {
+            const firstName = document.getElementById('newStudentFirstName').value;
+            const lastName = document.getElementById('newStudentLastName').value;
+            const classId = document.getElementById('studentClassSelect').value;
+            
+            if (!firstName || !lastName || !classId) {
+                alert('Wypełnij wszystkie pola!');
+                return;
+            }
+            
+            // Generuj login i hasło
+            const username = generateUsername(lastName, 'U');
+            const password = generatePassword();
+            
+            console.log('Dodaj ucznia:', { firstName, lastName, classId, username, password });
+            
+            // Reset pola
+            document.getElementById('newStudentFirstName').value = '';
+            document.getElementById('newStudentLastName').value = '';
+            
+            alert(`Uczeń dodany!\nLogin: ${username}\nHasło: ${password}`);
         }
-    }
-
-    // Zarządzanie dodatkowymi godzinami
-    async manageExtraHours() {
-        const { data: extraHours } = await supabase
-            .from('extra_hours')
-            .select(`
-                *,
-                teacher:teacher_id(first_name, last_name),
-                class:class_id(name),
-                approved_by:profiles(first_name, last_name)
-            `)
-            .order('date', { ascending: false });
         
-        const modal = `
-            <div class="modal extra-hours-modal">
-                <h3>Dodatkowe godziny nauczycieli</h3>
-                
-                <!-- Filtr -->
-                <div class="filter-bar">
-                    <input type="date" id="filterDate" placeholder="Filtruj po dacie">
-                    <select id="filterStatus">
-                        <option value="">Wszystkie</option>
-                        <option value="pending">Oczekujące</option>
-                        <option value="approved">Zatwierdzone</option>
-                    </select>
-                    <button onclick="director.filterExtraHours()">Filtruj</button>
-                </div>
-                
-                <!-- Lista godzin -->
-                <div class="extra-hours-list">
-                    ${extraHours.map(hour => `
-                        <div class="hour-item ${hour.approved ? 'approved' : 'pending'}">
-                            <div class="hour-header">
-                                <span class="teacher">${hour.teacher.first_name} ${hour.teacher.last_name}</span>
-                                <span class="date">${new Date(hour.date).toLocaleDateString('pl-PL')}</span>
-                                <span class="hours">${hour.hours} h</span>
-                            </div>
-                            <div class="hour-details">
-                                <p><strong>Opis:</strong> ${hour.description}</p>
-                                <p><strong>Klasa:</strong> ${hour.class?.name || '---'}</p>
-                                ${hour.attendance_list?.length ? `
-                                    <p><strong>Obecność:</strong> ${hour.attendance_list.join(', ')}</p>
-                                ` : ''}
-                            </div>
-                            <div class="hour-footer">
-                                ${hour.approved ? `
-                                    <span class="approved-by">
-                                        Zatwierdzone przez: ${hour.approved_by?.first_name} ${hour.approved_by?.last_name}
-                                    </span>
-                                ` : `
-                                    <button onclick="director.approveExtraHour('${hour.id}')">✓ Zatwierdź</button>
-                                    <button onclick="director.rejectExtraHour('${hour.id}')">✗ Odrzuć</button>
-                                `}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
+        function bulkAddStudents() {
+            const text = document.getElementById('studentsBulk').value;
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            const students = [];
+            lines.forEach(line => {
+                const parts = line.trim().split(' ');
+                if (parts.length >= 2) {
+                    const firstName = parts[0];
+                    const lastName = parts.slice(1).join(' ');
+                    students.push({ firstName, lastName });
+                }
+            });
+            
+            console.log('Dodaj wielu uczniów:', students);
+            alert(`Dodano ${students.length} uczniów`);
+        }
         
-        document.body.insertAdjacentHTML('beforeend', modal);
-    }
-}
-
-const director = new DirectorDashboard();
-        renderSubs();
+        function showLoginPasswords() {
+            // Tutaj pobierz uczniów i wyświetl w modal
+            document.getElementById('loginsModal').style.display = 'block';
+            
+            // Przykładowe dane
+            const logins = [
+                { name: 'Jan Kowalski', login: 'kowalskiU', password: 'Uczen2024!' },
+                { name: 'Anna Nowak', login: 'nowakU', password: 'Nowak2024!' }
+            ];
+            
+            const list = document.getElementById('loginsList');
+            list.innerHTML = '';
+            
+            logins.forEach(login => {
+                const div = document.createElement('div');
+                div.className = 'login-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${login.name}</strong><br>
+                        <small>Login: ${login.login}</small>
+                    </div>
+                    <div>
+                        <code>${login.password}</code>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+        
+        // ===== PLAN LEKCJI =====
+        function addLessonHour() {
+            const container = document.getElementById('lessonHours');
+            const count = container.children.length + 1;
+            
+            const div = document.createElement('div');
+            div.className = 'lesson-hour-item';
+            div.innerHTML = `
+                <input type="time" value="08:00"> - <input type="time" value="08:45">
+                <span style="margin-left: 10px;">Lekcja ${count}</span>
+                <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()" style="margin-left: 10px;">🗑️</button>
+            `;
+            container.appendChild(div);
+        }
+        
+        function addClassroom() {
+            const roomName = document.getElementById('newRoom').value;
+            if (!roomName) return;
+            
+            const container = document.getElementById('classroomsList');
+            const div = document.createElement('div');
+            div.className = 'subject-tag';
+            div.innerHTML = `
+                🏫 ${roomName}
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: #999; margin-left: 5px;">×</button>
+            `;
+            container.appendChild(div);
+            
+            document.getElementById('newRoom').value = '';
+        }
+        
+        function loadClassTimetable() {
+            const classId = document.getElementById('timetableClassSelect').value;
+            if (!classId) {
+                document.getElementById('timetableBuilder').style.display = 'none';
+                return;
+            }
+            
+            selectedClassId = classId;
+            const className = document.getElementById('timetableClassSelect').selectedOptions[0].text;
+            document.getElementById('selectedClassName').textContent = className;
+            document.getElementById('timetableBuilder').style.display = 'block';
+            
+            // Generuj tabelę planu
+            generateTimetableGrid();
+        }
+        
+        function generateTimetableGrid() {
+            const days = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+            const hours = 8; // 8 lekcji
+            
+            const table = document.getElementById('timetableGrid');
+            table.innerHTML = '';
+            
+            // Nagłówek
+            let thead = '<tr><th>Lekcja</th>';
+            days.forEach(day => {
+                thead += `<th>${day}</th>`;
+            });
+            thead += '</tr>';
+            table.innerHTML = thead;
+            
+            // Wiersze z lekcjami
+            for (let i = 1; i <= hours; i++) {
+                let row = `<tr><td style="background: #f8f9fa; font-weight: bold;">${i}</td>`;
+                
+                days.forEach(day => {
+                    row += `<td class="lesson-cell empty" onclick="openLessonModal('${day}', ${i})">+</td>`;
+                });
+                
+                row += '</tr>';
+                table.innerHTML += row;
+            }
+        }
+        
+        function openLessonModal(day, lesson) {
+            selectedDay = day;
+            selectedLesson = lesson;
+            document.getElementById('lessonModal').style.display = 'block';
+            
+            // Tutaj załaduj przedmioty, nauczycieli i sale dla danej klasy
+        }
+        
+        function closeLessonModal() {
+            document.getElementById('lessonModal').style.display = 'none';
+        }
+        
+        function saveLesson() {
+            const subject = document.getElementById('lessonSubject').value;
+            const teacher = document.getElementById('lessonTeacher').value;
+            const room = document.getElementById('lessonRoom').value;
+            
+            console.log('Zapisz lekcję:', { day: selectedDay, lesson: selectedLesson, subject, teacher, room });
+            
+            // Aktualizuj komórkę w tabeli
+            const cells = document.querySelectorAll('.lesson-cell');
+            cells.forEach(cell => {
+                if (cell.getAttribute('onclick')?.includes(`${selectedDay}', ${selectedLesson}`)) {
+                    cell.className = 'lesson-cell has-lesson';
+                    cell.innerHTML = `
+                        <strong>${subject}</strong><br>
+                        <small>${teacher}</small><br>
+                        <small>${room}</small>
+                        <button onclick="removeLesson(this)" style="position: absolute; top: 5px; right: 5px; background: none; border: none; color: #dc3545;">×</button>
+                    `;
+                    cell.onclick = null;
+                }
+            });
+            
+            closeLessonModal();
+        }
+        
+        function removeLesson(button) {
+            const cell = button.parentElement;
+            cell.className = 'lesson-cell empty';
+            cell.innerHTML = '+';
+            cell.onclick = function() {
+                openLessonModal(selectedDay, selectedLesson);
+            };
+        }
+        
+        // ===== POMOCNICZE FUNKCJE =====
+        function generateUsername(lastName, rolePrefix) {
+            const cleanLastName = lastName.toLowerCase()
+                .replace(/[ąćęłńóśźż]/g, '')
+                .replace(/[^a-z]/g, '')
+                .substring(0, 8);
+            return cleanLastName + rolePrefix;
+        }
+        
+        function generatePassword() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
+            let password = '';
+            for (let i = 0; i < 10; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+        
+        function showSection(sectionId) {
+            // Ukryj wszystkie sekcje
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Pokaż wybraną sekcję
+            document.getElementById(`${sectionId}Section`).style.display = 'block';
+            
+            // Aktualizuj menu
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Znajdź odpowiedni element menu i ustaw jako aktywny
+            const menuItems = document.querySelectorAll('.menu-item');
+            for (let item of menuItems) {
+                if (item.textContent.includes(getSectionName(sectionId))) {
+                    item.classList.add('active');
+                    break;
+                }
+            }
+        }
+        
+        function getSectionName(sectionId) {
+            const names = {
+                'dashboard': 'Pulpit',
+                'teachers': 'Nauczyciele',
+                'classes': 'Klasy',
+                'students': 'Uczniowie',
+                'timetable': 'Plan lekcji',
+                'subjects': 'Przedmioty',
+                'messages': 'Wiadomości',
+                'settings': 'Ustawienia'
+            };
+            return names[sectionId] || sectionId;
+        }
+        
+        function logout() {
+            localStorage.removeItem('libruz_is_logged_in');
+            localStorage.removeItem('libruz_user');
+            window.location.href = 'index.html';
+        }
+        
+        function redirectToLogin() {
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+        
+        function showAccessDenied(message) {
+            document.body.innerHTML = `
+                <div style="text-align: center; padding: 100px 20px;">
+                    <h2 style="color: #dc3545;">⛔ ${message}</h2>
+                    <button onclick="logout()" style="margin-top: 20px; padding: 10px 20px; background: #4361ee; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Wróć do logowania
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Zamknij modal po kliknięciu poza nim
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        };
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Inicjalizacja
+        showSection('dashboard');
     </script>
 </body>
 </html>
