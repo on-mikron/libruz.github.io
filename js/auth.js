@@ -1,252 +1,131 @@
-// System logowania LIBRUZ
-console.log('🔐 Inicjalizacja systemu logowania...');
-
+// auth.js - UPROSZCZONY KOD LOGOWANIA
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ DOM załadowany');
+    console.log('🔐 Inicjalizacja logowania...');
     
-    // Elementy DOM
+    // Supabase
+    const supabase = window.supabase.createClient(
+        'https://fupfgshptjghdjpkeaee.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM'
+    );
+    
+    // Elementy
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const loginBtn = document.getElementById('loginBtn');
-    const btnText = document.getElementById('btnText');
     const alertDiv = document.getElementById('alert');
-    const forgotPasswordLink = document.getElementById('forgotPassword');
-    const rememberMe = document.getElementById('rememberMe');
     
-    // Sprawdź czy elementy istnieją
-    if (!loginForm || !emailInput || !passwordInput || !loginBtn) {
-        console.error('❌ Nie znaleziono elementów formularza!');
-        showAlert('Błąd systemu: Brak formularza', 'error');
+    if (!loginForm) {
+        console.error('❌ Nie znaleziono formularza!');
         return;
     }
     
-    console.log('✅ Elementy formularza znalezione');
-    
-    // 1. Sprawdź istniejącą sesję
-    checkExistingSession();
-    
-    // 2. Obsługa formularza
-    loginForm.addEventListener('submit', handleLogin);
-    
-    // 3. Zapomniane hasło
-    if (forgotPasswordLink) {
-        forgotPasswordLink.addEventListener('click', handleForgotPassword);
-    }
-    
-    // 4. Zapamiętany email
-    loadRememberedEmail();
-    
-    // Funkcje
-    async function handleLogin(event) {
-        event.preventDefault();
+    // Obsługa formularza
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
         
         const email = emailInput.value.trim();
         const password = passwordInput.value;
         
-        // Walidacja
+        // Prosta walidacja
         if (!email || !password) {
             showAlert('Wprowadź email i hasło', 'error');
             return;
         }
         
-        if (!validateEmail(email)) {
-            showAlert('Wprowadź poprawny adres email', 'error');
+        if (!email.includes('@')) {
+            showAlert('Wprowadź poprawny email', 'error');
             return;
         }
         
-        // Zmień stan przycisku
-        loginBtn.disabled = true;
-        btnText.textContent = '⌛ Logowanie...';
+        // Przycisk ładowania
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span>⌛ Logowanie...</span>';
+        }
         
         try {
-            console.log(`🔐 Próba logowania: ${email}`);
+            console.log('🔐 Próba logowania:', email);
             
-            // Logowanie przez Supabase
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
-            
-            if (error) {
-                console.error('❌ Błąd logowania:', error.message);
-                
-                if (error.message.includes('Invalid login credentials')) {
-                    throw new Error('Nieprawidłowy email lub hasło');
-                } else if (error.message.includes('Email not confirmed')) {
-                    throw new Error('Potwierdź email przed logowaniem');
-                } else {
-                    throw new Error('Błąd logowania: ' + error.message);
-                }
-            }
-            
-            console.log('✅ Logowanie udane:', data.user.email);
-            
-            // Pobierz profil użytkownika
+            // 1. Sprawdź czy użytkownik istnieje w naszej bazie
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('email', email)
+                .eq('is_active', true)
                 .single();
             
-            if (profileError) {
-                console.error('❌ Błąd pobierania profilu:', profileError);
-                throw new Error('Błąd pobierania danych użytkownika');
-            }
-            
-            if (!profile) {
-                throw new Error('Profil użytkownika nie znaleziony');
-            }
-            
-            console.log('👤 Profil:', profile);
-            
-            // Sprawdź czy konto aktywne
-            if (!profile.is_active) {
-                throw new Error('Konto jest nieaktywne. Skontaktuj się z administratorem.');
-            }
-            
-            // Sprawdź czy pierwsze logowanie
-            if (profile.temporary_password === true) {
-                console.log('🔐 Pierwsze logowanie - zmiana hasła wymagana');
-                
-                // Zapisz tymczasowe dane
-                localStorage.setItem('libruz_temp_user', JSON.stringify(profile));
-                localStorage.setItem('libruz_user_id', profile.id);
-                
-                showAlert('Pierwsze logowanie! Ustaw swoje hasło...', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'change-password.html';
-                }, 1500);
-                
+            if (profileError || !profile) {
+                console.error('❌ Użytkownik nie znaleziony w bazie');
+                showAlert('Nieprawidłowy email lub konto nieaktywne', 'error');
                 return;
             }
             
-            // Normalne logowanie
-            console.log('✅ Normalne logowanie - zapisywanie danych...');
+            console.log('✅ Znaleziono profil:', profile);
             
-            // Zapisz dane
-            localStorage.setItem('libruz_user', JSON.stringify(profile));
-            localStorage.setItem('libruz_session', JSON.stringify(data.session));
-            localStorage.setItem('libruz_auth', JSON.stringify({
-                access_token: data.session.access_token,
-                refresh_token: data.session.refresh_token
-            }));
+            // 2. Dla DEMO - proste hasło (w prawdziwym systemie użyj Supabase Auth)
+            // W DEMO sprawdzamy czy hasło = "admin123" dla admina
+            let isValidPassword = false;
             
-            // Zapamiętaj email
-            if (rememberMe && rememberMe.checked) {
-                localStorage.setItem('libruz_remember_email', email);
-            } else {
-                localStorage.removeItem('libruz_remember_email');
+            if (email === 'admin@libruz.pl' && password === 'admin123') {
+                isValidPassword = true;
+            } else if (email === 'dyrektor@sp1.pl' && password === 'dyrektor123') {
+                isValidPassword = true;
+            } else if (email === 'nauczyciel@sp1.pl' && password === 'nauczyciel123') {
+                isValidPassword = true;
+            } else if (email === 'uczen@sp1.pl' && password === 'uczen123') {
+                isValidPassword = true;
+            } else if (email === 'rodzic@sp1.pl' && password === 'rodzic123') {
+                isValidPassword = true;
             }
             
-            showAlert('Logowanie udane! Przekierowuję...', 'success');
+            if (!isValidPassword) {
+                showAlert('Nieprawidłowe hasło', 'error');
+                return;
+            }
             
-            // Przekieruj według roli
+            // 3. Zapisz dane użytkownika
+            localStorage.setItem('libruz_user', JSON.stringify(profile));
+            
+            // 4. Pokaz sukces
+            showAlert('✅ Zalogowano pomyślnie! Przekierowuję...', 'success');
+            
+            // 5. Przekieruj według roli
             setTimeout(() => {
-                redirectByRole(profile);
-            }, 1000);
+                if (profile.role === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else if (profile.role === 'director') {
+                    window.location.href = 'director-dashboard.html';
+                } else if (profile.role === 'teacher') {
+                    window.location.href = 'teacher-dashboard.html';
+                } else if (profile.role === 'student') {
+                    window.location.href = 'student-dashboard.html';
+                } else if (profile.role === 'parent') {
+                    window.location.href = 'parent-dashboard.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            }, 1500);
             
         } catch (error) {
             console.error('💥 Błąd logowania:', error);
-            showAlert('❌ ' + error.message, 'error');
-            
-            // Animacja błędu
-            loginForm.style.animation = 'shake 0.5s ease';
-            setTimeout(() => {
-                loginForm.style.animation = '';
-            }, 500);
-            
+            showAlert('❌ Błąd systemu: ' + error.message, 'error');
         } finally {
             // Przywróć przycisk
-            loginBtn.disabled = false;
-            btnText.textContent = '🔐 Zaloguj się';
-        }
-    }
-    
-    async function handleForgotPassword(event) {
-        event.preventDefault();
-        
-        const email = emailInput.value.trim();
-        
-        if (!email) {
-            showAlert('Wprowadź email do resetu hasła', 'error');
-            emailInput.focus();
-            return;
-        }
-        
-        if (!validateEmail(email)) {
-            showAlert('Wprowadź poprawny adres email', 'error');
-            return;
-        }
-        
-        try {
-            loginBtn.disabled = true;
-            btnText.textContent = '⌛ Wysyłanie...';
-            
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: window.location.origin + '/reset-password.html',
-            });
-            
-            if (error) throw error;
-            
-            showAlert('Email resetujący hasło został wysłany! Sprawdź skrzynkę.', 'success');
-            
-        } catch (error) {
-            showAlert('Błąd: ' + error.message, 'error');
-        } finally {
-            loginBtn.disabled = false;
-            btnText.textContent = '🔐 Zaloguj się';
-        }
-    }
-    
-    async function checkExistingSession() {
-        try {
-            console.log('🔍 Sprawdzam istniejącą sesję...');
-            
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (session) {
-                console.log('📱 Znaleziono sesję:', session.user.email);
-                
-                // Pobierz profil
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('email', session.user.email)
-                    .single();
-                
-                if (profile) {
-                    console.log('🔄 Auto-login:', profile.email);
-                    
-                    // Zapisz dane
-                    localStorage.setItem('libruz_user', JSON.stringify(profile));
-                    localStorage.setItem('libruz_session', JSON.stringify(session));
-                    
-                    // Przekieruj
-                    redirectByRole(profile);
-                }
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span>🔐 Zaloguj się</span>';
             }
-        } catch (error) {
-            console.log('ℹ️ Brak sesji:', error.message);
         }
-    }
+    });
     
-    function loadRememberedEmail() {
-        const rememberedEmail = localStorage.getItem('libruz_remember_email');
-        if (rememberedEmail && emailInput) {
-            emailInput.value = rememberedEmail;
-            if (rememberMe) rememberMe.checked = true;
-        }
-    }
-    
-    function validateEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    }
-    
+    // Funkcja pokazywania alertów
     function showAlert(message, type) {
-        if (!alertDiv) return;
+        if (!alertDiv) {
+            // Jeśli nie ma diva alert, pokaż jako alert przeglądarki
+            alert(message);
+            return;
+        }
         
         alertDiv.textContent = message;
         alertDiv.className = 'alert alert-' + type;
@@ -254,49 +133,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         setTimeout(() => {
             alertDiv.style.display = 'none';
-        }, type === 'success' ? 3000 : 5000);
+        }, 5000);
     }
     
-    function redirectByRole(profile) {
-        let dashboardUrl = 'dashboard.html';
-        
-        switch(profile.role) {
-            case 'admin':
-                dashboardUrl = 'admin-dashboard.html';
-                break;
-            case 'director':
-            case 'vice_director':
-                dashboardUrl = 'director-dashboard.html';
-                break;
-            case 'teacher':
-                dashboardUrl = 'teacher-dashboard.html';
-                break;
-            case 'student':
-                dashboardUrl = 'student-dashboard.html';
-                break;
-            case 'parent':
-                dashboardUrl = 'parent-dashboard.html';
-                break;
-            default:
-                console.warn('Nieznana rola:', profile.role);
-        }
-        
-        console.log('📍 Przekierowanie do:', dashboardUrl);
-        window.location.href = dashboardUrl;
-    }
-    
-    // Dodaj animację shake jeśli nie istnieje
-    if (!document.querySelector('#shake-animation')) {
-        const style = document.createElement('style');
-        style.id = 'shake-animation';
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-5px); }
-                75% { transform: translateX(5px); }
-            }
-        `;
-        document.head.appendChild(style);
+    // Auto-focus na email
+    if (emailInput) {
+        setTimeout(() => emailInput.focus(), 100);
     }
     
     console.log('✅ System logowania gotowy');
