@@ -87,19 +87,11 @@
             color: #2e7d32;
             border-left: 4px solid #2e7d32;
         }
-        .test-accounts {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        .test-accounts h3 {
-            color: #4361ee;
-            margin-bottom: 10px;
-        }
-        .account {
-            margin: 5px 0;
-            font-size: 14px;
+        .system-info {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -113,12 +105,12 @@
         <form id="loginForm">
             <div class="form-group">
                 <label>Email:</label>
-                <input type="email" id="email" placeholder="admin@libruz.pl" required>
+                <input type="email" id="email" required>
             </div>
             
             <div class="form-group">
                 <label>Hasło:</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+                <input type="password" id="password" required>
             </div>
             
             <button type="submit" class="btn" id="loginBtn">
@@ -126,19 +118,13 @@
             </button>
         </form>
         
-        <div class="test-accounts">
-            <h3>📋 Konta testowe:</h3>
-            <div class="account"><strong>Admin:</strong> admin@libruz.pl / admin123</div>
-            <div class="account"><strong>Dyrektor:</strong> dyrektor@sp1.pl / dyrektor123</div>
-            <div class="account"><strong>Nauczyciel:</strong> nauczyciel@sp1.pl / nauczyciel123</div>
-            <div class="account"><strong>Uczeń:</strong> uczen@sp1.pl / uczen123</div>
-            <div class="account"><strong>Rodzic:</strong> rodzic@sp1.pl / rodzic123</div>
+        <div class="system-info">
+            <p>© 2024 LIBRUZ System</p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // auth.js wbudowany bezpośrednio w HTML
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 LIBRUZ - System logowania');
             
@@ -153,6 +139,10 @@
             const loginBtn = document.getElementById('loginBtn');
             const alertDiv = document.getElementById('alert');
             
+            // 1. Sprawdź czy już zalogowany
+            checkSession();
+            
+            // 2. Obsługa formularza
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -168,19 +158,20 @@
                 loginBtn.innerHTML = '<span>⌛ Logowanie...</span>';
                 
                 try {
-                    // 1. Sprawdź czy użytkownik istnieje
+                    // Sprawdź czy użytkownik istnieje w bazie
                     const { data: profile, error } = await supabase
                         .from('profiles')
                         .select('*')
                         .eq('email', email)
+                        .eq('is_active', true)
                         .single();
                     
                     if (error || !profile) {
-                        showAlert('❌ Nieprawidłowy email', 'error');
+                        showAlert('Nieprawidłowy email lub konto nieaktywne', 'error');
                         return;
                     }
                     
-                    // 2. Sprawdź hasło (demo - proste sprawdzenie)
+                    // Sprawdź hasło
                     const passwords = {
                         'admin@libruz.pl': 'admin123',
                         'dyrektor@sp1.pl': 'dyrektor123',
@@ -190,32 +181,68 @@
                     };
                     
                     if (passwords[email] !== password) {
-                        showAlert('❌ Nieprawidłowe hasło', 'error');
+                        showAlert('Nieprawidłowe hasło', 'error');
                         return;
                     }
                     
-                    // 3. Zaloguj
+                    // Zapisz dane
                     localStorage.setItem('libruz_user', JSON.stringify(profile));
-                    showAlert('✅ Zalogowano! Przekierowuję...', 'success');
+                    localStorage.setItem('libruz_logged_in', 'true');
+                    localStorage.setItem('libruz_login_time', Date.now().toString());
                     
+                    showAlert('Zalogowano pomyślnie! Przekierowuję...', 'success');
+                    
+                    // Przekieruj
                     setTimeout(() => {
-                        if (profile.role === 'admin') {
-                            window.location.href = 'admin-dashboard.html';
-                        } else if (profile.role === 'director') {
-                            window.location.href = 'director-dashboard.html';
-                        } else {
-                            window.location.href = 'dashboard.html';
-                        }
+                        redirectToDashboard(profile.role);
                     }, 1000);
                     
                 } catch (error) {
-                    console.error('💥 Błąd:', error);
-                    showAlert('❌ Błąd systemu', 'error');
+                    console.error('Błąd:', error);
+                    showAlert('Błąd systemu', 'error');
                 } finally {
                     loginBtn.disabled = false;
                     loginBtn.innerHTML = '<span>🔐 Zaloguj się</span>';
                 }
             });
+            
+            async function checkSession() {
+                try {
+                    const isLoggedIn = localStorage.getItem('libruz_logged_in');
+                    const userData = localStorage.getItem('libruz_user');
+                    
+                    if (isLoggedIn === 'true' && userData) {
+                        const user = JSON.parse(userData);
+                        const loginTime = parseInt(localStorage.getItem('libruz_login_time') || '0');
+                        const now = Date.now();
+                        
+                        // Sprawdź czy sesja nie wygasła (24 godziny)
+                        if (now - loginTime < 24 * 60 * 60 * 1000) {
+                            console.log('🔄 Auto-login dla:', user.email);
+                            redirectToDashboard(user.role);
+                        } else {
+                            localStorage.clear();
+                        }
+                    }
+                } catch (error) {
+                    console.log('Brak sesji');
+                }
+            }
+            
+            function redirectToDashboard(role) {
+                let dashboard = 'dashboard.html';
+                
+                switch(role) {
+                    case 'admin': dashboard = 'admin-dashboard.html'; break;
+                    case 'director': dashboard = 'director-dashboard.html'; break;
+                    case 'teacher': dashboard = 'teacher-dashboard.html'; break;
+                    case 'student': dashboard = 'student-dashboard.html'; break;
+                    case 'parent': dashboard = 'parent-dashboard.html'; break;
+                }
+                
+                console.log('Przekierowanie do:', dashboard);
+                window.location.href = dashboard;
+            }
             
             function showAlert(message, type) {
                 alertDiv.textContent = message;
