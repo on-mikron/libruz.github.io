@@ -87,6 +87,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // 3. Zapisz dane użytkownika
             localStorage.setItem('libruz_user', JSON.stringify(profile));
             
+            // ✅ ✅ ✅ DODAJ TĘ LINIJKĘ - TO KLUCZ DO DZIAŁANIA! ✅ ✅ ✅
+            localStorage.setItem('libruz_is_logged_in', 'true');
+            
             // 4. Pokaz sukces
             showAlert('✅ Zalogowano pomyślnie! Przekierowuję...', 'success');
             
@@ -143,50 +146,3 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('✅ System logowania gotowy');
 });
-// auth.js - rozszerzenie o obsługę wymuszonej zmiany hasła
-
-// Dodaj tę funkcję po udanym logowaniu
-async function handleFirstLogin(user) {
-    if (user.must_change_password || user.temporary_password) {
-        // Przekieruj do zmiany hasła
-        localStorage.setItem('libruz_must_change_password', 'true');
-        window.location.href = 'change-password.html';
-        return false;
-    }
-    return true;
-}
-
-// Funkcja zmiany hasła (change-password.html)
-async function changePassword(newPassword) {
-    const user = JSON.parse(localStorage.getItem('libruz_user'));
-    
-    const { error } = await supabase
-        .from('profiles')
-        .update({
-            must_change_password: false,
-            temporary_password: false,
-            password_hash: await hashPassword(newPassword),
-            updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-    
-    if (!error) {
-        localStorage.removeItem('libruz_must_change_password');
-        alert('Hasło zostało zmienione!');
-        // Przekieruj do odpowiedniego dashboard
-        redirectByRole(user.role);
-    }
-}
-// W funkcji logowania, po udanym zalogowaniu DODAJ:
-if (isValidPassword) {
-    // 3. Zapisz dane użytkownika
-    localStorage.setItem('libruz_user', JSON.stringify(profile));
-    
-    // 👇 DODAJ TĘ LINIJKĘ - to klucz do poprawnego działania!
-    localStorage.setItem('libruz_is_logged_in', 'true');
-    
-    // 4. Pokaz sukces
-    showAlert('✅ Zalogowano pomyślnie! Przekierowuję...', 'success');
-    
-    // ... reszta kodu
-}
