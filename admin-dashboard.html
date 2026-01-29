@@ -7,212 +7,451 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
             min-height: 100vh;
         }
+        
+        /* Navbar */
         .navbar {
             background: white;
             padding: 15px 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         .logo {
             color: #4361ee;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.8rem;
+            font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: #4361ee;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            font-size: 18px;
         }
         .btn-logout {
-            background: #ff3b30;
+            background: #ef476f;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 10px 24px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
         }
+        .btn-logout:hover {
+            background: #d43a5f;
+            transform: translateY(-2px);
+        }
+        
+        /* Dashboard */
         .dashboard {
             max-width: 1400px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        .welcome {
-            background: white;
+            margin: 0 auto;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+        }
+        
+        /* Welcome */
+        .welcome {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
         }
         .welcome h2 {
-            color: #4361ee;
-            margin-bottom: 10px;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
         }
-        .grid {
+        .welcome p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Stats */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
-        .card {
+        .stat-card {
             background: white;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-left: 4px solid #4361ee;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid #4361ee;
+            transition: transform 0.3s;
         }
-        .card h3 {
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card h3 {
             color: #4361ee;
             margin-bottom: 15px;
+            font-size: 1.3rem;
         }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .stat-desc {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        /* Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .action-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .action-card:hover {
+            border-color: #4361ee;
+            transform: translateY(-5px);
+        }
+        .action-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-card p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        /* Buttons */
         .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
             background: #4361ee;
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 15px;
-            margin-right: 10px;
         }
-        .btn:hover {
+        .btn-primary:hover {
             background: #3a56d4;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        .btn-success {
+            background: #06d6a0;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #05b686;
+        }
+        .btn-warning {
+            background: #ffd166;
+            color: #333;
+        }
+        .btn-danger {
+            background: #ef476f;
+            color: white;
         }
         .btn-secondary {
             background: #6c757d;
-        }
-        .btn-success {
-            background: #28a745;
-        }
-        .btn-danger {
-            background: #dc3545;
+            color: white;
         }
         
-        /* Modal styles */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
         .modal-content {
             background: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
+            border-radius: 20px;
+            width: 100%;
             max-width: 800px;
-            max-height: 80vh;
+            max-height: 90vh;
             overflow-y: auto;
+            animation: modalAppear 0.3s ease-out;
+        }
+        @keyframes modalAppear {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
         }
-        .close {
+        .modal-header h3 {
+            color: #333;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        .close-modal {
+            background: none;
+            border: none;
             font-size: 28px;
             cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+        .close-modal:hover {
+            color: #ef476f;
+        }
+        .modal-body {
+            padding: 30px;
         }
         
+        /* Forms */
         .form-group {
             margin-bottom: 20px;
         }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
         }
-        .form-group input,
-        .form-group select {
+        .form-control {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 14px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border 0.3s;
+        }
+        .form-control:focus {
+            border-color: #4361ee;
+            outline: none;
         }
         .form-row {
             display: flex;
             gap: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .form-row .form-group {
             flex: 1;
         }
         
+        /* Password Generator */
+        .password-generator {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .password-display {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .password-display input {
+            flex: 1;
+            font-family: monospace;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+        .password-strength {
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .password-strength-bar {
+            height: 100%;
+            width: 100%;
+            border-radius: 3px;
+            transition: width 0.3s, background 0.3s;
+        }
+        
+        /* Table */
         .table-container {
             overflow-x: auto;
             margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            background: white;
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        thead {
+            background: #4361ee;
+            color: white;
         }
         th {
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s;
+        }
+        tbody tr:hover {
             background: #f8f9fa;
         }
-        .status-active {
-            color: #28a745;
-            font-weight: bold;
-        }
-        .status-inactive {
-            color: #dc3545;
-            font-weight: bold;
+        td {
+            padding: 18px 15px;
+            color: #333;
         }
         
-        .password-generator {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .password-generator input {
-            flex: 1;
-        }
-        .password-strength {
-            margin-top: 5px;
-            font-size: 12px;
-        }
-        .strength-weak { color: #dc3545; }
-        .strength-medium { color: #ffc107; }
-        .strength-strong { color: #28a745; }
-        
+        /* Access View */
         .access-view {
             display: none;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border: 2px dashed #4361ee;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 3px solid #4361ee;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .access-view.active {
             display: block;
+        }
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .view-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+        .view-tab {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .view-tab.active {
+            color: #4361ee;
+            border-bottom-color: #4361ee;
+        }
+        .view-content {
+            min-height: 400px;
+            padding: 20px 0;
+        }
+        
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* Access Denied */
+        .access-denied {
+            text-align: center;
+            padding: 100px 20px;
+            background: white;
+            border-radius: 20px;
+            margin: 50px auto;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .access-denied h2 {
+            color: #ef476f;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        .access-denied p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .dashboard {
+                padding: 20px;
+            }
+            .welcome {
+                padding: 30px;
+            }
+            .modal-content {
+                margin: 20px;
+            }
         }
     </style>
 </head>
@@ -224,487 +463,174 @@
         </div>
     </div>
 
+    <!-- Modal tworzenia szkoły -->
     <div id="createSchoolModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>🏫 Dodaj nową szkołę</h3>
-                <span class="close" onclick="closeModal('createSchoolModal')">×</span>
+                <h3>🏫 Utwórz nową szkołę</h3>
+                <button class="close-modal" onclick="closeModal('createSchoolModal')">×</button>
             </div>
-            <form id="createSchoolForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nazwa szkoły *</label>
-                        <input type="text" id="schoolName" required>
+            <div class="modal-body">
+                <form id="createSchoolForm">
+                    <h4 style="margin-bottom: 25px; color: #4361ee;">Dane szkoły</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nazwa szkoły *</label>
+                            <input type="text" class="form-control" id="schoolName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Typ szkoły *</label>
+                            <select class="form-control" id="schoolType" required>
+                                <option value="">Wybierz typ</option>
+                                <option value="podstawowa">Szkoła Podstawowa</option>
+                                <option value="liceum">Liceum Ogólnokształcące</option>
+                                <option value="technikum">Technikum</option>
+                                <option value="zawodowa">Szkoła Zawodowa</option>
+                                <option value="branzowa">Szkoła Branżowa</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Miejscowość</label>
-                        <input type="text" id="schoolCity">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Miejscowość *</label>
+                            <input type="text" class="form-control" id="schoolCity" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Ulica i numer</label>
+                            <input type="text" class="form-control" id="schoolAddress">
+                        </div>
                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Adres</label>
-                        <input type="text" id="schoolAddress">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Kod pocztowy</label>
+                            <input type="text" class="form-control" id="schoolPostal">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon kontaktowy</label>
+                            <input type="tel" class="form-control" id="schoolPhone">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Telefon</label>
-                        <input type="tel" id="schoolPhone">
+                    
+                    <h4 style="margin: 40px 0 25px; padding-top: 25px; border-top: 2px solid #eee; color: #4361ee;">
+                        Dane dyrektora szkoły
+                    </h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Imię dyrektora *</label>
+                            <input type="text" class="form-control" id="directorFirstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nazwisko dyrektora *</label>
+                            <input type="text" class="form-control" id="directorLastName" required>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Email szkoły</label>
-                        <input type="email" id="schoolEmail">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email służbowy *</label>
+                            <input type="email" class="form-control" id="directorEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon dyrektora</label>
+                            <input type="tel" class="form-control" id="directorPhone">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Typ szkoły</label>
-                        <select id="schoolType">
-                            <option value="podstawowa">Szkoła Podstawowa</option>
-                            <option value="liceum">Liceum</option>
-                            <option value="technikum">Technikum</option>
-                            <option value="zawodowa">Szkoła Zawodowa</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <h4 style="margin: 30px 0 20px; padding-bottom: 10px; border-bottom: 2px solid #eee;">
-                    Dane dyrektora szkoły
-                </h4>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Imię dyrektora *</label>
-                        <input type="text" id="directorFirstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Nazwisko dyrektora *</label>
-                        <input type="text" id="directorLastName" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Email służbowy *</label>
-                        <input type="email" id="directorEmail" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Telefon</label>
-                        <input type="tel" id="directorPhone">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Tymczasowe hasło</label>
+                    
                     <div class="password-generator">
-                        <input type="text" id="tempPassword" value="Libruz2024!" readonly>
-                        <button type="button" class="btn btn-secondary" onclick="generatePassword()">
-                            🔄 Generuj
+                        <h5 style="margin-bottom: 15px; color: #333;">🔐 Tymczasowe hasło dla dyrektora</h5>
+                        
+                        <div class="password-display">
+                            <input type="text" class="form-control" id="tempPassword" value="Libruz2024!" readonly>
+                            <button type="button" class="btn btn-warning" onclick="generatePassword()">
+                                🔄 Generuj
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="copyToClipboard('tempPassword')">
+                                📋 Kopiuj
+                            </button>
+                        </div>
+                        
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="passwordStrength"></div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 13px; color: #28a745;">
+                            ✅ Silne hasło: 12 znaków, wielkie/małe litery, cyfry, znaki specjalne
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 30px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('createSchoolModal')" style="flex: 1;">
+                            Anuluj
                         </button>
-                        <button type="button" class="btn" onclick="copyPassword()">
-                            📋 Kopiuj
+                        <button type="submit" class="btn btn-success" style="flex: 2;">
+                            🏫 Utwórz szkołę i konto dyrektora
                         </button>
                     </div>
-                    <div class="password-strength strength-strong">
-                        Silne hasło: 12 znaków, wielkie/małe litery, cyfry, znaki specjalne
-                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal podglądu szkoły -->
+    <div id="viewSchoolModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👁️ Podgląd szkoły</h3>
+                <button class="close-modal" onclick="closeModal('viewSchoolModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="view-tabs">
+                    <button class="view-tab active" onclick="switchSchoolView('overview')">📊 Przegląd</button>
+                    <button class="view-tab" onclick="switchSchoolView('classes')">🏫 Klasy</button>
+                    <button class="view-tab" onclick="switchSchoolView('teachers')">👥 Nauczyciele</button>
+                    <button class="view-tab" onclick="switchSchoolView('students')">👦 Uczniowie</button>
+                    <button class="view-tab" onclick="switchSchoolView('parents')">👨‍👩‍👧‍👦 Rodzice</button>
                 </div>
                 
-                <div class="form-group" style="margin-top: 30px;">
-                    <button type="submit" class="btn btn-success" style="width: 100%;">
-                        🏫 Utwórz szkołę i konto dyrektora
-                    </button>
+                <div class="view-content">
+                    <div id="schoolOverview" class="view-section">
+                        <h4 style="margin-bottom: 20px;">Informacje o szkole</h4>
+                        <div id="schoolInfo"></div>
+                    </div>
+                    
+                    <div id="schoolClasses" class="view-section" style="display: none;">
+                        <h4 style="margin-bottom: 20px;">Klasy w szkole</h4>
+                        <div class="loading" id="classesLoading">Ładowanie klas...</div>
+                        <div id="classesList"></div>
+                    </div>
+                    
+                    <div id="schoolTeachers" class="view-section" style="display: none;">
+                        <h4 style="margin-bottom: 20px;">Nauczyciele</h4>
+                        <div class="loading" id="teachersLoading">Ładowanie nauczycieli...</div>
+                        <div id="teachersList"></div>
+                    </div>
+                    
+                    <div id="schoolStudents" class="view-section" style="display: none;">
+                        <h4 style="margin-bottom: 20px;">Uczniowie</h4>
+                        <div class="loading" id="studentsLoading">Ładowanie uczniów...</div>
+                        <div id="studentsList"></div>
+                    </div>
+                    
+                    <div id="schoolParents" class="view-section" style="display: none;">
+                        <h4 style="margin-bottom: 20px;">Rodzice</h4>
+                        <div class="loading" id="parentsLoading">Ładowanie rodziców...</div>
+                        <div id="parentsList"></div>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
     <script>
-        // Supabase klient
-        const supabaseUrl = 'https://fupfgshptjghdjpkeaee.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+        // ===== GŁÓWNY KOD ADMINA =====
+        let currentUser = null;
+        let allSchools = [];
+        
         document.addEventListener('DOMContentLoaded', function() {
             console.log('👑 Panel Administratora - inicjalizacja');
-            checkUserSession();
-        });
-        
-        function checkUserSession() {
-            const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
-            const userData = localStorage.getItem('libruz_user');
-            
-            if (isLoggedIn !== 'true' || !userData) {
-                redirectToLogin();
-                return;
-            }
-            
-            try {
-                const user = JSON.parse(userData);
-                
-                if (user.role !== 'admin') {
-                    showAccessDenied('Tylko administrator ma dostęp do tego panelu');
-                    return;
-                }
-                
-                renderDashboard(user);
-                loadSchools();
-                
-            } catch (error) {
-                localStorage.clear();
-                redirectToLogin();
-            }
-        }
-        
-        function renderDashboard(user) {
-            const app = document.getElementById('app');
-            
-            app.innerHTML = `
-                <nav class="navbar">
-                    <div class="logo">👑 LIBRUZ Admin</div>
-                    <div class="user-menu">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="user-avatar">${getUserInitials(user)}</div>
-                            <div>
-                                <div style="font-weight: bold;">${user.first_name} ${user.last_name}</div>
-                                <small style="color: #666;">Administrator systemu</small>
-                            </div>
-                        </div>
-                        <button class="btn-logout" onclick="logout()">🚪 Wyloguj</button>
-                    </div>
-                </nav>
-                
-                <div class="dashboard">
-                    <div class="welcome">
-                        <h2>Witaj ${user.first_name} w Panelu Administratora!</h2>
-                        <p>Zarządzaj systemem szkolnym LIBRUZ. Stwórz nowe szkoły, dodaj konta dyrektorów i monitoruj działanie systemu.</p>
-                    </div>
-                    
-                    <div class="grid">
-                        <div class="card">
-                            <h3>🏫 Zarządzaj szkołami</h3>
-                            <p>Dodawaj i zarządzaj szkołami w systemie. Twórz konta dla dyrektorów.</p>
-                            <button class="btn" onclick="openCreateSchoolModal()">➕ Dodaj szkołę</button>
-                            <button class="btn btn-secondary" onclick="showSchoolsList()">📋 Lista szkół</button>
-                        </div>
-                        
-                        <div class="card">
-                            <h3>👥 Użytkownicy systemu</h3>
-                            <p>Przeglądaj wszystkich użytkowników systemu według szkół i ról.</p>
-                            <button class="btn" onclick="showAllUsers()">👁️ Przeglądaj użytkowników</button>
-                            <button class="btn btn-secondary" onclick="showStatistics()">📊 Statystyki</button>
-                        </div>
-                        
-                        <div class="card">
-                            <h3>⚙️ System i logi</h3>
-                            <p>Konfiguruj ustawienia systemu, przeglądaj logi aktywności.</p>
-                            <button class="btn" onclick="showSystemLogs()">📋 Logi systemowe</button>
-                            <button class="btn btn-secondary" onclick="showBackup()">💾 Kopia zapasowa</button>
-                        </div>
-                        
-                        <div class="card">
-                            <h3>🔧 Narzędzia</h3>
-                            <p>Generatory haseł, narzędzia diagnostyczne, wsparcie techniczne.</p>
-                            <button class="btn" onclick="showPasswordGenerator()">🔐 Generator haseł</button>
-                            <button class="btn btn-secondary" onclick="showSupport()">🛟 Wsparcie</button>
-                        </div>
-                    </div>
-                    
-                    <div id="contentArea" style="margin-top: 30px;"></div>
-                    
-                    <div id="accessView" class="access-view">
-                        <h3>👁️ Podgląd szkoły</h3>
-                        <div id="accessViewContent"></div>
-                        <button class="btn btn-danger" onclick="exitAccessView()">✖️ Zamknij podgląd</button>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function getUserInitials(user) {
-            const first = user.first_name ? user.first_name.charAt(0) : '';
-            const last = user.last_name ? user.last_name.charAt(0) : '';
-            return (first + last).toUpperCase() || 'A';
-        }
-        
-        // FUNKCJE SZKOŁY
-        function openCreateSchoolModal() {
-            document.getElementById('createSchoolModal').style.display = 'block';
-        }
-        
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        function generatePassword() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-            let password = '';
-            for (let i = 0; i < 12; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            document.getElementById('tempPassword').value = password;
-        }
-        
-        function copyPassword() {
-            const passwordField = document.getElementById('tempPassword');
-            passwordField.select();
-            document.execCommand('copy');
-            alert('Hasło skopiowane do schowka!');
-        }
-        
-        async function loadSchools() {
-            try {
-                const { data: schools, error } = await supabase
-                    .from('schools')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                const contentArea = document.getElementById('contentArea');
-                if (!contentArea) return;
-                
-                if (schools.length === 0) {
-                    contentArea.innerHTML = `
-                        <div class="card" style="text-align: center; padding: 40px;">
-                            <h3>🏫 Brak szkół w systemie</h3>
-                            <p>Dodaj pierwszą szkołę, aby rozpocząć korzystanie z systemu.</p>
-                            <button class="btn" onclick="openCreateSchoolModal()">➕ Dodaj pierwszą szkołę</button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                let html = `
-                    <div class="card">
-                        <h3>🏫 Szkoły w systemie (${schools.length})</h3>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Nazwa szkoły</th>
-                                        <th>Miejscowość</th>
-                                        <th>Typ</th>
-                                        <th>Dyrektor</th>
-                                        <th>Utworzono</th>
-                                        <th>Akcje</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-                
-                for (const school of schools) {
-                    // Pobierz dyrektora szkoły
-                    const { data: director } = await supabase
-                        .from('profiles')
-                        .select('first_name, last_name')
-                        .eq('school_id', school.id)
-                        .eq('role', 'director')
-                        .single();
-                    
-                    html += `
-                        <tr>
-                            <td><strong>${school.name}</strong></td>
-                            <td>${school.city || '-'}</td>
-                            <td>${getSchoolTypeLabel(school.type)}</td>
-                            <td>${director ? `${director.first_name} ${director.last_name}` : 'Brak'}</td>
-                            <td>${new Date(school.created_at).toLocaleDateString('pl-PL')}</td>
-                            <td>
-                                <button class="btn" onclick="viewSchoolDetails('${school.id}')">👁️ Podgląd</button>
-                                <button class="btn btn-secondary" onclick="editSchool('${school.id}')">✏️ Edytuj</button>
-                            </td>
-                        </tr>
-                    `;
-                }
-                
-                html += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-                
-                contentArea.innerHTML = html;
-                
-            } catch (error) {
-                console.error('Błąd ładowania szkół:', error);
-            }
-        }
-        
-        function getSchoolTypeLabel(type) {
-            const types = {
-                'podstawowa': 'SP',
-                'liceum': 'LO',
-                'technikum': 'TECH',
-                'zawodowa': 'SZ'
-            };
-            return types[type] || type;
-        }
-        
-        // Obsługa formularza tworzenia szkoły
-        document.getElementById('createSchoolForm')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const schoolData = {
-                name: document.getElementById('schoolName').value,
-                city: document.getElementById('schoolCity').value,
-                address: document.getElementById('schoolAddress').value,
-                phone: document.getElementById('schoolPhone').value,
-                email: document.getElementById('schoolEmail').value,
-                type: document.getElementById('schoolType').value
-            };
-            
-            const directorData = {
-                first_name: document.getElementById('directorFirstName').value,
-                last_name: document.getElementById('directorLastName').value,
-                email: document.getElementById('directorEmail').value,
-                phone: document.getElementById('directorPhone').value,
-                temporary_password: document.getElementById('tempPassword').value
-            };
-            
-            try {
-                // 1. Utwórz szkołę
-                const { data: school, error: schoolError } = await supabase
-                    .from('schools')
-                    .insert([schoolData])
-                    .select()
-                    .single();
-                
-                if (schoolError) throw schoolError;
-                
-                // 2. Utwórz konto dyrektora
-                const username = generateUsername(directorData.last_name, 'D');
-                const directorProfile = {
-                    email: directorData.email,
-                    username: username,
-                    first_name: directorData.first_name,
-                    last_name: directorData.last_name,
-                    role: 'director',
-                    school_id: school.id,
-                    phone: directorData.phone,
-                    temporary_password: true,
-                    password_hash: await hashPassword(directorData.temporary_password),
-                    is_active: true
-                };
-                
-                const { error: directorError } = await supabase
-                    .from('profiles')
-                    .insert([directorProfile]);
-                
-                if (directorError) throw directorError;
-                
-                // 3. Wyświetl potwierdzenie z loginem i hasłem
-                closeModal('createSchoolModal');
-                
-                const contentArea = document.getElementById('contentArea');
-                contentArea.innerHTML = `
-                    <div class="card" style="background: #e7f7ef; border-left-color: #28a745;">
-                        <h3 style="color: #28a745;">✅ Szkoła utworzona pomyślnie!</h3>
-                        <p><strong>Szkoła:</strong> ${schoolData.name}</p>
-                        <p><strong>Dyrektor:</strong> ${directorData.first_name} ${directorData.last_name}</p>
-                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                            <h4>📋 Dane logowania dla dyrektora:</h4>
-                            <p><strong>Login/Email:</strong> ${directorData.email}</p>
-                            <p><strong>Tymczasowe hasło:</strong> ${directorData.temporary_password}</p>
-                            <p><strong>Link do logowania:</strong> <a href="index.html">libruz.pl</a></p>
-                        </div>
-                        <button class="btn" onclick="printCredentials()">🖨️ Wydrukuj dane</button>
-                        <button class="btn btn-secondary" onclick="loadSchools()">📋 Wróć do listy</button>
-                    </div>
-                `;
-                
-                // 4. Odśwież listę szkół
-                loadSchools();
-                
-            } catch (error) {
-                console.error('Błąd tworzenia szkoły:', error);
-                alert('❌ Błąd tworzenia szkoły: ' + error.message);
-            }
-        });
-        
-        function generateUsername(lastName, rolePrefix) {
-            const cleanLastName = lastName.toLowerCase()
-                .replace(/[^a-z]/g, '')
-                .substring(0, 8);
-            return cleanLastName + rolePrefix;
-        }
-        
-        async function hashPassword(password) {
-            // W rzeczywistości użyj Supabase Auth lub bcrypt
-            // Tutaj uproszczona wersja dla demo
-            return btoa(password);
-        }
-        
-        function viewSchoolDetails(schoolId) {
-            // Implementacja podglądu szkoły
-            const accessView = document.getElementById('accessView');
-            accessView.classList.add('active');
-            
-            // Tutaj można załadować widoki szkoły przez iframe lub API
-            document.getElementById('accessViewContent').innerHTML = `
-                <p>Ładowanie widoku szkoły...</p>
-                <iframe src="director-dashboard.html?school=${schoolId}" style="width: 100%; height: 500px; border: none;"></iframe>
-            `;
-        }
-        
-        function exitAccessView() {
-            document.getElementById('accessView').classList.remove('active');
-        }
-        
-        function showAllUsers() {
-            const contentArea = document.getElementById('contentArea');
-            contentArea.innerHTML = `
-                <div class="card">
-                    <h3>👥 Wszyscy użytkownicy systemu</h3>
-                    <p>Ładowanie danych użytkowników...</p>
-                </div>
-            `;
-            
-            // Implementacja ładowania użytkowników
-        }
-        
-        function logout() {
-            localStorage.removeItem('libruz_is_logged_in');
-            localStorage.removeItem('libruz_user');
-            window.location.href = 'index.html';
-        }
-        
-        function redirectToLogin() {
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1000);
-        }
-        
-        function showAccessDenied(message) {
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <div class="access-denied">
-                    <h2>⛔ Brak dostępu</h2>
-                    <p>${message}</p>
-                    <button onclick="logout()" style="margin-top: 20px; padding: 10px 20px; background: #4361ee; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                        Wróć do logowania
-                    </button>
-                </div>
-            `;
-        }
-        
-        // Zamykanie modala kliknięciem poza nim
-        window.onclick = function(event) {
-            const modals = document.getElementsByClassName('modal');
-            for (let modal of modals) {
-                if (event.target == modal) {
-                    modal.style.display = 'none';
-                }
-            }
-        };
-    </script>
-        <script>
-        // PROSTY SYSTEM SESJI
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('👑 Panel Administratora - inicjalizacja');
-            
-            // 1. Sprawdź czy użytkownik jest zalogowany
             checkUserSession();
         });
         
@@ -715,33 +641,35 @@
             console.log('🔍 Sprawdzam sesję:', { isLoggedIn, userData });
             
             if (isLoggedIn !== 'true' || !userData) {
-                console.error('❌ Brak sesji - przekierowuję do logowania');
-                redirectToLogin();
+                console.error('❌ Brak sesji');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
                 return;
             }
             
             try {
-                const user = JSON.parse(userData);
-                console.log('✅ Użytkownik:', user);
+                currentUser = JSON.parse(userData);
+                console.log('✅ Użytkownik:', currentUser);
                 
-                // Sprawdź czy to admin
-                if (user.role !== 'admin') {
-                    console.error('❌ Brak uprawnień admina');
+                if (currentUser.role !== 'admin') {
                     showAccessDenied('Tylko administrator ma dostęp do tego panelu');
                     return;
                 }
                 
-                // Renderuj dashboard
-                renderDashboard(user);
+                renderDashboard();
+                loadSchoolsFromStorage();
                 
             } catch (error) {
                 console.error('💥 Błąd parsowania danych:', error);
                 localStorage.clear();
-                redirectToLogin();
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
             }
         }
         
-        function renderDashboard(user) {
+        function renderDashboard() {
             const app = document.getElementById('app');
             
             app.innerHTML = `
@@ -749,10 +677,10 @@
                     <div class="logo">👑 LIBRUZ Admin</div>
                     <div class="user-menu">
                         <div class="user-info">
-                            <div class="user-avatar">${getUserInitials(user)}</div>
+                            <div class="user-avatar">${getUserInitials(currentUser)}</div>
                             <div>
-                                <div>${user.first_name} ${user.last_name}</div>
-                                <small>${user.role}</small>
+                                <div style="font-weight: bold;">${currentUser.first_name} ${currentUser.last_name}</div>
+                                <small style="color: #666;">Administrator systemu</small>
                             </div>
                         </div>
                         <button class="btn-logout" onclick="logout()">🚪 Wyloguj</button>
@@ -761,156 +689,699 @@
                 
                 <div class="dashboard">
                     <div class="welcome">
-                        <h2>Witaj ${user.first_name} w Panelu Administratora!</h2>
-                        <p>Zarządzaj systemem szkolnym LIBRUZ.</p>
+                        <h2>Witaj ${currentUser.first_name} w Panelu Administratora!</h2>
+                        <p>Zarządzaj szkołami, użytkownikami i całym systemem LIBRUZ.</p>
                     </div>
                     
-                    <div class="grid">
-                        <div class="card">
+                    <div class="stats-grid">
+                        <div class="stat-card">
                             <h3>🏫 Szkoły</h3>
-                            <p>Dodawaj i zarządzaj szkołami w systemie.</p>
-                            <button onclick="showFeature('szkoły')">Zarządzaj szkołami</button>
+                            <div class="stat-number" id="schoolsCount">0</div>
+                            <div class="stat-desc">Aktywnych szkół w systemie</div>
                         </div>
-                        
-                        <div class="card">
+                        <div class="stat-card">
                             <h3>👥 Użytkownicy</h3>
-                            <p>Twórz i zarządzaj kontami użytkowników.</p>
-                            <button onclick="showFeature('użytkownicy')">Zarządzaj użytkownikami</button>
+                            <div class="stat-number" id="usersCount">0</div>
+                            <div class="stat-desc">Wszystkich użytkowników</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>📊 Aktywność</h3>
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-desc">System działa non-stop</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>🛡️ Bezpieczeństwo</h3>
+                            <div class="stat-number">100%</div>
+                            <div class="stat-desc">Zabezpieczony system</div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions-grid">
+                        <div class="action-card">
+                            <h3>🏫 Zarządzaj szkołami</h3>
+                            <p>Twórz nowe szkoły, dodawaj konta dyrektorów, przeglądaj i edytuj istniejące placówki.</p>
+                            <button class="btn btn-primary" onclick="openCreateSchoolModal()">
+                                ➕ Dodaj szkołę
+                            </button>
+                            <button class="btn btn-secondary" onclick="showSchoolsList()" style="margin-left: 10px;">
+                                📋 Lista szkół
+                            </button>
                         </div>
                         
-                        <div class="card">
-                            <h3>⚙️ System</h3>
-                            <p>Konfiguruj ustawienia systemu.</p>
-                            <button onclick="showFeature('system')">Ustawienia</button>
+                        <div class="action-card">
+                            <h3>👥 Użytkownicy systemu</h3>
+                            <p>Przeglądaj wszystkich użytkowników według ról, resetuj hasła, zarządzaj uprawnieniami.</p>
+                            <button class="btn btn-primary" onclick="showAllUsers()">
+                                👁️ Przeglądaj użytkowników
+                            </button>
                         </div>
                         
-                        <div class="card">
-                            <h3>📊 Raporty</h3>
-                            <p>Generuj raporty i statystyki.</p>
-                            <button onclick="showFeature('raporty')">Raporty</button>
+                        <div class="action-card">
+                            <h3>⚙️ System i konfiguracja</h3>
+                            <p>Ustawienia systemowe, konfiguracja modułów, zarządzanie rolami i uprawnieniami.</p>
+                            <button class="btn btn-primary" onclick="showSystemSettings()">
+                                ⚙️ Ustawienia systemu
+                            </button>
+                        </div>
+                        
+                        <div class="action-card">
+                            <h3>📊 Raporty i statystyki</h3>
+                            <p>Generuj szczegółowe raporty, statystyki użycia systemu, logi aktywności.</p>
+                            <button class="btn btn-primary" onclick="generateReports()">
+                                📈 Generuj raporty
+                            </button>
+                        </div>
+                        
+                        <div class="action-card">
+                            <h3>🔧 Narzędzia</h3>
+                            <p>Generatory haseł, narzędzia diagnostyczne, import/export danych, kopia zapasowa.</p>
+                            <button class="btn btn-primary" onclick="showTools()">
+                                🛠️ Otwórz narzędzia
+                            </button>
+                        </div>
+                        
+                        <div class="action-card">
+                            <h3>🛟 Wsparcie techniczne</h3>
+                            <p>Pomoc techniczna, dokumentacja, kontakt z developerami, zgłaszanie błędów.</p>
+                            <button class="btn btn-primary" onclick="showSupport()">
+                                ❓ Pomoc i wsparcie
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="contentArea" style="margin-top: 50px;"></div>
+                    
+                    <div class="access-view" id="accessView">
+                        <div class="view-header">
+                            <h3 style="margin: 0; color: #4361ee;">👁️ Podgląd szkoły</h3>
+                            <button class="btn btn-danger" onclick="exitAccessView()">
+                                ✖️ Zamknij podgląd
+                            </button>
+                        </div>
+                        <div id="accessViewContent">
+                            <p>Wybierz szkołę z listy, aby zobaczyć szczegóły.</p>
                         </div>
                     </div>
                 </div>
             `;
+            
+            // Inicjalizacja Supabase
+            initSupabase();
         }
         
         function getUserInitials(user) {
-            const first = user.first_name ? user.first_name.charAt(0) : '';
-            const last = user.last_name ? user.last_name.charAt(0) : '';
-            return (first + last).toUpperCase() || 'A';
+            const first = user.first_name ? user.first_name.charAt(0).toUpperCase() : '';
+            const last = user.last_name ? user.last_name.charAt(0).toUpperCase() : '';
+            return (first + last) || 'A';
         }
         
-        function showAccessDenied(message) {
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <div class="access-denied">
-                    <h2>⛔ Brak dostępu</h2>
-                    <p>${message}</p>
-                    <button onclick="logout()" style="margin-top: 20px; padding: 10px 20px; background: #4361ee; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                        Wróć do logowania
-                    </button>
-                </div>
-            `;
-        }
-        
-        function redirectToLogin() {
-            // Małe opóźnienie żeby widać było co się dzieje
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1000);
-        }
-        
-        function logout() {
-            // Wyczyść sesję
-            localStorage.removeItem('libruz_is_logged_in');
-            localStorage.removeItem('libruz_user');
-            
-            // Przekieruj do logowania
-            window.location.href = 'index.html';
-        }
-        
-        function showFeature(feature) {
-            alert(`🛠️ ${feature}\n\nFunkcja jest w trakcie rozwoju.`);
-        }
-        
-        // Eksport funkcji do globalnego scope
-        window.logout = logout;
-        window.showFeature = showFeature;
-        
-        // ===== DODATKOWY KOD DLA SUPABASE =====
-        // Inicjalizuj Supabase tylko jeśli istnieje
-        if (window.supabase) {
-            const supabaseUrl = 'https://fupfgshptjghdjpkeaee.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM';
+        // ===== SUPABASE =====
+        function initSupabase() {
+            if (!window.supabase) {
+                console.warn('Supabase nie jest załadowany');
+                return;
+            }
             
             try {
+                const supabaseUrl = 'https://fupfgshptjghdjpkeaee.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM';
+                
                 window.supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
                 console.log('✅ Supabase zainicjalizowany');
             } catch (error) {
                 console.warn('⚠️ Błąd inicjalizacji Supabase:', error);
             }
-        } else {
-            console.warn('⚠️ Biblioteka Supabase nie została załadowana');
         }
         
-        // ===== NATYCHMIASTOWA POPRAWKA DOSTĘPU =====
-        // Sprawdź czy admin jest w localStorage, jeśli nie - dodaj
-        setTimeout(function() {
-            const userData = localStorage.getItem('libruz_user');
-            if (!userData) {
-                console.log('⚠️ Brak danych użytkownika, dodaję admina...');
-                
-                const adminUser = {
-                    id: 'admin-id',
-                    email: 'admin@libruz.pl',
-                    username: 'admin',
-                    first_name: 'Admin',
-                    last_name: 'System',
-                    role: 'admin',
-                    school_id: 'temp-school-id',
-                    is_active: true
-                };
-                
-                localStorage.setItem('libruz_user', JSON.stringify(adminUser));
-                localStorage.setItem('libruz_is_logged_in', 'true');
-                
-                console.log('✅ Admin dodany do localStorage');
-                location.reload();
-            } else {
-                console.log('✅ Użytkownik istnieje w localStorage:', JSON.parse(userData));
-            }
-        }, 500);
-            // ===== AWARYJNA NAPRAWKA SESJI =====
-setTimeout(function() {
-    console.log('🔍 Sprawdzam sesję...');
-    
-    const userData = localStorage.getItem('libruz_user');
-    const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
-    
-    console.log('Dane sesji:', { userData, isLoggedIn });
-    
-    // Jeśli brakuje danych, ale jesteś na admin-dashboard, dodaj admina
-    if (!userData && window.location.pathname.includes('admin-dashboard')) {
-        console.log('⚠️ Brak danych admina, dodaję...');
+        // ===== ZARZĄDZANIE SZKOŁAMI =====
+        function openCreateSchoolModal() {
+            document.getElementById('createSchoolModal').style.display = 'flex';
+            document.getElementById('tempPassword').value = generateStrongPassword();
+            updatePasswordStrength();
+        }
         
-        const adminUser = {
-            id: 'admin-001',
-            email: 'admin@libruz.pl',
-            username: 'admin',
-            first_name: 'Admin',
-            last_name: 'System',
-            role: 'admin',
-            school_id: null,
-            is_active: true
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function generateStrongPassword() {
+            const length = 12;
+            const charset = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&";
+            let password = "";
+            
+            // Zapewnij różne typy znaków
+            password += "ABCDEFGHJKLMNPQRSTUVWXYZ".charAt(Math.floor(Math.random() * 24));
+            password += "abcdefghjkmnpqrstuvwxyz".charAt(Math.floor(Math.random() * 24));
+            password += "23456789".charAt(Math.floor(Math.random() * 8));
+            password += "!@#$%&".charAt(Math.floor(Math.random() * 6));
+            
+            // Uzupełnij resztę
+            for (let i = 4; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            
+            // Wymieszaj
+            password = password.split('').sort(() => Math.random() - 0.5).join('');
+            return password;
+        }
+        
+        function generatePassword() {
+            const password = generateStrongPassword();
+            document.getElementById('tempPassword').value = password;
+            updatePasswordStrength();
+        }
+        
+        function updatePasswordStrength() {
+            const password = document.getElementById('tempPassword').value;
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            let strength = 0;
+            if (password.length >= 8) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[a-z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 25;
+            if (/[^A-Za-z0-9]/.test(password)) strength = Math.min(100, strength + 25);
+            
+            strengthBar.style.width = strength + '%';
+            strengthBar.style.background = strength >= 75 ? '#28a745' : 
+                                          strength >= 50 ? '#ffc107' : 
+                                          strength >= 25 ? '#fd7e14' : '#dc3545';
+        }
+        
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            
+            alert('✅ Skopiowano do schowka!');
+        }
+        
+        // Obsługa formularza tworzenia szkoły
+        document.getElementById('createSchoolForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Pobierz dane z formularza
+            const schoolData = {
+                name: document.getElementById('schoolName').value,
+                type: document.getElementById('schoolType').value,
+                city: document.getElementById('schoolCity').value,
+                address: document.getElementById('schoolAddress').value,
+                postal: document.getElementById('schoolPostal').value,
+                phone: document.getElementById('schoolPhone').value,
+                created_at: new Date().toISOString(),
+                status: 'active'
+            };
+            
+            const directorData = {
+                first_name: document.getElementById('directorFirstName').value,
+                last_name: document.getElementById('directorLastName').value,
+                email: document.getElementById('directorEmail').value,
+                phone: document.getElementById('directorPhone').value,
+                temporary_password: document.getElementById('tempPassword').value,
+                role: 'director'
+            };
+            
+            // Generuj login dyrektora
+            const login = generateLogin(directorData.last_name, 'D');
+            
+            // Zapisz do localStorage (symulacja bazy)
+            const schoolId = 'school-' + Date.now();
+            const directorId = 'director-' + Date.now();
+            
+            const school = {
+                id: schoolId,
+                ...schoolData
+            };
+            
+            const director = {
+                id: directorId,
+                school_id: schoolId,
+                username: login,
+                ...directorData,
+                is_active: true,
+                created_at: new Date().toISOString()
+            };
+            
+            // Zapisz w localStorage
+            saveSchool(school);
+            saveUser(director);
+            
+            // Wyświetl potwierdzenie
+            closeModal('createSchoolModal');
+            
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = `
+                <div class="action-card" style="background: #e7f7ef; border-color: #28a745;">
+                    <h3 style="color: #28a745;">✅ Szkoła utworzona pomyślnie!</h3>
+                    <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h4 style="margin-bottom: 15px;">📋 Dane szkoły i dyrektora</h4>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <div>
+                                <strong>Szkoła:</strong><br>
+                                ${schoolData.name}<br>
+                                ${schoolData.address}<br>
+                                ${schoolData.postal} ${schoolData.city}
+                            </div>
+                            <div>
+                                <strong>Dyrektor:</strong><br>
+                                ${directorData.first_name} ${directorData.last_name}<br>
+                                ${directorData.email}<br>
+                                ${directorData.phone || 'Brak telefonu'}
+                            </div>
+                        </div>
+                        
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #4361ee;">
+                            <h5 style="margin: 0 0 10px 0;">🔐 Dane logowania dla dyrektora:</h5>
+                            <p><strong>Login/Email:</strong> ${directorData.email}</p>
+                            <p><strong>Tymczasowe hasło:</strong> ${directorData.temporary_password}</p>
+                            <p><small>⚠️ Hasło należy zmienić przy pierwszym logowaniu</small></p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" onclick="printCredentials('${directorData.email}', '${directorData.temporary_password}')">
+                            🖨️ Wydrukuj dane
+                        </button>
+                        <button class="btn btn-primary" onclick="viewSchoolDetails('${schoolId}')">
+                            👁️ Zobacz szkołę
+                        </button>
+                        <button class="btn btn-secondary" onclick="showSchoolsList()">
+                            📋 Wróć do listy
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Odśwież statystyki
+            loadSchoolsFromStorage();
+        });
+        
+        function generateLogin(lastName, roleCode) {
+            const cleanName = lastName.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z]/g, '')
+                .substring(0, 8);
+            return cleanName + roleCode;
+        }
+        
+        // ===== PRZECHOWYWANIE DANYCH W LOCALSTORAGE =====
+        function saveSchool(school) {
+            let schools = JSON.parse(localStorage.getItem('libruz_schools')) || [];
+            schools.push(school);
+            localStorage.setItem('libruz_schools', JSON.stringify(schools));
+        }
+        
+        function saveUser(user) {
+            let users = JSON.parse(localStorage.getItem('libruz_users')) || [];
+            users.push(user);
+            localStorage.setItem('libruz_users', JSON.stringify(users));
+        }
+        
+        function loadSchoolsFromStorage() {
+            const schools = JSON.parse(localStorage.getItem('libruz_schools')) || [];
+            const users = JSON.parse(localStorage.getItem('libruz_users')) || [];
+            
+            document.getElementById('schoolsCount').textContent = schools.length;
+            document.getElementById('usersCount').textContent = users.length;
+            
+            allSchools = schools;
+            
+            // Jeśli contentArea pokazuje listę szkół, odśwież ją
+            if (document.querySelector('#contentArea h3')?.textContent.includes('Szkoły')) {
+                showSchoolsList();
+            }
+        }
+        
+        // ===== FUNKCJE ADMINA =====
+        function showSchoolsList() {
+            const contentArea = document.getElementById('contentArea');
+            const schools = JSON.parse(localStorage.getItem('libruz_schools')) || [];
+            
+            let html = `
+                <div class="action-card">
+                    <h3>🏫 Wszystkie szkoły (${schools.length})</h3>
+                    <p>Lista wszystkich szkół zarejestrowanych w systemie LIBRUZ.</p>
+                    
+                    ${schools.length === 0 ? `
+                        <div style="text-align: center; padding: 40px 20px; background: #f8f9fa; border-radius: 10px; margin: 20px 0;">
+                            <h4 style="color: #666; margin-bottom: 15px;">Brak szkół w systemie</h4>
+                            <p>Dodaj pierwszą szkołę, aby rozpocząć.</p>
+                            <button class="btn btn-primary" onclick="openCreateSchoolModal()" style="margin-top: 15px;">
+                                ➕ Dodaj pierwszą szkołę
+                            </button>
+                        </div>
+                    ` : `
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nazwa szkoły</th>
+                                        <th>Typ</th>
+                                        <th>Miejscowość</th>
+                                        <th>Data utworzenia</th>
+                                        <th>Dyrektor</th>
+                                        <th>Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+            `;
+            
+            schools.forEach(school => {
+                // Znajdź dyrektora tej szkoły
+                const users = JSON.parse(localStorage.getItem('libruz_users')) || [];
+                const director = users.find(u => u.school_id === school.id && u.role === 'director');
+                
+                html += `
+                    <tr>
+                        <td><strong>${school.name}</strong></td>
+                        <td>${getSchoolTypeLabel(school.type)}</td>
+                        <td>${school.city}</td>
+                        <td>${new Date(school.created_at).toLocaleDateString('pl-PL')}</td>
+                        <td>${director ? `${director.first_name} ${director.last_name}` : 'Brak'}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="viewSchoolDetails('${school.id}')" style="padding: 8px 12px; font-size: 13px;">
+                                👁️ Podgląd
+                            </button>
+                            <button class="btn btn-secondary btn-sm" onclick="editSchool('${school.id}')" style="padding: 8px 12px; font-size: 13px; margin-left: 5px;">
+                                ✏️ Edytuj
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-top: 25px; display: flex; justify-content: space-between;">
+                            <button class="btn btn-success" onclick="openCreateSchoolModal()">
+                                ➕ Dodaj nową szkołę
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportSchools()">
+                                📥 Eksportuj dane
+                            </button>
+                        </div>
+                    `;
+            
+            html += `</div>`;
+            contentArea.innerHTML = html;
+        }
+        
+        function getSchoolTypeLabel(type) {
+            const types = {
+                'podstawowa': 'SP',
+                'liceum': 'LO',
+                'technikum': 'TECH',
+                'zawodowa': 'SZ',
+                'branzowa': 'SB'
+            };
+            return types[type] || type;
+        }
+        
+        function viewSchoolDetails(schoolId) {
+            const school = allSchools.find(s => s.id === schoolId);
+            if (!school) {
+                alert('Nie znaleziono szkoły');
+                return;
+            }
+            
+            // Pokaż modal podglądu
+            document.getElementById('viewSchoolModal').style.display = 'flex';
+            
+            // Wypełnij informacje o szkole
+            const users = JSON.parse(localStorage.getItem('libruz_users')) || [];
+            const director = users.find(u => u.school_id === schoolId && u.role === 'director');
+            const teachers = users.filter(u => u.school_id === schoolId && u.role === 'teacher');
+            const students = users.filter(u => u.school_id === schoolId && u.role === 'student');
+            const parents = users.filter(u => u.school_id === schoolId && u.role === 'parent');
+            
+            document.getElementById('schoolInfo').innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                    <div>
+                        <h5 style="color: #4361ee; margin-bottom: 10px;">Dane szkoły</h5>
+                        <p><strong>Nazwa:</strong> ${school.name}</p>
+                        <p><strong>Typ:</strong> ${school.type}</p>
+                        <p><strong>Adres:</strong> ${school.address}, ${school.postal} ${school.city}</p>
+                        <p><strong>Telefon:</strong> ${school.phone || 'Brak'}</p>
+                        <p><strong>Utworzono:</strong> ${new Date(school.created_at).toLocaleString('pl-PL')}</p>
+                    </div>
+                    <div>
+                        <h5 style="color: #4361ee; margin-bottom: 10px;">Dane dyrektora</h5>
+                        ${director ? `
+                            <p><strong>Imię i nazwisko:</strong> ${director.first_name} ${director.last_name}</p>
+                            <p><strong>Email:</strong> ${director.email}</p>
+                            <p><strong>Telefon:</strong> ${director.phone || 'Brak'}</p>
+                            <p><strong>Login:</strong> ${director.username}</p>
+                            <p><strong>Status:</strong> ${director.is_active ? 'Aktywny' : 'Nieaktywny'}</p>
+                        ` : '<p style="color: #dc3545;">Brak przypisanego dyrektora</p>'}
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                    <div style="text-align: center; padding: 15px; background: #e7f7ef; border-radius: 10px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #28a745;">${teachers.length}</div>
+                        <div>Nauczycieli</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #e7f3ff; border-radius: 10px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #4361ee;">0</div>
+                        <div>Klas</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #fff3cd; border-radius: 10px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #ffc107;">${students.length}</div>
+                        <div>Uczniów</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #f8d7da; border-radius: 10px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #dc3545;">${parents.length}</div>
+                        <div>Rodziców</div>
+                    </div>
+                </div>
+            `;
+            
+            // Pokaż listę nauczycieli
+            document.getElementById('teachersList').innerHTML = teachers.length > 0 ? `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Imię i nazwisko</th>
+                                <th>Email</th>
+                                <th>Login</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${teachers.map(teacher => `
+                                <tr>
+                                    <td>${teacher.first_name} ${teacher.last_name}</td>
+                                    <td>${teacher.email}</td>
+                                    <td>${teacher.username}</td>
+                                    <td><span style="color: ${teacher.is_active ? '#28a745' : '#dc3545'}">
+                                        ${teacher.is_active ? 'Aktywny' : 'Nieaktywny'}
+                                    </span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            ` : '<p style="text-align: center; color: #666;">Brak nauczycieli w tej szkole</p>';
+            
+            // Ukryj loading
+            document.getElementById('teachersLoading').style.display = 'none';
+        }
+        
+        function switchSchoolView(view) {
+            // Ukryj wszystkie sekcje
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Pokaż wybraną sekcję
+            document.getElementById('school' + view.charAt(0).toUpperCase() + view.slice(1)).style.display = 'block';
+            
+            // Aktualizuj zakładki
+            document.querySelectorAll('.view-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function showAllUsers() {
+            const users = JSON.parse(localStorage.getItem('libruz_users')) || [];
+            const schools = JSON.parse(localStorage.getItem('libruz_schools')) || [];
+            
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = `
+                <div class="action-card">
+                    <h3>👥 Wszyscy użytkownicy systemu (${users.length})</h3>
+                    <p>Przeglądaj i zarządzaj użytkownikami wszystkich szkół.</p>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <select class="form-control" style="width: auto;" onchange="filterUsersByRole(this.value)">
+                            <option value="">Wszystkie role</option>
+                            <option value="admin">Administratorzy</option>
+                            <option value="director">Dyrektorzy</option>
+                            <option value="teacher">Nauczyciele</option>
+                            <option value="student">Uczniowie</option>
+                            <option value="parent">Rodzice</option>
+                        </select>
+                        
+                        <select class="form-control" style="width: auto;" onchange="filterUsersBySchool(this.value)">
+                            <option value="">Wszystkie szkoły</option>
+                            ${schools.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+                        </select>
+                    </div>
+                    
+                    ${users.length === 0 ? `
+                        <div style="text-align: center; padding: 40px 20px; background: #f8f9fa; border-radius: 10px;">
+                            <h4 style="color: #666;">Brak użytkowników</h4>
+                            <p>Dodaj szkołę, aby pojawili się użytkownicy.</p>
+                        </div>
+                    ` : `
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Imię i nazwisko</th>
+                                        <th>Email</th>
+                                        <th>Rola</th>
+                                        <th>Szkoła</th>
+                                        <th>Login</th>
+                                        <th>Status</th>
+                                        <th>Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    ${users.map(user => {
+                                        const school = schools.find(s => s.id === user.school_id);
+                                        return `
+                                            <tr>
+                                                <td>${user.first_name} ${user.last_name}</td>
+                                                <td>${user.email}</td>
+                                                <td><span class="badge" style="background: ${getRoleColor(user.role)}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                                    ${getRoleLabel(user.role)}
+                                                </span></td>
+                                                <td>${school ? school.name : 'System'}</td>
+                                                <td>${user.username || '-'}</td>
+                                                <td><span style="color: ${user.is_active ? '#28a745' : '#dc3545'}">
+                                                    ${user.is_active ? 'Aktywny' : 'Nieaktywny'}
+                                                </span></td>
+                                                <td>
+                                                    <button class="btn btn-secondary btn-sm" onclick="resetUserPassword('${user.id}')" title="Resetuj hasło">
+                                                        🔐
+                                                    </button>
+                                                    <button class="btn btn-warning btn-sm" onclick="editUser('${user.id}')" title="Edytuj">
+                                                        ✏️
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+        
+        function getRoleLabel(role) {
+            const labels = {
+                'admin': 'Administrator',
+                'director': 'Dyrektor',
+                'teacher': 'Nauczyciel',
+                'student': 'Uczeń',
+                'parent': 'Rodzic'
+            };
+            return labels[role] || role;
+        }
+        
+        function getRoleColor(role) {
+            const colors = {
+                'admin': '#dc3545',
+                'director': '#4361ee',
+                'teacher': '#28a745',
+                'student': '#ffc107',
+                'parent': '#6f42c1'
+            };
+            return colors[role] || '#6c757d';
+        }
+        
+        // ===== POZOSTAŁE FUNKCJE =====
+        function printCredentials(email, password) {
+            const printContent = `
+                <div style="padding: 30px; font-family: Arial;">
+                    <h2 style="color: #4361ee;">LIBRUZ - Dane logowania</h2>
+                    <div style="margin: 20px 0; padding: 20px; border: 2px dashed #4361ee; border-radius: 10px;">
+                        <h3>Dane dostępu do systemu:</h3>
+                        <p><strong>Email:</strong> ${email}</p>
+                        <p><strong>Hasło:</strong> ${password}</p>
+                        <p><strong>Link:</strong> https://libruz.pl</p>
+                    </div>
+                    <p style="color: #666; font-size: 12px; margin-top: 30px;">
+                        Data wygenerowania: ${new Date().toLocaleString('pl-PL')}<br>
+                        Hasło należy zmienić przy pierwszym logowaniu
+                    </p>
+                </div>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        function resetUserPassword(userId) {
+            const newPassword = generateStrongPassword();
+            if (confirm(`Resetować hasło? Nowe hasło: ${newPassword}\n\nKopiuję do schowka.`)) {
+                navigator.clipboard.writeText(newPassword);
+                alert('✅ Hasło skopiowane do schowka!');
+            }
+        }
+        
+        function showSystemSettings() {
+            alert('⚙️ Moduł ustawień systemu\n\nFunkcja w trakcie implementacji...');
+        }
+        
+        function generateReports() {
+            alert('📊 Generowanie raportów\n\nFunkcja w trakcie implementacji...');
+        }
+        
+        function showTools() {
+            alert('🛠️ Narzędzia administratora\n\nFunkcja w trakcie implementacji...');
+        }
+        
+        function showSupport() {
+            alert('🛟 Wsparcie techniczne\n\nKontakt: support@libruz.pl\nTelefon: 123 456 789');
+        }
+        
+        function exitAccessView() {
+            document.getElementById('accessView').classList.remove('active');
+        }
+        
+        function logout() {
+            localStorage.removeItem('libruz_is_logged_in');
+            localStorage.removeItem('libruz_user');
+            window.location.href = 'index.html';
+        }
+        
+        // Zamykanie modalów kliknięciem poza
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
         };
         
-        localStorage.setItem('libruz_user', JSON.stringify(adminUser));
-        localStorage.setItem('libruz_is_logged_in', 'true');
-        
-        console.log('✅ Admin dodany. Odświeżam...');
-        setTimeout(() => location.reload(), 500);
-    }
-}, 1000);
+        // Inicjalizacja hasła
+        document.addEventListener('DOMContentLoaded', function() {
+            const tempPassword = document.getElementById('tempPassword');
+            if (tempPassword) {
+                tempPassword.addEventListener('input', updatePasswordStrength);
+            }
+        });
     </script>
 </body>
 </html>
