@@ -177,3 +177,16 @@ async function changePassword(newPassword) {
         redirectByRole(user.role);
     }
 }
+// W funkcji logowania, po udanym zalogowaniu DODAJ:
+if (isValidPassword) {
+    // 3. Zapisz dane użytkownika
+    localStorage.setItem('libruz_user', JSON.stringify(profile));
+    
+    // 👇 DODAJ TĘ LINIJKĘ - to klucz do poprawnego działania!
+    localStorage.setItem('libruz_is_logged_in', 'true');
+    
+    // 4. Pokaz sukces
+    showAlert('✅ Zalogowano pomyślnie! Przekierowuję...', 'success');
+    
+    // ... reszta kodu
+}
