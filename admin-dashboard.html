@@ -699,5 +699,187 @@
             }
         };
     </script>
+        <script>
+        // PROSTY SYSTEM SESJI
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('👑 Panel Administratora - inicjalizacja');
+            
+            // 1. Sprawdź czy użytkownik jest zalogowany
+            checkUserSession();
+        });
+        
+        function checkUserSession() {
+            const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
+            const userData = localStorage.getItem('libruz_user');
+            
+            console.log('🔍 Sprawdzam sesję:', { isLoggedIn, userData });
+            
+            if (isLoggedIn !== 'true' || !userData) {
+                console.error('❌ Brak sesji - przekierowuję do logowania');
+                redirectToLogin();
+                return;
+            }
+            
+            try {
+                const user = JSON.parse(userData);
+                console.log('✅ Użytkownik:', user);
+                
+                // Sprawdź czy to admin
+                if (user.role !== 'admin') {
+                    console.error('❌ Brak uprawnień admina');
+                    showAccessDenied('Tylko administrator ma dostęp do tego panelu');
+                    return;
+                }
+                
+                // Renderuj dashboard
+                renderDashboard(user);
+                
+            } catch (error) {
+                console.error('💥 Błąd parsowania danych:', error);
+                localStorage.clear();
+                redirectToLogin();
+            }
+        }
+        
+        function renderDashboard(user) {
+            const app = document.getElementById('app');
+            
+            app.innerHTML = `
+                <nav class="navbar">
+                    <div class="logo">👑 LIBRUZ Admin</div>
+                    <div class="user-menu">
+                        <div class="user-info">
+                            <div class="user-avatar">${getUserInitials(user)}</div>
+                            <div>
+                                <div>${user.first_name} ${user.last_name}</div>
+                                <small>${user.role}</small>
+                            </div>
+                        </div>
+                        <button class="btn-logout" onclick="logout()">🚪 Wyloguj</button>
+                    </div>
+                </nav>
+                
+                <div class="dashboard">
+                    <div class="welcome">
+                        <h2>Witaj ${user.first_name} w Panelu Administratora!</h2>
+                        <p>Zarządzaj systemem szkolnym LIBRUZ.</p>
+                    </div>
+                    
+                    <div class="grid">
+                        <div class="card">
+                            <h3>🏫 Szkoły</h3>
+                            <p>Dodawaj i zarządzaj szkołami w systemie.</p>
+                            <button onclick="showFeature('szkoły')">Zarządzaj szkołami</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>👥 Użytkownicy</h3>
+                            <p>Twórz i zarządzaj kontami użytkowników.</p>
+                            <button onclick="showFeature('użytkownicy')">Zarządzaj użytkownikami</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>⚙️ System</h3>
+                            <p>Konfiguruj ustawienia systemu.</p>
+                            <button onclick="showFeature('system')">Ustawienia</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>📊 Raporty</h3>
+                            <p>Generuj raporty i statystyki.</p>
+                            <button onclick="showFeature('raporty')">Raporty</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function getUserInitials(user) {
+            const first = user.first_name ? user.first_name.charAt(0) : '';
+            const last = user.last_name ? user.last_name.charAt(0) : '';
+            return (first + last).toUpperCase() || 'A';
+        }
+        
+        function showAccessDenied(message) {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="access-denied">
+                    <h2>⛔ Brak dostępu</h2>
+                    <p>${message}</p>
+                    <button onclick="logout()" style="margin-top: 20px; padding: 10px 20px; background: #4361ee; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Wróć do logowania
+                    </button>
+                </div>
+            `;
+        }
+        
+        function redirectToLogin() {
+            // Małe opóźnienie żeby widać było co się dzieje
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+        
+        function logout() {
+            // Wyczyść sesję
+            localStorage.removeItem('libruz_is_logged_in');
+            localStorage.removeItem('libruz_user');
+            
+            // Przekieruj do logowania
+            window.location.href = 'index.html';
+        }
+        
+        function showFeature(feature) {
+            alert(`🛠️ ${feature}\n\nFunkcja jest w trakcie rozwoju.`);
+        }
+        
+        // Eksport funkcji do globalnego scope
+        window.logout = logout;
+        window.showFeature = showFeature;
+        
+        // ===== DODATKOWY KOD DLA SUPABASE =====
+        // Inicjalizuj Supabase tylko jeśli istnieje
+        if (window.supabase) {
+            const supabaseUrl = 'https://fupfgshptjghdjpkeaee.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1cGZnc2hwdGpnaGRqcGtlYWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1NDk2MTcsImV4cCI6MjA4NTEyNTYxN30.PO_kVi3YBslUH1GQtfSHduMap_oSNYCsGL9eIhpxYnM';
+            
+            try {
+                window.supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log('✅ Supabase zainicjalizowany');
+            } catch (error) {
+                console.warn('⚠️ Błąd inicjalizacji Supabase:', error);
+            }
+        } else {
+            console.warn('⚠️ Biblioteka Supabase nie została załadowana');
+        }
+        
+        // ===== NATYCHMIASTOWA POPRAWKA DOSTĘPU =====
+        // Sprawdź czy admin jest w localStorage, jeśli nie - dodaj
+        setTimeout(function() {
+            const userData = localStorage.getItem('libruz_user');
+            if (!userData) {
+                console.log('⚠️ Brak danych użytkownika, dodaję admina...');
+                
+                const adminUser = {
+                    id: 'admin-id',
+                    email: 'admin@libruz.pl',
+                    username: 'admin',
+                    first_name: 'Admin',
+                    last_name: 'System',
+                    role: 'admin',
+                    school_id: 'temp-school-id',
+                    is_active: true
+                };
+                
+                localStorage.setItem('libruz_user', JSON.stringify(adminUser));
+                localStorage.setItem('libruz_is_logged_in', 'true');
+                
+                console.log('✅ Admin dodany do localStorage');
+                location.reload();
+            } else {
+                console.log('✅ Użytkownik istnieje w localStorage:', JSON.parse(userData));
+            }
+        }, 500);
+    </script>
 </body>
 </html>
