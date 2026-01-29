@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👑 LIBRUZ - Panel Admina</title>
+    <title>👑 LIBRUZ - Panel Administratora</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: Arial, sans-serif;
             background: #f5f5f5;
+            min-height: 100vh;
         }
         .navbar {
             background: white;
@@ -49,6 +50,9 @@
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
+        }
+        .btn-logout:hover {
+            background: #e0352b;
         }
         .dashboard {
             max-width: 1200px;
@@ -94,95 +98,177 @@
         .card button:hover {
             background: #3a56d4;
         }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">👑 LIBRUZ Admin</div>
-        <div class="user-menu">
-            <div class="user-info" id="userInfo">
-                <div class="user-avatar" id="avatar">A</div>
-                <div>
-                    <div id="userName">Administrator</div>
-                    <small id="userRole">Administrator</small>
-                </div>
-            </div>
-            <button class="btn-logout" onclick="logout()">🚪 Wyloguj</button>
-        </div>
-    </nav>
+    <div id="loading" class="loading">
+        <h2>⌛ Sprawdzanie sesji...</h2>
+    </div>
     
-    <div class="dashboard">
-        <div class="welcome">
-            <h2 id="welcomeTitle">Witaj w Panelu Administratora!</h2>
-            <p>Zarządzaj systemem szkolnym.</p>
-        </div>
+    <div id="content" style="display: none;">
+        <nav class="navbar">
+            <div class="logo">👑 LIBRUZ Admin</div>
+            <div class="user-menu">
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar" id="avatar">A</div>
+                    <div>
+                        <div id="userName">Administrator</div>
+                        <small id="userRole">Administrator</small>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="logout()">🚪 Wyloguj</button>
+            </div>
+        </nav>
         
-        <div class="grid">
-            <div class="card">
-                <h3>🏫 Szkoły</h3>
-                <p>Dodawaj i zarządzaj szkołami w systemie.</p>
-                <button onclick="manageSchools()">Zarządzaj szkołami</button>
+        <div class="dashboard">
+            <div class="welcome">
+                <h2 id="welcomeTitle">Witaj w Panelu Administratora!</h2>
+                <p>Zarządzaj systemem szkolnym.</p>
             </div>
             
-            <div class="card">
-                <h3>👥 Użytkownicy</h3>
-                <p>Twórz i zarządzaj kontami użytkowników.</p>
-                <button onclick="manageUsers()">Zarządzaj użytkownikami</button>
-            </div>
-            
-            <div class="card">
-                <h3>⚙️ System</h3>
-                <p>Konfiguruj ustawienia systemu.</p>
-                <button onclick="systemSettings()">Ustawienia</button>
-            </div>
-            
-            <div class="card">
-                <h3>📊 Raporty</h3>
-                <p>Generuj raporty i statystyki.</p>
-                <button onclick="generateReports()">Raporty</button>
+            <div class="grid">
+                <div class="card">
+                    <h3>🏫 Szkoły</h3>
+                    <p>Dodawaj i zarządzaj szkołami w systemie.</p>
+                    <button onclick="manageSchools()">Zarządzaj szkołami</button>
+                </div>
+                
+                <div class="card">
+                    <h3>👥 Użytkownicy</h3>
+                    <p>Twórz i zarządzaj kontami użytkowników.</p>
+                    <button onclick="manageUsers()">Zarządzaj użytkownikami</button>
+                </div>
+                
+                <div class="card">
+                    <h3>⚙️ System</h3>
+                    <p>Konfiguruj ustawienia systemu.</p>
+                    <button onclick="systemSettings()">Ustawienia</button>
+                </div>
+                
+                <div class="card">
+                    <h3>📊 Raporty</h3>
+                    <p>Generuj raporty i statystyki.</p>
+                    <button onclick="generateReports()">Raporty</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Sprawdź czy zalogowany jako admin
+        // SPRAWDŹ SESJĘ
         document.addEventListener('DOMContentLoaded', function() {
-            const userData = localStorage.getItem('libruz_user');
+            console.log('🔍 Sprawdzam sesję...');
             
-            if (!userData) {
-                alert('❌ Brak sesji! Zaloguj się ponownie.');
-                window.location.href = 'index.html';
-                return;
+            setTimeout(() => {
+                checkSession();
+            }, 500);
+        });
+        
+        function checkSession() {
+            try {
+                // 1. Sprawdź czy jesteśmy zalogowani
+                const isLoggedIn = localStorage.getItem('libruz_logged_in');
+                const userData = localStorage.getItem('libruz_user');
+                
+                if (isLoggedIn !== 'true' || !userData) {
+                    console.error('❌ Brak sesji');
+                    redirectToLogin();
+                    return;
+                }
+                
+                // 2. Sprawdź czas sesji
+                const loginTime = parseInt(localStorage.getItem('libruz_login_time') || '0');
+                const now = Date.now();
+                
+                if (now - loginTime > 24 * 60 * 60 * 1000) {
+                    console.error('❌ Sesja wygasła');
+                    localStorage.clear();
+                    redirectToLogin();
+                    return;
+                }
+                
+                // 3. Sprawdź dane użytkownika
+                const user = JSON.parse(userData);
+                
+                if (!user || user.role !== 'admin') {
+                    console.error('❌ Brak uprawnień admina');
+                    redirectToLogin();
+                    return;
+                }
+                
+                console.log('✅ Sesja poprawna:', user.email);
+                
+                // 4. Pokaż dashboard
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                
+                // 5. Załaduj dane użytkownika
+                loadUserData(user);
+                
+            } catch (error) {
+                console.error('💥 Błąd sesji:', error);
+                redirectToLogin();
+            }
+        }
+        
+        function loadUserData(user) {
+            // Imię i nazwisko
+            document.getElementById('userName').textContent = 
+                (user.first_name || '') + ' ' + (user.last_name || '');
+            
+            // Rola
+            document.getElementById('userRole').textContent = user.role;
+            
+            // Avatar (inicjały)
+            const firstName = user.first_name || '';
+            const lastName = user.last_name || '';
+            const avatar = document.getElementById('avatar');
+            if (firstName && lastName) {
+                avatar.textContent = firstName.charAt(0) + lastName.charAt(0);
+            } else if (user.email) {
+                avatar.textContent = user.email.charAt(0).toUpperCase();
             }
             
-            const user = JSON.parse(userData);
-            
-            // Aktualizuj UI
-            document.getElementById('userName').textContent = user.first_name + ' ' + user.last_name;
-            document.getElementById('userRole').textContent = user.role;
-            document.getElementById('avatar').textContent = (user.first_name?.charAt(0) || '') + (user.last_name?.charAt(0) || '');
-            document.getElementById('welcomeTitle').textContent = `Witaj ${user.first_name || ''} w Panelu Admina!`;
-        });
+            // Tytuł welcome
+            const welcomeTitle = document.getElementById('welcomeTitle');
+            if (user.first_name) {
+                welcomeTitle.textContent = `Witaj ${user.first_name} w Panelu Administratora!`;
+            } else {
+                welcomeTitle.textContent = 'Witaj w Panelu Administratora!';
+            }
+        }
+        
+        function redirectToLogin() {
+            localStorage.removeItem('libruz_logged_in');
+            localStorage.removeItem('libruz_login_time');
+            window.location.href = 'index.html';
+        }
         
         function logout() {
             localStorage.clear();
             window.location.href = 'index.html';
         }
         
+        // Funkcje panelu admina
         function manageSchools() {
-            alert('🏫 Zarządzanie szkołami\n\nFunkcja w budowie.');
+            alert('🏫 Zarządzanie szkołami\n\nFunkcja w budowie.\nBędzie możliwość dodawania, edytowania i usuwania szkół.');
         }
         
         function manageUsers() {
-            alert('👥 Zarządzanie użytkownikami\n\nFunkcja w budowie.');
+            alert('👥 Zarządzanie użytkownikami\n\nFunkcja w budowie.\nTworzenie kont dla nauczycieli, uczniów i rodziców.');
         }
         
         function systemSettings() {
-            alert('⚙️ Ustawienia systemu\n\nFunkcja w budowie.');
+            alert('⚙️ Ustawienia systemu\n\nFunkcja w budowie.\nKonfiguracja systemu, backup danych, logi.');
         }
         
         function generateReports() {
-            alert('📊 Raporty\n\nFunkcja w budowie.');
+            alert('📊 Raporty\n\nFunkcja w budowie.\nGenerowanie raportów frekwencji, ocen, aktywności.');
         }
     </script>
 </body>
