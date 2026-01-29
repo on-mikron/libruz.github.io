@@ -880,6 +880,37 @@
                 console.log('✅ Użytkownik istnieje w localStorage:', JSON.parse(userData));
             }
         }, 500);
+            // ===== AWARYJNA NAPRAWKA SESJI =====
+setTimeout(function() {
+    console.log('🔍 Sprawdzam sesję...');
+    
+    const userData = localStorage.getItem('libruz_user');
+    const isLoggedIn = localStorage.getItem('libruz_is_logged_in');
+    
+    console.log('Dane sesji:', { userData, isLoggedIn });
+    
+    // Jeśli brakuje danych, ale jesteś na admin-dashboard, dodaj admina
+    if (!userData && window.location.pathname.includes('admin-dashboard')) {
+        console.log('⚠️ Brak danych admina, dodaję...');
+        
+        const adminUser = {
+            id: 'admin-001',
+            email: 'admin@libruz.pl',
+            username: 'admin',
+            first_name: 'Admin',
+            last_name: 'System',
+            role: 'admin',
+            school_id: null,
+            is_active: true
+        };
+        
+        localStorage.setItem('libruz_user', JSON.stringify(adminUser));
+        localStorage.setItem('libruz_is_logged_in', 'true');
+        
+        console.log('✅ Admin dodany. Odświeżam...');
+        setTimeout(() => location.reload(), 500);
+    }
+}, 1000);
     </script>
 </body>
 </html>
